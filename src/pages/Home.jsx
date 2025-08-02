@@ -18,7 +18,7 @@ export default function Home() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-5xl md:text-6xl xl:text-[4.4rem] font-extrabold text-orange-600 mb-6 leading-tight">
-            Mentorship & Coaching That Moves you Forward
+            (Coming Soon)Mentorship & Coaching That Moves you Forward
           </h1>
           <p className="text-gray-700 text-xl md:text-2xl mb-6 leading-relaxed">
             Growth can feel lonely — until now. Get matched with experienced mentors and take your goals further, faster.
