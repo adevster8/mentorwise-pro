@@ -2,7 +2,53 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa"; // Import search icon
 
+
 export const categories = [
+  {
+    name: "Local",
+    topics: [
+      {
+        title: "Find Nearby Mentors",
+        subtopics: [
+          "Map View",
+          "Local Search",
+          "Coffee Shop Meetups",
+          "Group Sessions",
+          "Safe Public Spaces"
+        ]
+      },
+      {
+        title: "In-Person Coaching",
+        subtopics: [
+          "Fitness in the Park",
+          "Career Coaching Locally",
+          "Study Groups",
+          "Walking Meetups",
+          "Skill Workshops"
+        ]
+      },
+      {
+        title: "Local Events",
+        subtopics: [
+          "Upcoming Events",
+          "Host Your Own",
+          "Weekly Gatherings",
+          "Open Workshops",
+          "Networking Nights"
+        ]
+      },
+      {
+        title: "Safety & Tips",
+        subtopics: [
+          "Privacy Tips",
+          "Safe Places to Meet",
+          "How Location Sharing Works",
+          "Community Guidelines",
+          "Report a Concern"
+        ]
+      }
+    ]
+  },
   {
     name: "Career & Business",
     topics: [
@@ -66,6 +112,7 @@ export const categories = [
         title: "Nutrition & Lifestyle",
         subtopics: [
           "Meal Planning",
+          "Sports Training",
           "Weight Management",
           "Supplements Guidance",
           "Plant-Based Diets",
@@ -281,51 +328,64 @@ export const categories = [
 
 export default function MegaMenuNavbar() {
   return (
-    <div className="bg-blue-100 text-gray-900 shadow-sm border-b border-gray-300">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Categories Centered */}
-        <div className="flex flex-wrap gap-12 justify-center flex-grow">
-          {categories.map((cat, idx) => (
-            <div className="group relative" key={idx}>
-              <button className="text-gray-800 font-medium hover:text-orange-600 text-base tracking-wide">
-                {cat.name}
-              </button>
-              <div className="absolute left-1/2 transform -translate-x-1/2 top-full hidden group-hover:block bg-white shadow-lg border mt-2 p-6 rounded-xl z-50 w-[1100px]">
-                <div className="grid grid-cols-4 gap-10">
-                  {cat.topics.map((topic, tIdx) => (
-                    <div key={tIdx}>
-                      <h4 className="font-bold text-gray-800 text-base mb-2">{topic.title}</h4>
-                      <ul className="text-sm text-gray-700 space-y-1">
-                        {topic.subtopics.map((sub, sIdx) => (
-                          <li key={sIdx}>
-                            <Link
-                              to={`/mentors?category=${encodeURIComponent(sub)}`}
-                              className="hover:text-orange-500"
-                            >
-                              {sub}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+    <div className="bg-blue-100 text-gray-900 shadow-sm border-b border-gray-300 w-full">
+      <nav className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex items-center w-full gap-8">
+          {/* Categories: always fill available space */}
+          <div className="flex gap-12 flex-nowrap flex-grow">
+            {categories.map((cat, idx) => (
+              <div className="group relative" key={idx}>
+                <button
+                  className="text-gray-800 font-medium hover:text-orange-600 text-base tracking-wide whitespace-nowrap"
+                >
+                  {cat.name}
+                </button>
+                {/* Dropdown */}
+                <div
+                  className={
+                    "absolute top-full mt-2 hidden group-hover:block bg-white shadow-lg border p-6 rounded-xl z-50 w-[1100px] " +
+                    (
+                      idx === 0
+                        ? "left-0 transform-none"
+                        : idx === categories.length - 1
+                          ? "right-0 left-auto transform-none"
+                          : "left-1/2 transform -translate-x-1/2"
+                    )
+                  }
+                >
+                  <div className="grid grid-cols-4 gap-10">
+                    {cat.topics.map((topic, tIdx) => (
+                      <div key={tIdx}>
+                        <h4 className="font-bold text-gray-800 text-base mb-2">{topic.title}</h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          {topic.subtopics.map((sub, sIdx) => (
+                            <li key={sIdx}>
+                              <Link
+                                to={`/mentors?category=${encodeURIComponent(sub)}`}
+                                className="hover:text-orange-500"
+                              >
+                                {sub}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          {/* SEARCH ICON far right */}
+         <button
+  className="ml-8 p-2 bg-transparent hover:bg-transparent shadow-none border-none focus:outline-none transition group"
+  aria-label="Search"
+  style={{ boxShadow: "none", background: "none", border: "none" }}
+>
+  <FaSearch className="w-6 h-6 text-gray-700 hover:text-orange-500 transition" />
+</button>
         </div>
-
-        {/* Search Icon on Right */}
-        <div className="ml-6">
-          <button
-            title="Search topics"
-            className="p-2 rounded-full hover:bg-gray-200 transition text-gray-700 hover:text-orange-600 text-lg"
-            onClick={() => alert("Search feature coming soon!")}
-          >
-            <FaSearch />
-          </button>
-        </div>
-      </div>
+      </nav>
     </div>
   );
 }
