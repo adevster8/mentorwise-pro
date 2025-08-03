@@ -4,6 +4,7 @@ import ModernDropdown from "../components/ModernDropdown";
 import IconPic from "../components/IconPic";
 import Footer from "../components/Footer";
 import ParallaxCardSection from "../components/ParallaxCardSection";
+import TestimonialsCarousel from "../components/TestimonialsCarousel";
 
 export default function Home() {
   // Modern dropdowns controlled state
@@ -245,112 +246,49 @@ export default function Home() {
 
 
       {/* Parallax Coaching Section */}
-      <section className="relative h-[450px] md:h-[650px] overflow-hidden">
-        {/* Background Image with Parallax Effect */}
-        <motion.div
-          className="absolute inset-0 bg-fixed bg-center bg-cover"
-          style={{ backgroundImage: "url('/Coaching.jpg')" }}
-          initial={{ scale: 1.05 }}
-          whileInView={{ scale: 1 }}
-          transition={{ duration: 1.3, ease: "easeInOut" }}
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/70"></div>
-        {/* Centered Text Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center text-white h-full px-6">
-          <motion.h2
-            className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow-lg"
-            initial={{ y: 40, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            1-on-1 Coaching That Actually Works
-          </motion.h2>
-          <motion.p
-            className="text-lg md:text-2xl mb-8 max-w-3xl leading-relaxed"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.9 }}
-            viewport={{ once: true }}
-          >
-            Get matched with coaches who’ve walked the path you’re on. Real conversations, real strategies, and personalized support—without the overpriced fluff.
-          </motion.p>
-          <motion.a
-            href="/mentors"
-            className="bg-blue-100 hover:bg-blue-200 text-gray-900 px-8 py-4 rounded-lg text-lg font-medium shadow-lg transition-all hover:scale-105"
-            whileHover={{ scale: 1.06, boxShadow: "0 8px 32px 0 #4f8cff44" }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Find Your Coach
-          </motion.a>
-        </div>
-      </section>
-
-
+<section className="relative h-[450px] md:h-[650px] overflow-hidden">
+  {/* Background Image with Parallax Effect - NO animation */}
+  <div
+    className="absolute inset-0 bg-fixed bg-center bg-cover"
+    style={{ backgroundImage: "url('/Coaching.jpg')" }}
+  />
+  {/* Dark Overlay */}
+  <div className="absolute inset-0 bg-black/70"></div>
+  {/* Centered Text Content */}
+  <div className="relative z-10 flex flex-col items-center justify-center text-center text-white h-full px-6">
+    <motion.h2
+      className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow-lg"
+      initial={{ y: 40, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ duration: 1, ease: "easeOut" }}
+      viewport={{ once: true }}
+    >
+      1-on-1 Coaching That Actually Works
+    </motion.h2>
+    <motion.p
+      className="text-lg md:text-2xl mb-8 max-w-3xl leading-relaxed"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ delay: 0.4, duration: 0.9 }}
+      viewport={{ once: true }}
+    >
+      Get matched with coaches who’ve walked the path you’re on. Real conversations, real strategies, and personalized support...without the overpriced fluff.
+    </motion.p>
+    <motion.a
+      href="/mentors"
+      className="bg-blue-100 hover:bg-blue-200 text-gray-900 px-8 py-4 rounded-lg text-lg font-medium shadow-lg transition-all hover:scale-105"
+      whileHover={{ scale: 1.06, boxShadow: "0 8px 32px 0 #4f8cff44" }}
+      whileTap={{ scale: 0.98 }}
+    >
+      Find Your Coach
+    </motion.a>
+  </div>
+</section>
       {/* Full-width Large Image Footer */}
       <IconPic />
       
+<TestimonialsCarousel />
 
-      {/* Testimonials Section */}
-      <section className="bg-orange-50 py-20 px-6">
-        <div className="max-w-7xl mx-auto text-center">
-          <motion.h2
-            className="text-3xl font-bold text-orange-600 mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            viewport={{ once: true }}
-          >
-            What People Are Saying
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {[
-              {
-                name: "Jenny",
-                img: "https://randomuser.me/api/portraits/women/65.jpg",
-                quote: "MentorWise gave me the confidence to switch careers. My mentor’s guidance was priceless.",
-                age: "28",
-                location: "Nashville, TN"
-              },
-              {
-                name: "Mark",
-                img: "https://randomuser.me/api/portraits/men/32.jpg",
-                quote: "This platform saved me from wasting thousands on courses. Real advice, real growth.",
-                age: "35",
-                location: "Denver, CO"
-              },
-              {
-                name: "Alicia",
-                img: "https://randomuser.me/api/portraits/women/44.jpg",
-                quote: "I found a mentor who really understood my challenges. I’m on a whole new path now.",
-                age: "31",
-                location: "Portland, OR"
-              }
-            ].map(({ name, img, quote, age, location }, index) => (
-              <motion.div
-                key={name}
-                className="bg-white/95 p-8 rounded-3xl shadow-xl hover:shadow-2xl border-t-4 border-orange-100 transition-all duration-300 hover:scale-[1.03] hover:border-orange-400 group"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.18 }}
-                viewport={{ once: true }}
-              >
-                <motion.img
-                  src={img}
-                  alt={name}
-                  className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-orange-200 shadow group-hover:scale-105 transition"
-                  initial={{ scale: 0.92 }}
-                  whileHover={{ scale: 1.04 }}
-                />
-                <p className="text-orange-500 text-lg">★★★★★</p>
-                <p className="italic text-gray-700 mt-2 leading-relaxed">“{quote}”</p>
-                <p className="mt-4 font-semibold text-gray-900">{name}, {age} — {location}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Video Coaching Highlight Section */}
       <section className="relative h-[600px] md:h-[800px] overflow-hidden">
@@ -359,6 +297,7 @@ export default function Home() {
           loop
           muted
           playsInline
+      
           className="absolute inset-0 w-full h-full object-cover object-top z-0"
           src="/lifecoach-vid.mp4"
         />
