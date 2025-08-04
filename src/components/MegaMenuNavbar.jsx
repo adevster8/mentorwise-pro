@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaSearch } from "react-icons/fa"; // Import search icon
+import { FaSearch } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 export const categories = [
@@ -325,65 +326,119 @@ export const categories = [
   }
 ];
 
+function useDropdown() {
+  const [openIdx, setOpenIdx] = useState(null);
+  return {
+    openIdx,
+    handleEnter: (idx) => setOpenIdx(idx),
+    handleLeave: () => setOpenIdx(null),
+  };
+}
 
 export default function MegaMenuNavbar() {
+  const { openIdx, handleEnter, handleLeave } = useDropdown();
+
+  // Optional: keyboard accessibility
+  const handleKeyDown = (e, idx) => {
+    if (e.key === "Enter" || e.key === " ") handleEnter(idx);
+    if (e.key === "Escape") handleLeave();
+  };
+
   return (
-    <div className="bg-blue-100 text-gray-900 shadow-sm border-b border-gray-300 w-full">
+    <div className="bg-blue-100 text-gray-900 shadow-sm border-b border-gray-300 w-full font-lato z-9999 relative">
       <nav className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center w-full gap-8">
-          {/* Categories: always fill available space */}
-          <div className="flex gap-12 flex-nowrap flex-grow">
+          {/* Categories row */}
+          <div className="flex gap-10 flex-nowrap flex-grow">
             {categories.map((cat, idx) => (
-              <div className="group relative" key={idx}>
-                <button
-                  className="text-gray-800 font-medium hover:text-orange-600 text-base tracking-wide whitespace-nowrap"
+              <div
+                key={cat.name}
+                className="relative"
+                onMouseEnter={() => handleEnter(idx)}
+                onMouseLeave={handleLeave}
+                tabIndex={0}
+                onKeyDown={(e) => handleKeyDown(e, idx)}
+                aria-haspopup="true"
+                aria-expanded={openIdx === idx}
+                style={{ outline: "none" }}
+              >
+                <motion.button
+                  className="relative text-gray-800 font-semibold text-base tracking-wide whitespace-nowrap px-4 py-2 rounded-lg transition-all"
+                  whileHover={{ scale: 1.07 }}
+                  animate={{
+                    color: openIdx === idx ? "#f97316" : "#1e293b"
+                  }}
+                  style={{
+                    background: openIdx === idx ? "#fff7ed" : "transparent",
+                    boxShadow: openIdx === idx ? "0 1px 10px #fbbf24aa" : "none",
+                    zIndex: openIdx === idx ? 20 : 10,
+                  }}
+                  tabIndex={0}
                 >
-                  {cat.name}
-                </button>
-                {/* Dropdown */}
-                <div
-                  className={
-                    "absolute top-full mt-2 hidden group-hover:block bg-white shadow-lg border p-6 rounded-xl z-50 w-[1100px] " +
-                    (
-                      idx === 0
-                        ? "left-0 transform-none"
-                        : idx === categories.length - 1
-                          ? "right-0 left-auto transform-none"
-                          : "left-1/2 transform -translate-x-1/2"
-                    )
-                  }
-                >
-                  <div className="grid grid-cols-4 gap-10">
-                    {cat.topics.map((topic, tIdx) => (
-                      <div key={tIdx}>
-                        <h4 className="font-bold text-gray-800 text-base mb-2">{topic.title}</h4>
-                        <ul className="text-sm text-gray-700 space-y-1">
-                          {topic.subtopics.map((sub, sIdx) => (
-                            <li key={sIdx}>
-                              <Link
-                                to={`/mentors?category=${encodeURIComponent(sub)}`}
-                                className="hover:text-orange-500"
-                              >
-                                {sub}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
+                  <span className="relative z-10">{cat.name}</span>
+                </motion.button>
+
+                <AnimatePresence>
+                  {openIdx === idx && (
+                    <motion.div
+                      key="dropdown"
+                      initial={{ opacity: 0, y: -28, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -20, scale: 0.96 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 370,
+                        damping: 30,
+                        duration: 0.28,
+                      }}
+                      className={
+                        `absolute top-full mt-3 bg-white/95 border border-orange-100 shadow-2xl rounded-2xl p-8 z-10 w-[1120px] max-w-[97vw] ` +
+                        (idx >= categories.length - 3 ? "right-0 left-auto" : "left-0")
+                      }
+                      style={{
+                        boxShadow: "0 16px 56px 0 rgba(32,41,79,0.15), 0 2px 8px 0 rgba(253,186,116,0.12)",
+                        pointerEvents: "auto",
+                        minHeight: 270,
+                      }}
+                    >
+                      <div className="grid grid-cols-4 gap-10">
+                        {cat.topics.map((topic, tIdx) => (
+                          <div key={tIdx} className="min-w-[200px]">
+                            <h4 className="font-bold text-orange-600 text-[1rem] mb-2 tracking-wide uppercase">
+                              {topic.title}
+                            </h4>
+                            <ul className="text-base text-gray-800 space-y-1">
+                              {topic.subtopics.map((sub, sIdx) => (
+                                <li key={sIdx}>
+                                  <Link
+                                    to={`/mentors?topic=${encodeURIComponent(sub)}`}
+                                    className="inline-block px-2 py-1 rounded hover:bg-orange-100 hover:text-orange-600 transition-colors font-medium"
+                                    style={{
+                                      fontSize: "0.97rem",
+                                      letterSpacing: ".02em"
+                                    }}
+                                  >
+                                    {sub}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ))}
           </div>
-          {/* SEARCH ICON far right */}
-         <button
-  className="ml-8 p-2 bg-transparent hover:bg-transparent shadow-none border-none focus:outline-none transition group"
-  aria-label="Search"
-  style={{ boxShadow: "none", background: "none", border: "none" }}
->
-  <FaSearch className="w-6 h-6 text-gray-700 hover:text-orange-500 transition" />
-</button>
+          {/* Search icon */}
+          <button
+            className="ml-8 p-2 bg-transparent hover:bg-orange-100 rounded-full border-none focus:outline-none transition group"
+            aria-label="Search"
+          >
+            <FaSearch className="w-6 h-6 text-gray-700 group-hover:text-orange-500 transition" />
+          </button>
         </div>
       </nav>
     </div>

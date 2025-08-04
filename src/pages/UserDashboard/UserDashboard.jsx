@@ -9,7 +9,7 @@ export default function UserDashboard() {
     { name: "Profile", path: "/dashboard/profile" },
     { name: "Billing", path: "/dashboard/billing" },
     { name: "Schedule", path: "/dashboard/schedule" },
-    { name: "Become a Mentor", path: "/dashboard/become-a-mentor" },
+    { name: "Become a Mentor", path: "/dashboard/become-mentor" }, // Note: Path uses dash (matches your route!)
     { name: "Edit Profile", path: "/dashboard/edit-profile" },
     { name: "Invite", path: "/dashboard/invite" },
     { name: "Logout", path: "/dashboard/logout" },
@@ -17,18 +17,26 @@ export default function UserDashboard() {
     { name: "Help", path: "/dashboard/help" },
   ];
 
+  // For Dashboard Home, only highlight if exact match (no nested routes)
+  function isActive(linkPath) {
+    if (linkPath === "/dashboard") {
+      return location.pathname === "/dashboard" || location.pathname === "/dashboard/";
+    }
+    return location.pathname.startsWith(linkPath);
+  }
+
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg p-6">
         <h2 className="text-xl font-bold text-orange-600 mb-6">Your Dashboard</h2>
-        <nav className="space-y-4">
+        <nav className="space-y-2">
           {links.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className={`block px-3 py-2 rounded ${
-                location.pathname === link.path
+              className={`block px-3 py-2 rounded transition ${
+                isActive(link.path)
                   ? "bg-orange-100 text-orange-700 font-semibold"
                   : "text-gray-700 hover:bg-orange-50"
               }`}

@@ -1,24 +1,38 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { mentors } from "../data/mentorsData"; // ✅ Ensure this path matches casing exactly
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { mentors } from "../data/mentorsData";
 
 export default function Mentors() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const selectedTopic = queryParams.get("topic");
+  const selectedTopic = queryParams.get("topic"); // could be "AI", "Resume", etc.
 
   const [filteredMentors, setFilteredMentors] = useState(mentors);
+  const [isRelated, setIsRelated] = useState(false);
 
   useEffect(() => {
     if (selectedTopic) {
-      const filtered = mentors.filter((mentor) =>
-        mentor.specialties?.some((s) =>
-          s.toLowerCase().includes(selectedTopic.toLowerCase())
+      // Try exact match first
+      let filtered = mentors.filter((mentor) =>
+        mentor.specialties?.some(
+          (s) => s.toLowerCase() === selectedTopic.toLowerCase()
         )
       );
+      if (filtered.length === 0) {
+        // If no exact match, do a partial match (for "related" results)
+        filtered = mentors.filter((mentor) =>
+          mentor.specialties?.some(
+            (s) => s.toLowerCase().includes(selectedTopic.toLowerCase())
+          )
+        );
+        setIsRelated(true);
+      } else {
+        setIsRelated(false);
+      }
       setFilteredMentors(filtered);
     } else {
       setFilteredMentors(mentors);
+      setIsRelated(false);
     }
   }, [selectedTopic]);
 
@@ -27,14 +41,13 @@ export default function Mentors() {
       <h1 className="text-3xl font-bold text-center text-orange-600 mb-8">
         Meet Our Mentors
       </h1>
-
       {selectedTopic && (
         <p className="text-center text-sm text-gray-600 mb-4">
+          {isRelated && <span>No exact matches. </span>}
           Showing mentors for:{" "}
           <span className="font-medium">{selectedTopic}</span>
         </p>
       )}
-
       {filteredMentors.length === 0 ? (
         <p className="text-center text-gray-500">
           No mentors found for this topic.
@@ -58,8 +71,20 @@ export default function Mentors() {
               <p className="text-sm text-gray-600 italic mb-4">
                 "{mentor.bio}"
               </p>
+              {/* Show clickable specialties */}
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                {mentor.specialties?.map((topic) => (
+                  <button
+                    key={topic}
+                    className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs hover:bg-orange-200 transition"
+                    onClick={() => window.location.href=`/mentors?topic=${encodeURIComponent(topic)}`}
+                  >
+                    {topic}
+                  </button>
+                ))}
+              </div>
               <Link
-                to={`/mentors/${mentor.id}`} // ✅ Corrected route path
+                to={`/mentors/${mentor.id}`}
                 className="inline-block px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
               >
                 View Profile

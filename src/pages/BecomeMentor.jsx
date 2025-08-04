@@ -89,7 +89,7 @@ export default function BecomeMentor() {
           transition={{ duration: 1 }}
         >
           <img
-            src="/Become-a-Mentor.png"
+            src="/Become-a-Mentor.jpg"
             alt="Become a Mentor"
             className="w-full h-full max-h-[700px] object-cover rounded-xl shadow-md"
           />

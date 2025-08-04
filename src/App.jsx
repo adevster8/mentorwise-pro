@@ -1,7 +1,9 @@
-import { Routes, Route } from "react-router-dom";
+// src/App.jsx
+import { HelmetProvider } from "react-helmet-async";
 import Navbar from "./components/Navbar";
 import LayoutWithFooter from "./pages/LayoutWithFooter";
-import PasswordGate from "./components/PasswordGate"; 
+import PasswordGate from "./components/PasswordGate";
+import { Routes, Route } from "react-router-dom";
 
 // Public Pages (with footer)
 import Home from "./pages/Home";
@@ -48,64 +50,64 @@ import Requests from "./pages/MentorDashboard/Requests";
 import Reviews from "./pages/MentorDashboard/Reviews";
 import MentorSettings from "./pages/MentorDashboard/Settings";
 
-function App() {
+export default function App() {
   return (
-    <PasswordGate>
-      <>
-        <Navbar />
-        <Routes>
-          {/* Public Pages wrapped with layout and footer */}
-          <Route element={<LayoutWithFooter />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/mentors" element={<Mentors />} />
-            <Route path="/mentors/:id" element={<MentorProfile />} />
-            <Route path="/become-a-mentor" element={<BecomeMentor />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/signup-mentee" element={<SignUpMentee />} />
-            <Route path="/schedule-call" element={<ScheduleCall />} />
-            <Route path="/confirmation" element={<BookingConfirmation />} />
-            <Route path="/message/:id" element={<MessageMentor />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/blog" element={<Blog />} />
-          </Route>
+    <HelmetProvider>
+      <PasswordGate>
+        <>
+          <Navbar />
+          <Routes>
+            {/* Public Pages wrapped with layout and footer */}
+            <Route element={<LayoutWithFooter />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/mentors" element={<Mentors />} />
+              <Route path="/mentors/:id" element={<MentorProfile />} />
+              <Route path="/become-a-mentor" element={<BecomeMentor />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signup-mentee" element={<SignUpMentee />} />
+              <Route path="/schedule-call" element={<ScheduleCall />} />
+              <Route path="/confirmation" element={<BookingConfirmation />} />
+              <Route path="/message/:id" element={<MessageMentor />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/blog" element={<Blog />} />
+            </Route>
 
-          {/* User Dashboard Routes */}
-          <Route path="/dashboard" element={<UserDashboard />}>
-            <Route index element={<DashboardHome />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="billing" element={<Billing />} />
-            <Route path="schedule" element={<Schedule />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="edit-profile" element={<EditProfile />} />
-            <Route path="help" element={<Help />} />
-            <Route path="invite" element={<Invite />} />
-            <Route path="logout" element={<Logout />} />
-            <Route path="become-mentor" element={<BecomeMentorDash />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
+            {/* User Dashboard Routes */}
+            <Route path="/dashboard" element={<UserDashboard />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="messages" element={<Messages />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="billing" element={<Billing />} />
+              <Route path="schedule" element={<Schedule />} />
+              <Route path="bookings" element={<Bookings />} />
+              <Route path="edit-profile" element={<EditProfile />} />
+              <Route path="help" element={<Help />} />
+              <Route path="invite" element={<Invite />} />
+              <Route path="logout" element={<Logout />} />
+              <Route path="become-mentor" element={<BecomeMentorDash />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
 
-          {/* Mentor Dashboard Routes */}
-          <Route path="/mentor-dashboard" element={<MentorDashboard />}>
-            <Route path="availability" element={<Availability />} />
-            <Route path="earnings" element={<Earnings />} />
-            <Route path="edit-profile" element={<EditMentorProfile />} />
-            <Route path="help" element={<MentorHelp />} />
-            <Route path="messages" element={<MentorMessages />} />
-            <Route path="requests" element={<Requests />} />
-            <Route path="reviews" element={<Reviews />} />
-            <Route path="settings" element={<MentorSettings />} />
-          </Route>
-        </Routes>
-      </>
-    </PasswordGate>
+            {/* Mentor Dashboard Routes */}
+            <Route path="/mentor-dashboard" element={<MentorDashboard />}>
+              <Route path="availability" element={<Availability />} />
+              <Route path="earnings" element={<Earnings />} />
+              <Route path="edit-profile" element={<EditMentorProfile />} />
+              <Route path="help" element={<MentorHelp />} />
+              <Route path="messages" element={<MentorMessages />} />
+              <Route path="requests" element={<Requests />} />
+              <Route path="reviews" element={<Reviews />} />
+              <Route path="settings" element={<MentorSettings />} />
+            </Route>
+          </Routes>
+        </>
+      </PasswordGate>
+    </HelmetProvider>
   );
 }
-
-export default App;

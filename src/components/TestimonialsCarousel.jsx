@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const testimonials = [
-  // ...same 8 testimonials as before...
   {
     name: "Jenny",
     img: "https://randomuser.me/api/portraits/women/65.jpg",
@@ -63,47 +62,47 @@ const testimonials = [
 ];
 
 const CARDS_SHOWN = 4;
+const CARD_WIDTH = 290 + 32; // 290px card + 32px gap
 
 export default function TestimonialsCarousel() {
-  const [start, setStart] = useState(0);
-  const [direction, setDirection] = useState(0); // for animation direction
+  // Add clones at start and end for infinite loop
+  const cardsWithClones = [
+    ...testimonials.slice(-CARDS_SHOWN),
+    ...testimonials,
+    ...testimonials.slice(0, CARDS_SHOWN)
+  ];
 
-  // Next and Prev with looping
-  function next() {
-    setDirection(1);
-    setStart((s) => (s + 1) % testimonials.length);
+  // Centered index starts at CARDS_SHOWN
+  const [index, setIndex] = useState(CARDS_SHOWN);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Handle left/right clicks
+  function handleNext() {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setIndex(prev => prev + 1);
+    setTimeout(() => setIsAnimating(false), 400);
   }
-  function prev() {
-    setDirection(-1);
-    setStart((s) => (s - 1 + testimonials.length) % testimonials.length);
+  function handlePrev() {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setIndex(prev => prev - 1);
+    setTimeout(() => setIsAnimating(false), 400);
   }
 
-  // Get visible cards in looping fashion
-  const visible = [];
-  for (let i = 0; i < CARDS_SHOWN; i++) {
-    visible.push(testimonials[(start + i) % testimonials.length]);
+  // Instantly jump (without animation) when wrapping around clones
+  if (index === cardsWithClones.length - CARDS_SHOWN) {
+    setTimeout(() => setIndex(CARDS_SHOWN), 50);
   }
-
-  // For sliding animation
-  const variants = {
-    enter: (dir) => ({
-      x: dir > 0 ? 320 : -320,
-      opacity: 0,
-      position: "absolute"
-    }),
-    center: { x: 0, opacity: 1, position: "relative" },
-    exit: (dir) => ({
-      x: dir > 0 ? -320 : 320,
-      opacity: 0,
-      position: "absolute"
-    }),
-  };
+  if (index === 0) {
+    setTimeout(() => setIndex(cardsWithClones.length - CARDS_SHOWN * 2), 50);
+  }
 
   return (
-    <section className="bg-orange-50 py-20 px-6">
-      <div className="max-w-7xl mx-auto text-center relative">
+    <section className="bg-orange-50 pt-20 pb-32 px-6 relative z-20">
+      <div className="max-w-7xl mx-auto text-center relative z-20">
         <motion.h2
-          className="text-3xl font-bold text-orange-600 mb-14"
+          className="text-4xl md:text-5xl font-extrabold text-orange-600 mb-14 font-manrope"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
@@ -112,59 +111,65 @@ export default function TestimonialsCarousel() {
           What People Are Saying
         </motion.h2>
         <div className="relative flex items-center justify-center w-full">
-          {/* Left arrow - use lg:-left-20 for large screens, closer for mobile */}
+          {/* Left Arrow */}
           <button
-            className="absolute -left-16 lg:-left-24 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-orange-100 rounded-full shadow-lg p-3 z-10 border-2 border-orange-300 transition"
-            onClick={prev}
+            className="absolute -left-8 sm:-left-12 lg:-left-24 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-orange-100 rounded-full shadow-lg p-3 z-20 border-2 border-orange-200 transition"
+            onClick={handlePrev}
             aria-label="Previous"
             tabIndex={0}
-            style={{ outline: "none" }}
+            disabled={isAnimating}
           >
             <FaChevronLeft className="text-orange-400 text-2xl" />
           </button>
-          {/* Cards */}
-          <div className="w-full flex justify-center overflow-hidden relative min-h-[410px]">
+
+          {/* Carousel viewport */}
+          <div
+            className="overflow-hidden w-full"
+            style={{
+              maxWidth: `${CARD_WIDTH * CARDS_SHOWN}px`,
+              margin: "0 auto",
+            }}
+          >
             <motion.div
-              key={start}
-              className="flex gap-8 w-full justify-center"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 370, damping: 35 },
-                opacity: { duration: 0.15 },
+              className="flex gap-8"
+              style={{
+                x: `-${index * CARD_WIDTH}px`,
+                width: `${cardsWithClones.length * CARD_WIDTH}px`,
+                transition: isAnimating
+                  ? "all 0.38s cubic-bezier(.6,.05,.27,.99)"
+                  : "none"
               }}
             >
-              {visible.map((t, idx) => (
+              {cardsWithClones.map((t, idx) => (
                 <div
-                  key={t.name}
-                  className="bg-white/95 p-8 rounded-3xl shadow-xl border-t-4 border-orange-100 min-w-[260px] max-w-[290px] flex-1"
+                  key={t.name + t.location + idx}
+                  className="bg-white/95 p-8 rounded-3xl shadow-xl border-t-4 border-orange-100 min-w-[260px] max-w-[290px] flex-1 transition-all hover:scale-105 hover:shadow-2xl"
+                  style={{ width: "290px", flex: "0 0 auto" }}
                 >
                   <img
                     src={t.img}
                     alt={t.name}
                     className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-orange-200 shadow"
                   />
-                  <p className="text-orange-500 text-lg">★★★★★</p>
-                  <p className="italic text-gray-700 mt-2 leading-relaxed">
+                  <p className="text-orange-500 text-lg font-lato mb-1">★★★★★</p>
+                  <p className="italic text-gray-700 mt-2 leading-relaxed font-lato">
                     “{t.quote}”
                   </p>
-                  <p className="mt-4 font-semibold text-gray-900">
+                  <p className="mt-4 font-lato font-bold text-gray-900">
                     {t.name}, {t.age} — {t.location}
                   </p>
                 </div>
               ))}
             </motion.div>
           </div>
-          {/* Right arrow */}
+
+          {/* Right Arrow */}
           <button
-            className="absolute -right-16 lg:-right-24 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-orange-100 rounded-full shadow-lg p-3 z-10 border-2 border-orange-300 transition"
-            onClick={next}
+            className="absolute -right-8 sm:-right-12 lg:-right-24 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-orange-100 rounded-full shadow-lg p-3 z-20 border-2 border-orange-200 transition"
+            onClick={handleNext}
             aria-label="Next"
             tabIndex={0}
-            style={{ outline: "none" }}
+            disabled={isAnimating}
           >
             <FaChevronRight className="text-orange-400 text-2xl" />
           </button>

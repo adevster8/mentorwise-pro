@@ -10,7 +10,7 @@ export default function ModernDropdown({ label, options, value, setValue }) {
       <Listbox value={value} onChange={setValue}>
         <div className="relative">
           <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white/95 border border-orange-200 py-3 pl-5 pr-10 text-left shadow-lg outline-none transition focus:ring-2 focus:ring-orange-400 focus:border-orange-400 font-body">
-            <span className="block truncate text-gray-900">{value || "Choose a topic"}</span>
+            <span className="block truncate text-gray-900">{value || "Explore ➣"}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
               <ChevronUpDownIcon className="h-6 w-6 text-orange-400" aria-hidden="true" />
             </span>
