@@ -7,7 +7,7 @@ import { doc, setDoc } from "firebase/firestore";
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("mentee"); // default
+  const [role, setRole] = useState("mentee");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -15,19 +15,18 @@ export default function SignUp() {
     e.preventDefault();
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
-
+      // Add basic info to Firestore
       await setDoc(doc(db, "users", userCred.user.uid), {
         uid: userCred.user.uid,
         email,
         role,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
-
       // Redirect based on role
       if (role === "mentor") {
-        navigate("/become-a-mentor"); // go to mentor setup page
+        navigate("/mentor-setup"); // To new setup page
       } else {
-        navigate("/mentors"); // go browse mentors
+        navigate("/mentors");
       }
     } catch (err) {
       setError(err.message);

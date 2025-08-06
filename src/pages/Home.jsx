@@ -8,6 +8,8 @@ import ParallaxCardSection from "../components/ParallaxCardSection";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import ContactForm from "../components/ContactForm";
 import Button from "../components/Button";
+import HeroSlideshow from "../components/HeroSlideshow";
+
 
 export default function Home() {
   // Controlled state for dropdowns
@@ -68,97 +70,8 @@ export default function Home() {
       {/* Main Content */}
       <main role="main">
 
-        {/* Hero Section */}
-        <section
-          aria-label="Hero section: Mentorship & Coaching"
-          className="flex flex-col-reverse md:flex-row items-center justify-between max-w-7xl mx-auto px-4 py-20 md:gap-20 lg:gap-32 xl:gap-40"
-        >
-          {/* Left Text Block */}
-          <motion.div
-            className="md:w-[65%] lg:w-[60%] xl:w-[55%] ml-[-80px]"
-            initial={{ opacity: 0, x: -60 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            <motion.h1
-              className="font-heading text-5xl md:text-6xl xl:text-[4.4rem] font-extrabold text-orange-600 mb-10 leading-tight tracking-wider"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              style={{
-                textShadow: `
-                  0 4px 32px rgba(253,186,116,0.34),
-                  0 2px 8px rgba(32,41,79,0.22),
-                  0 1px 0 rgba(255,255,255,0.34)
-                `
-              }}
-              tabIndex={-1}
-            >
-              Mentorship & Coaching That Moves You Forward
-            </motion.h1>
-            <motion.p
-              className="font-body text-gray-700 text-xl md:text-2xl mb-10 leading-relaxed"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-            >
-              Growth can feel lonely — until now. Get matched with experienced mentors and take your goals further, faster.
-            </motion.p>
-      <motion.a
-              href="/mentors"
-              className="inline-block bg-blue-100 hover:bg-blue-200 text-gray-900 px-8 py-4 rounded-lg transition text-lg font-bodyxs font-bold shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              whileHover={{ scale: 1.07, boxShadow: "0 8px 32px 0 #fdba7488" }}
-              whileTap={{ scale: 0.98 }}
-            >
-             
-              Join The Family
-            </motion.a>
-          </motion.div>
+      <HeroSlideshow/>
 
-          {/* Right Image */}
-          <motion.div
-            className="md:w-[55%] relative flex items-center justify-center"
-            initial={{ opacity: 0, x: 70, scale: 0.97 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 1.1, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            <motion.img
-              src="/hero-illustration.png"
-              alt="Illustration representing online mentorship"
-              className="w-[600px] md:w-[700px] lg:w-[900px] max-w-none object-contain rounded-3xl border-4 border-orange-100"
-              initial={{ scale: 0.96, opacity: 0.7 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1.3, ease: "easeOut" }}
-              loading="eager"
-              style={{
-                boxShadow: `
-                  24px 32px 64px 0 rgba(32, 41, 79, 0.17),
-                  0 16px 40px 0 rgba(255,186,116,0.21),
-                  0 1.5px 3.5px 0 rgba(80, 160, 255, 0.08)
-                `
-              }}
-            />
-            {/* Animated underglow */}
-            <motion.div
-              className="absolute left-1/2 -translate-x-1/2 bottom-[-30px] w-[70%] h-[90px] z-[-1] pointer-events-none"
-              initial={{ opacity: 0, scale: 0.94 }}
-              animate={{ opacity: 0.45, scale: 1 }}
-              transition={{ duration: 1.2, delay: 0.3 }}
-              style={{
-                filter: "blur(16px)",
-                background: `
-                  radial-gradient(ellipse at center, 
-                    rgba(253,186,116,0.13) 0%, 
-                    rgba(87,165,247,0.09) 65%, 
-                    transparent 100%)
-                `
-              }}
-              aria-hidden="true"
-            />
-          </motion.div>
-        </section>
 
 
       {/* Category Dropdowns - MODERN CUSTOM */}
@@ -276,53 +189,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Coaching Section */}
-      <section className="relative h-[500px] md:h-[700px] overflow-hidden">
-        {/* Background Image with Parallax Effect */}
-        <div
-          className="absolute inset-0 bg-fixed bg-center bg-cover"
-          style={{ backgroundImage: "url('/Coaching.jpg')" }}
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="relative z-10 flex flex-col items-center justify-center text-center text-white h-full px-6">
-          <motion.h2
-            className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow-xl font-manrope"
-            initial={{ y: 44, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            viewport={{ once: true }}
-            style={{
-              textShadow: "0 2px 24px rgba(32,41,79,0.30), 0 1px 0 rgba(255,255,255,0.20)"
-            }}
-          >
-            1-on-1 Coaching That Actually Works
-          </motion.h2>
-          <motion.p
-            className="text-lg md:text-2xl mb-8 max-w-3xl leading-relaxed font-lato tracking-wide"
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.23, duration: 0.9, ease: "easeOut" }}
-            viewport={{ once: true }}
-            style={{
-              textShadow: "0 1.5px 10px rgba(80,120,160,0.10), 0 1px 0 rgba(255,255,255,0.12)"
-            }}
-          >
-            Get matched with coaches who’ve walked the path you’re on. Real conversations, real strategies, and personalized support...without the overpriced fluff.
-          </motion.p>
-          <motion.button
-            onClick={() => window.location.href='/mentors'}
-            className="bg-blue-100 hover:bg-blue-200 text-gray-900 px-10 py-4 rounded-xl text-lg font-lato font-bold shadow-lg transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            whileHover={{ scale: 1.08, boxShadow: "0 10px 32px 0 #4f8cff44" }}
-            whileTap={{ scale: 0.98 }}
-            style={{ letterSpacing: ".01em" }}
-          >
-            Find Your Coach
-          </motion.button>
-        </div>
-      </section>
-
-      {/* Full-width Large Image Footer */}
       <IconPic />
     
 
@@ -379,61 +245,155 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-orange-100 py-24 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-16">
-          {/* Text Content */}
-          <motion.div
-            className="md:w-1/2"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-extrabold text-orange-600 mb-6 font-manrope">
-              The Shortcut to Self-Mastery
-            </h2>
-            <p className="text-lg md:text-xl text-gray-700 mb-6 leading-relaxed font-lato">
-              Coaching bridges the gap between where you are and where you want to be. It’s not therapy, and it’s not a course. It’s a conversation that unlocks action.
-            </p>
-            {/* Checkmark List */}
-            <ul className="space-y-4 text-gray-700 text-base md:text-lg mb-8 font-lato">
-              {[
-                "Personalized insight from someone who's done it before",
-                "Clear direction without overwhelm or fluff",
-                "Momentum that actually lasts beyond one session"
-              ].map((item, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <span className="text-green-500 mt-1 text-xl">✔️</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <motion.a
-              href="/mentors"
-              className="inline-block bg-blue-100 hover:bg-blue-200 text-gray-900 px-8 py-4 rounded-lg transition text-lg font-lato font-bold shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              whileHover={{ scale: 1.07, boxShadow: "0 8px 32px 0 #fdba7488" }}
-              whileTap={{ scale: 0.98 }}
-            >
-             
-              Find Your Coach
-            </motion.a>
-          </motion.div>
-          {/* Image */}
-          <motion.div
-            className="md:w-1/2 ml-auto md:mr-[-150px]"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            <img
-              src="/why-coaching.jpg"
-              alt="Why Coaching Works"
-              className="w-full max-w-7xl rounded-3xl shadow-2xl border-2 border-orange-200"
-            />
-          </motion.div>
-        </div>
-      </section>
+     {/* HERO SECTION: IMAGE LEFT, TEXT RIGHT */}
+<section
+  aria-label="Hero section: Mentorship & Coaching"
+  className="flex flex-col-reverse md:flex-row items-center justify-between max-w-7xl mx-auto px-4 py-20 md:gap-20 lg:gap-32 xl:gap-40"
+>
+  {/* IMAGE LEFT */}
+  <motion.div
+    className="md:w-[55%] relative flex items-center justify-center"
+    initial={{ opacity: 0, x: -70, scale: 0.97 }}
+    whileInView={{ opacity: 1, x: 0, scale: 1 }}
+    transition={{ duration: 1.1, ease: "easeOut" }}
+    viewport={{ once: true }}
+  >
+    <motion.img
+      src="/hero-illustration.png"
+      alt="Illustration representing online mentorship"
+      className="w-[600px] md:w-[700px] lg:w-[900px] max-w-none object-contain rounded-3xl border-4 border-orange-100"
+      initial={{ scale: 0.96, opacity: 0.7 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 1.3, ease: "easeOut" }}
+      loading="eager"
+      style={{
+        boxShadow: `
+          24px 32px 64px 0 rgba(32, 41, 79, 0.17),
+          0 16px 40px 0 rgba(255,186,116,0.21),
+          0 1.5px 3.5px 0 rgba(80, 160, 255, 0.08)
+        `
+      }}
+    />
+    {/* Animated underglow */}
+    <motion.div
+      className="absolute left-1/2 -translate-x-1/2 bottom-[-30px] w-[70%] h-[90px] z-[-1] pointer-events-none"
+      initial={{ opacity: 0, scale: 0.94 }}
+      animate={{ opacity: 0.45, scale: 1 }}
+      transition={{ duration: 1.2, delay: 0.3 }}
+      style={{
+        filter: "blur(16px)",
+        background: `
+          radial-gradient(ellipse at center, 
+            rgba(253,186,116,0.13) 0%, 
+            rgba(87,165,247,0.09) 65%, 
+            transparent 100%)
+        `
+      }}
+      aria-hidden="true"
+    />
+  </motion.div>
+  {/* TEXT RIGHT */}
+  <motion.div
+    className="md:w-[55%] lg:w-[50%] xl:w-[45%] ml-0 md:ml-[80px]"
+    initial={{ opacity: 0, x: 60 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.8, ease: "easeOut" }}
+    viewport={{ once: true }}
+  >
+    <motion.h1
+      className="font-heading text-5xl md:text-5xl xl:text-[3.9rem] font-extrabold text-orange-600 mb-10 leading-tight tracking-wider"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      style={{
+        textShadow: `
+          0 4px 32px rgba(253,186,116,0.34),
+          0 2px 8px rgba(32,41,79,0.22),
+          0 1px 0 rgba(255,255,255,0.34)
+        `
+      }}
+      tabIndex={-1}
+    >
+      RealTalk Chat Feature
+    </motion.h1>
+    <motion.p
+      className="font-lato text-gray-700 text-2xl md:text-xl mb-6 leading-relaxed"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.3, duration: 0.7 }}
+    >
+      Message Mentors & Peers Instantly
+Ask questions, get advice, or just talk it out — our chat feature connects you with real people who’ve been there.  Message Mentors or Join the Forum
+    </motion.p>
+   <motion.a
+  href="/realtalk"
+  className="inline-block bg-blue-100 hover:bg-blue-200 text-gray-900 px-8 py-4 rounded-lg transition text-lg font-lato font-bold shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+  whileHover={{ scale: 1.07, boxShadow: "0 8px 32px 0 #fdba7488" }}
+  whileTap={{ scale: 0.98 }}
+>
+  Chat Now
+</motion.a>
+
+  </motion.div>
+</section>
+
+{/* COACH SECTION: IMAGE RIGHT, TEXT LEFT */}
+<section className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 py-20 gap-16">
+  {/* TEXT LEFT */}
+  <motion.div
+    className="md:w-1/2"
+    initial={{ opacity: 0, x: -60 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.8, ease: "easeOut" }}
+    viewport={{ once: true }}
+  >
+    <h2 className="text-4xl md:text-5xl font-extrabold text-orange-600 mb-6 font-manrope">
+            Mentorship & Coaching That Moves You Forward
+
+    </h2>
+    <p className="text-lg md:text-xl text-gray-700 mb-6 leading-relaxed font-lato">
+      Coaching bridges the gap between where you are and where you want to be. It’s not therapy, and it’s not a course. It’s a conversation that unlocks action.
+    </p>
+    <ul className="space-y-4 text-gray-700 text-base md:text-lg mb-8 font-lato">
+      <li className="flex items-start gap-3">
+        <span className="text-green-500 mt-1 text-xl">✔️</span>
+        <span>Personalized insight from someone who's done it before</span>
+      </li>
+      <li className="flex items-start gap-3">
+        <span className="text-green-500 mt-1 text-xl">✔️</span>
+        <span>Clear direction without overwhelm or fluff</span>
+      </li>
+      <li className="flex items-start gap-3">
+        <span className="text-green-500 mt-1 text-xl">✔️</span>
+        <span>Momentum that actually lasts beyond one session</span>
+      </li>
+    </ul>
+    <motion.a
+      href="/mentors"
+      className="inline-block bg-blue-100 hover:bg-blue-200 text-gray-900 px-8 py-4 rounded-lg transition text-lg font-lato font-bold shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+      whileHover={{ scale: 1.07, boxShadow: "0 8px 32px 0 #fdba7488" }}
+      whileTap={{ scale: 0.98 }}
+    >
+      Find Your Coach
+    </motion.a>
+  </motion.div>
+  {/* IMAGE RIGHT */}
+  <motion.div
+    className="md:w-1/2 ml-auto md:mr-[-150px]"
+    initial={{ opacity: 0, scale: 0.95 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.8, ease: "easeOut" }}
+    viewport={{ once: true }}
+  >
+    <img
+      src="/why-coaching.jpg"
+      alt="Why Coaching Works"
+      className="w-full max-w-7xl rounded-3xl shadow-2xl border-2 border-orange-200"
+    />
+  </motion.div>
+</section>
+
+
 
       <ParallaxCardSection />
 

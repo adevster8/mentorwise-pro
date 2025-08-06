@@ -99,7 +99,8 @@ export default function TestimonialsCarousel() {
   }
 
   return (
-    <section className="bg-orange-50 pt-20 pb-32 px-6 relative z-20">
+    <section className="bg-orange-50 pt-20 pb-40 px-6 relative z-20 overflow-visible">
+
       <div className="max-w-7xl mx-auto text-center relative z-20">
         <motion.h2
           className="text-4xl md:text-5xl font-extrabold text-orange-600 mb-14 font-manrope"
@@ -123,13 +124,14 @@ export default function TestimonialsCarousel() {
           </button>
 
           {/* Carousel viewport */}
-          <div
-            className="overflow-hidden w-full"
-            style={{
-              maxWidth: `${CARD_WIDTH * CARDS_SHOWN}px`,
-              margin: "0 auto",
-            }}
-          >
+         <div
+  className="overflow-x-hidden w-full"
+  style={{
+    maxWidth: `${CARD_WIDTH * CARDS_SHOWN}px`,
+    margin: "0 auto",
+    paddingBottom: "2.5rem" // adds extra bottom space inside the scroll area
+  }}
+>
             <motion.div
               className="flex gap-8"
               style={{

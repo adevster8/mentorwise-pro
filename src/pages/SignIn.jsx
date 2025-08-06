@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -12,8 +13,26 @@ export default function SignIn() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/"); // Go to home after sign in
+      // Sign in user with Firebase Auth
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+      // Get the user profile from Firestore
+      const userDocRef = doc(db, "users", userCred.user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+
+        // Redirect based on role
+        if (userData.role === "mentor") {
+          navigate("/mentor-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        // Fallback: Go to general dashboard if no user doc found
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(err.message.replace("Firebase:", "").trim());
     }

@@ -5,6 +5,13 @@ import LayoutWithFooter from "./pages/LayoutWithFooter";
 import PasswordGate from "./components/PasswordGate";
 import { Routes, Route } from "react-router-dom";
 
+// RealTalk pages
+import RealTalkLanding from "./pages/RealTalkPages/RealTalkLanding";
+import RealTalkHome from "./pages/RealTalkPages/RealTalkHome";
+import RealTalkCategory from "./pages/RealTalkPages/RealTalkCategory";
+import RealTalkThread from "./pages/RealTalkPages/RealTalkThread";
+import RealTalkNewPost from "./pages/RealTalkPages/RealTalkNewPost";
+
 // Public Pages (with footer)
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -23,11 +30,13 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Support from "./pages/Support";
 import Blog from "./pages/Blog";
+import MentorSetup from "./pages/MentorSetup";
 
 // User Dashboard
 import UserDashboard from "./pages/UserDashboard/UserDashboard";
 import DashboardHome from "./pages/UserDashboard/DashboardHome";
 import Messages from "./pages/UserDashboard/Messages";
+import MessageThread from "./pages/UserDashboard/MessageThread";
 import Profile from "./pages/UserDashboard/Profile";
 import Billing from "./pages/UserDashboard/Billing";
 import Schedule from "./pages/UserDashboard/Schedule";
@@ -36,7 +45,7 @@ import EditProfile from "./pages/UserDashboard/EditProfile";
 import Help from "./pages/UserDashboard/Help";
 import Invite from "./pages/UserDashboard/Invite";
 import Logout from "./pages/UserDashboard/Logout";
-import BecomeMentorDash from "./pages/UserDashboard/BecomeMentor";
+import BecomeMentorDash from "./pages/UserDashboard/BecomeMentorDash";
 import Settings from "./pages/UserDashboard/Settings";
 
 // Mentor Dashboard
@@ -49,6 +58,7 @@ import MentorMessages from "./pages/MentorDashboard/Messages";
 import Requests from "./pages/MentorDashboard/Requests";
 import Reviews from "./pages/MentorDashboard/Reviews";
 import MentorSettings from "./pages/MentorDashboard/Settings";
+import MentorBookings from "./pages/MentorDashboard/MentorBookings";
 
 export default function App() {
   return (
@@ -76,12 +86,21 @@ export default function App() {
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/support" element={<Support />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/mentor-setup" element={<MentorSetup />} />
+              
+              
+              {/* RealTalk Routes */}
+              <Route path="/realtalk" element={<RealTalkHome />} />
+              <Route path="/realtalk/category/:categoryName" element={<RealTalkCategory />} />
+              <Route path="/realtalk/thread/:threadId" element={<RealTalkThread />} />
+              <Route path="/realtalk/new" element={<RealTalkNewPost />} />
             </Route>
 
             {/* User Dashboard Routes */}
             <Route path="/dashboard" element={<UserDashboard />}>
               <Route index element={<DashboardHome />} />
               <Route path="messages" element={<Messages />} />
+              <Route path="messages/:threadId" element={<MessageThread />} />
               <Route path="profile" element={<Profile />} />
               <Route path="billing" element={<Billing />} />
               <Route path="schedule" element={<Schedule />} />
@@ -104,6 +123,8 @@ export default function App() {
               <Route path="requests" element={<Requests />} />
               <Route path="reviews" element={<Reviews />} />
               <Route path="settings" element={<MentorSettings />} />
+              <Route path="bookings" element={<MentorBookings />} />
+
             </Route>
           </Routes>
         </>

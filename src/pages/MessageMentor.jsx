@@ -1,71 +1,66 @@
-// src/pages/MessageAMentor.jsx
+// src/pages/MessageMentor.jsx
 
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { db, auth } from "../firebase";
-import { doc, setDoc, addDoc, serverTimestamp, collection } from "firebase/firestore";
-import { useParams, useNavigate } from "react-router-dom";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
-export default function MessageAMentor() {
-  const { id: mentorId } = useParams(); // mentor's ID from URL
+export default function MessageMentor() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const mentorId = params.get("mentor") || "";
+
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const [status, setStatus] = useState(""); // Feedback for the user
 
   const handleSend = async (e) => {
     e.preventDefault();
+    if (!message.trim()) return;
 
-    const mentee = auth.currentUser;
-
-    if (!mentee) {
-      alert("You must be logged in to send a message.");
+    if (!auth.currentUser) {
+      setStatus("You must be signed in to send a message.");
       return;
     }
-
-    const menteeId = mentee.uid;
-
-    // Consistent thread ID no matter who starts
-    const threadId = mentorId < menteeId ? `${mentorId}_${menteeId}` : `${menteeId}_${mentorId}`;
-
     try {
-      // Set or update thread info
-      await setDoc(doc(db, "threads", threadId), {
-        participants: [mentorId, menteeId],
-        lastUpdated: serverTimestamp(),
+      await addDoc(collection(db, "messages"), {
+        sender: auth.currentUser.uid,
+        recipient: mentorId,
+        content: message,
+        createdAt: serverTimestamp(),
       });
-
-      // Add message to subcollection
-      await addDoc(collection(db, "threads", threadId, "messages"), {
-        text: message,
-        senderId: menteeId,
-        recipientId: mentorId,
-        timestamp: serverTimestamp(),
-      });
-
+      setStatus("Message sent successfully!");
       setMessage("");
-      navigate("/messages");
-    } catch (error) {
-      console.error("Error sending message:", error);
+    } catch (err) {
+      setStatus("Failed to send message. Please try again.");
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-20 px-4">
-      <h2 className="text-2xl font-bold mb-4 text-orange-600">Send a Message</h2>
-      <form onSubmit={handleSend}>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Write your message..."
-          className="w-full p-4 border rounded mb-4"
-          rows={5}
-          required
-        />
-        <button
-          type="submit"
-          className="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700"
-        >
-          Send Message
-        </button>
-      </form>
+    <div className="min-h-screen bg-gradient-to-b from-[#e7f2fa] via-[#f4faff] to-[#e3e9f3] flex items-center justify-center py-20">
+      <div className="bg-white/95 max-w-xl w-full p-10 rounded-3xl shadow-xl border-t-4 border-orange-100 flex flex-col items-center">
+        <h1 className="text-2xl font-extrabold text-orange-600 mb-6 text-center">Send a Message</h1>
+        <form onSubmit={handleSend} className="w-full">
+          <textarea
+            className="w-full min-h-[120px] rounded-xl border border-gray-200 p-4 text-base mb-4 focus:ring-2 focus:ring-orange-200 transition"
+            placeholder="Write your message..."
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold text-lg shadow transition"
+          >
+            Send Message
+          </button>
+        </form>
+        {status && (
+          <div className="mt-6 text-center text-orange-500 font-semibold">{status}</div>
+        )}
+        <div className="w-full text-sm text-gray-400 mt-4 text-center">
+          {mentorId ? `Message will be sent to mentor ID: ${mentorId}` : "No mentor selected."}
+        </div>
+      </div>
     </div>
   );
 }
