@@ -1,26 +1,31 @@
+// src/pages/RealTalkPages/RealTalkThread.jsx
+
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import RealTalkCategorySidebar from "../../components/RealTalkComponents/RealTalkCategorySidebar";
 import RealTalkReplyBubble from "../../components/RealTalkComponents/RealTalkReplyBubble";
 import RealTalkEmojiBar from "../../components/RealTalkComponents/RealTalkEmojiBar";
 import RealTalkUserTag from "../../components/RealTalkComponents/RealTalkUserTag";
-import { realTalkCategories } from "../../data/realTalkCategories";
+import { megaMenuData } from "../../data/megaMenuData";
 
-
-// Sample thread data (replace with backend data later)
-const demoThread = {
-  id: "101",
-  title: "How do I navigate a toxic job without quitting yet?",
-  category: "Career & Business",
-  subcategory: "Office Politics",
-  author: "SarahD",
-  role: "Mentor",
-  createdAt: "3h ago",
-  body: "I've been feeling stuck and overwhelmed at work, but can't leave just yet. How do I cope and keep my sanity?",
-  emojiCounts: { "Support": 6, "Fire": 2, "Curious": 1 }
-};
+// DEMO: Replace with real thread data fetching later
+const demoThreads = [
+  {
+    id: "101",
+    title: "How do I navigate a toxic job without quitting yet?",
+    category: "Career & Business",
+    subcategory: "Office Politics",
+    subcategorySlug: "office-politics",
+    author: "SarahD",
+    role: "Mentor",
+    createdAt: "3h ago",
+    body: "I've been feeling stuck and overwhelmed at work, but can't leave just yet. How do I cope and keep my sanity?",
+    emojiCounts: { "Support": 6, "Fire": 2, "Curious": 1 }
+  },
+  // Add more threads here as needed
+];
 
 const demoReplies = [
   {
@@ -39,8 +44,26 @@ const demoReplies = [
   },
 ];
 
+// Helper to find a thread by ID
+const getThreadById = (id) => demoThreads.find(thread => thread.id === id);
+
+// Helper to get nice subcategory display name from slug (future use)
+const getSubtopicName = (slug) => {
+  for (const cat of megaMenuData) {
+    for (const topic of cat.topics) {
+      for (const sub of topic.subtopics) {
+        if (sub.path.endsWith(slug)) return sub.name;
+      }
+    }
+  }
+  return slug.replace(/-/g, " "); // fallback
+};
+
 export default function RealTalkThread() {
   const { threadId } = useParams();
+
+  // In a real app, you'd fetch by ID from Firestore here
+  const thread = useMemo(() => getThreadById(threadId) || demoThreads[0], [threadId]);
   const [reply, setReply] = useState("");
   const [replies, setReplies] = useState(demoReplies);
 
@@ -60,17 +83,23 @@ export default function RealTalkThread() {
     setReply("");
   };
 
+  // For meta/heading, get a user-friendly subcategory label
+  const subcategoryDisplay = useMemo(
+    () => thread.subcategory || getSubtopicName(thread.subcategorySlug),
+    [thread.subcategory, thread.subcategorySlug]
+  );
+
   return (
     <div className="min-h-screen bg-orange-50 text-gray-900">
       <Helmet>
-        <title>{demoThread.title} | RealTalk Thread</title>
+        <title>{thread.title} | RealTalk Thread</title>
         <meta
           name="description"
-          content={`Discussion: ${demoThread.title} in ${demoThread.category} on RealTalk. Share your support, advice, or experience.`}
+          content={`Discussion: ${thread.title} in ${thread.category} on RealTalk. Share your support, advice, or experience.`}
         />
       </Helmet>
       <main className="max-w-7xl mx-auto px-4 py-14 flex gap-8">
-        {/* Sidebar */}
+        {/* Sidebar (still present, now data-driven) */}
         <RealTalkCategorySidebar />
 
         {/* Main Thread Content */}
@@ -83,24 +112,24 @@ export default function RealTalkThread() {
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
               <div>
-                <h2 className="text-2xl font-extrabold text-blue-600 mb-1">{demoThread.title}</h2>
+                <h2 className="text-2xl font-extrabold text-blue-600 mb-1">{thread.title}</h2>
                 <div className="flex flex-wrap items-center gap-2 text-sm">
                   <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-xl font-semibold">
-                    {demoThread.category}
+                    {thread.category}
                   </span>
                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-semibold">
-                    {demoThread.subcategory}
+                    {subcategoryDisplay}
                   </span>
                   <span className="text-gray-400">by</span>
-                  <RealTalkUserTag user={demoThread.author} role={demoThread.role} />
-                  <span className="text-gray-400">· {demoThread.createdAt}</span>
+                  <RealTalkUserTag user={thread.author} role={thread.role} />
+                  <span className="text-gray-400">· {thread.createdAt}</span>
                 </div>
               </div>
               <div className="mt-3 md:mt-0">
-                <RealTalkEmojiBar initialCounts={demoThread.emojiCounts} />
+                <RealTalkEmojiBar initialCounts={thread.emojiCounts} />
               </div>
             </div>
-            <p className="text-lg text-gray-800 mb-3">{demoThread.body}</p>
+            <p className="text-lg text-gray-800 mb-3">{thread.body}</p>
           </motion.div>
 
           {/* Replies */}

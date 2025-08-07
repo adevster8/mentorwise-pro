@@ -1,144 +1,154 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 export default function ScheduleCall() {
+  // Animation variants for staggering items
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <section className="min-h-screen w-full bg-gradient-to-b from-[#f8fafc] via-[#fff7ee] to-[#e6eef7] py-0 flex flex-col">
-      {/* Header */}
-    <div className="text-center py-10 bg-white border-b border-orange-200 shadow-sm">
-<h1 className="text-4xl md:text-5xl font-extrabold font-heading text-center flex items-center justify-center text-orange-600 mb-8">
-  Let Us Find <span className="relative inline-block mx-2">
-    <span className="text-orange-600">Your</span>
-    {/* Underline */}
-    <span
-      className="absolute left-1/2 -translate-x-1/2"
-      style={{
-        bottom: "-14px",
-        width: "70%",
-        height: "6px",
-        background: "#fd7e14",
-        borderRadius: "8px",
-        display: "block"
-      }}
-    />
-  </span>
-  Coach
-</h1>
-  <p className="text-lato text-gray-700 mt-2 font-body">
-    Tell us a bit about you — we’ll connect you with the perfect mentor.
-  </p>
-</div>
-<div
-  className="w-full max-w-[1600px] mx-auto px-4 py-14"
-  style={{
-    display: 'grid',
-    gridTemplateColumns: '1fr 380px 1fr',
-    gap: '2.5rem',
-    alignItems: 'stretch',
-  }}
->
-  {/* Left Form */}
-  <div className="bg-[#d9ebfa] border-t-4 border-orange-200 rounded-3xl shadow-2xl flex flex-col justify-center px-12 py-12 min-h-[520px] transition-all"
-    style={{ width: '100%', maxWidth: '100%' }}>
-    <h2 className="text-2xl font-bold text-orange-600 mb-7 text-center font-heading">Send Us a Message</h2>
-    <form className="space-y-5 text-sm text-gray-800 font-body">
-      <div>
-        <label className="block mb-1 font-semibold">Full Name</label>
-        <input type="text" className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/95" placeholder="Your name" />
+    <section className="min-h-screen w-full bg-gradient-to-b from-slate-50 via-[#fff7ee] to-slate-200 flex flex-col">
+      
+      {/* === HEADER === */}
+      <div className="text-center py-12 bg-white border-b border-orange-200/60 shadow-sm">
+        <motion.h1 
+          className="text-4xl md:text-5xl font-extrabold font-manrope text-center text-slate-800 mb-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Let Us Find <span className="text-orange-600">Your</span> Perfect Coach
+        </motion.h1>
+        <motion.p 
+          className="text-lg text-slate-600 font-lato"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          Tell us a bit about you — we’ll connect you with the perfect mentor.
+        </motion.p>
       </div>
-      <div>
-        <label className="block mb-1 font-semibold">Email Address</label>
-        <input type="email" className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/95" placeholder="you@example.com" />
+
+      {/* === MAIN CONTENT GRID === */}
+      {/* This is the key change: The container is now full-width with padding, and the grid is defined with responsive Tailwind classes */}
+      <div
+        className="w-full flex-grow mx-auto px-6 md:px-8 lg:px-12 py-14 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 items-start"
+      >
+        {/* === Left Form: Send a Message === */}
+        <motion.div 
+          className="bg-white/50 border-t-4 border-orange-300 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col p-8 md:p-10 h-full"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center font-manrope">Send Us a Message</h2>
+          <form className="space-y-5 text-sm text-slate-800 font-lato">
+            <div>
+              <label className="block mb-1.5 font-semibold text-slate-700">Full Name</label>
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Your name" />
+            </div>
+            <div>
+              <label className="block mb-1.5 font-semibold text-slate-700">Email Address</label>
+              <input type="email" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="you@example.com" />
+            </div>
+            <div>
+              <label className="block mb-1.5 font-semibold text-slate-700">What are you looking for?</label>
+              <textarea rows="5" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Describe your goals or what kind of coach you're looking for..." />
+            </div>
+            <button type="submit" className="w-full bg-orange-500 hover:bg-blue-300 text-white py-3 px-7 rounded-lg shadow-md hover:shadow-lg font-semibold transition-all hover:-translate-y-0.5 transform">
+              Submit Request
+            </button>
+          </form>
+        </motion.div>
+
+        {/* === Center Image === */}
+        <motion.div 
+          className="hidden md:flex items-center justify-center pt-6" // pt-6 aligns it better vertically with the forms
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+        >
+          <img
+            src="/laptop-photo.jpg"
+            alt="Laptop Video Call"
+            className="object-cover rounded-2xl shadow-2xl w-[360px] h-auto aspect-[3/4]"
+          />
+        </motion.div>
+
+        {/* === Right Form: Request a Zoom Call === */}
+        <motion.div 
+          className="bg-white/50 border-t-4 border-blue-300 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col p-8 md:p-10 h-full"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center font-manrope">Request a Zoom Call</h2>
+          <form className="space-y-5 text-sm text-slate-800 font-lato">
+            <div>
+              <label className="block mb-1.5 font-semibold text-slate-700">Full Name</label>
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Your name" />
+            </div>
+            <div>
+              <label className="block mb-1.5 font-semibold text-slate-700">Email Address</label>
+              <input type="email" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="you@example.com" />
+            </div>
+            <div>
+              <label className="block mb-1.5 font-semibold text-slate-700">Preferred Times</label>
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="e.g. Mornings, Weekends, etc." />
+            </div>
+            <div>
+              <label className="block mb-1.5 font-semibold text-slate-700">Topic or Area of Coaching</label>
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Career, Mindset, Finance..." />
+            </div>
+            <button type="submit" className="w-full bg-orange-500 hover:bg-blue-300 text-white py-3 px-7 rounded-lg shadow-md hover:shadow-lg font-semibold transition-all hover:-translate-y-0.5 transform">
+              Schedule Call
+            </button>
+          </form>
+        </motion.div>
       </div>
-      <div>
-        <label className="block mb-1 font-semibold">What are you looking for?</label>
-        <textarea rows="5" className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/95" placeholder="Describe your goals or what kind of coach you're looking for..." />
-      </div>
-      <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white py-3 px-7 rounded-xl shadow font-semibold transition">
-        Submit Request
-      </button>
-    </form>
-  </div>
 
-  {/* Center Image */}
-  <div className="flex items-stretch justify-center"
-       style={{ marginTop: "24px" }}  // <-- Shift image down
-  >
-    <img
-      src="/laptop-photo.jpg"
-      alt="Laptop Video Call"
-      className="object-cover rounded-3xl border border-orange-100 shadow-2xl"
-      style={{
-        width: "380px",
-        minWidth: "320px",
-        height: "100%",
-        maxHeight: "520px",
-        aspectRatio: "3/4",
-      }}
-    />
-  </div>
-
-  {/* Right Form */}
-  <div className="bg-[#fff8ef] border-t-4 border-blue-200 rounded-3xl shadow-2xl flex flex-col justify-center px-12 py-12 min-h-[520px] transition-all"
-    style={{ width: '100%', maxWidth: '100%' }}>
-    <h2 className="text-2xl font-bold text-orange-600 mb-7 text-center font-heading">Request a Zoom Call</h2>
-    <form className="space-y-5 text-sm text-gray-800 font-body">
-      <div>
-        <label className="block mb-1 font-semibold">Full Name</label>
-        <input type="text" className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/95" placeholder="Your name" />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">Email Address</label>
-        <input type="email" className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/95" placeholder="you@example.com" />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">Preferred Times</label>
-        <input type="text" className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/95" placeholder="e.g. Mornings, Weekends, etc." />
-      </div>
-      <div>
-        <label className="block mb-1 font-semibold">Topic or Area of Coaching</label>
-        <input type="text" className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/95" placeholder="Career, Mindset, Finance..." />
-      </div>
-      <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white py-3 px-7 rounded-xl shadow font-semibold transition">
-        Schedule Call
-      </button>
-    </form>
-  </div>
-</div>
-
-
-
-
-
-      {/* Coaching Section (Parallax) */}
-      <section className="relative h-[500px] md:h-[700px] overflow-hidden">
-        {/* Background Image with Parallax Effect */}
+      {/* === Parallax Section === */}
+      <section className="relative h-[500px] md:h-[600px] overflow-hidden mt-auto">
         <div
           className="absolute inset-0 bg-fixed bg-center bg-cover"
           style={{ backgroundImage: "url('/Coaching.jpg')" }}
         />
-        {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/60" />
-        <div className="relative z-10 flex flex-col items-center justify-center text-center text-white h-full px-6">
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow-xl font-manrope"
-              style={{
-                textShadow: "0 2px 24px rgba(32,41,79,0.30), 0 1px 0 rgba(255,255,255,0.20)"
-              }}>
+        <motion.div 
+          className="relative z-10 flex flex-col items-center justify-center text-center text-white h-full px-6"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+        >
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow-xl font-manrope">
             1-on-1 Coaching That Actually Works
-          </h2>
-          <p className="text-lg md:text-2xl mb-8 max-w-3xl leading-relaxed font-lato tracking-wide"
-             style={{
-               textShadow: "0 1.5px 10px rgba(80,120,160,0.10), 0 1px 0 rgba(255,255,255,0.12)"
-             }}>
+          </motion.h2>
+          <motion.p variants={itemVariants} className="text-lg md:text-xl mb-8 max-w-3xl leading-relaxed font-lato">
             Get matched with coaches who’ve walked the path you’re on. Real conversations, real strategies, and personalized support...without the overpriced fluff.
-          </p>
-          <button
+          </motion.p>
+          <motion.button
+            variants={itemVariants}
             onClick={() => window.location.href='/mentors'}
-            className="bg-blue-100 hover:bg-blue-200 text-gray-900 px-10 py-4 rounded-xl text-lg font-lato font-bold shadow-lg transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            style={{ letterSpacing: ".01em" }}
+            className="bg-blue-100 hover:bg-blue-200 text-slate-900 px-10 py-4 rounded-xl text-lg font-lato font-bold shadow-lg transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
           >
             Find Your Coach
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </section>
     </section>
   );

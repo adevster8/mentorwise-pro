@@ -1,20 +1,17 @@
-// src/components/RealTalkComponents/RealTalkCategorySidebar.jsx
-
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { realTalkCategories } from "../../data/realTalkCategories"; 
+import { megaMenuData } from "../../data/megaMenuData";
 
 export default function RealTalkCategorySidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState({});
 
-  // Get current category from URL
-  const match = location.pathname.match(/category\/([^/]+)/);
-  const currentCategory = match ? decodeURIComponent(match[1]) : "";
+  // Get current subtopic from URL
+  const match = location.pathname.match(/category\/(.*)/);
+  const currentSubtopic = match ? decodeURIComponent(match[1]) : "";
 
-  // Toggle subcategory dropdown
   const toggleCategory = (catName) => {
     setExpanded((prev) => ({
       ...prev,
@@ -34,17 +31,16 @@ export default function RealTalkCategorySidebar() {
           Topics
         </h2>
         <ul className="space-y-2">
-          {realTalkCategories.map((cat) => (
+          {megaMenuData.map((cat) => (
             <li key={cat.name}>
               <div
                 className={`flex items-center gap-3 px-4 py-2 rounded-xl font-semibold cursor-pointer transition
-                  ${cat.subcategories.includes(currentCategory)
-                    ? "bg-blue-100 text-blue-700 shadow"
-                    : "text-gray-700 hover:bg-orange-100 hover:text-orange-700"
-                  }`}
+                ${expanded[cat.name] ? "bg-blue-50" : "text-gray-700 hover:bg-orange-100 hover:text-orange-700"}
+                `}
                 onClick={() => toggleCategory(cat.name)}
               >
-                <span className="text-xl">{cat.icon}</span>
+                {/* Optional: If your megaMenuData includes icons, use cat.icon */}
+                {cat.icon && <span className="text-xl">{cat.icon}</span>}
                 <span>{cat.name}</span>
                 <span className="ml-auto text-lg">
                   {expanded[cat.name] ? "▼" : "▶"}
@@ -53,27 +49,32 @@ export default function RealTalkCategorySidebar() {
               <AnimatePresence>
                 {expanded[cat.name] && (
                   <motion.ul
-                    className="ml-8 mt-2 space-y-1"
+                    className="ml-4 mt-2 space-y-2"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                   >
-                    {cat.subcategories.map((sub) => (
-                      <li key={sub}>
-                        <NavLink
-                          to={`/realtalk/category/${encodeURIComponent(sub)}`}
-                          className={({ isActive }) =>
-                            `block px-3 py-1 rounded-lg text-base transition
-                              ${
-                                isActive || currentCategory === sub
-                                  ? "bg-orange-200 text-orange-900 font-bold"
-                                  : "text-gray-600 hover:bg-orange-100 hover:text-orange-700"
-                              }`
-                          }
-                          end
-                        >
-                          {sub}
-                        </NavLink>
+                    {cat.topics.map((topic) => (
+                      <li key={topic.title}>
+                        <span className="block font-bold text-blue-900 text-sm mt-3 mb-1">{topic.title}</span>
+                        <ul className="space-y-1">
+                          {topic.subtopics.map((sub) => (
+                            <li key={sub.name}>
+                              <NavLink
+                                to={sub.path}
+                                className={({ isActive }) =>
+                                  `block px-3 py-1 rounded-lg text-base transition
+                                  ${isActive || currentSubtopic === sub.name
+                                    ? "bg-orange-200 text-orange-900 font-bold"
+                                    : "text-gray-600 hover:bg-orange-100 hover:text-orange-700"}`
+                                }
+                                end
+                              >
+                                {sub.name}
+                              </NavLink>
+                            </li>
+                          ))}
+                        </ul>
                       </li>
                     ))}
                   </motion.ul>
@@ -82,7 +83,6 @@ export default function RealTalkCategorySidebar() {
             </li>
           ))}
         </ul>
-        {/* Optional: See All Categories Button */}
         <button
           className="w-full mt-6 bg-blue-50 hover:bg-orange-100 text-blue-700 font-semibold rounded-xl py-2 px-3 shadow transition"
           onClick={() => navigate("/realtalk/home")}

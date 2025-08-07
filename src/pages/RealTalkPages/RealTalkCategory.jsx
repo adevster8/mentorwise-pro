@@ -1,84 +1,54 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
 import RealTalkCategorySidebar from "../../components/RealTalkComponents/RealTalkCategorySidebar";
 import RealTalkThreadCard from "../../components/RealTalkComponents/RealTalkThreadCard";
 import RealTalkStartModal from "../../components/RealTalkComponents/RealTalkStartModal";
-import { motion } from "framer-motion";
-import { realTalkCategories } from "../../data/realTalkCategories";
+import { megaMenuData } from "../../data/megaMenuData"; // Import the single source of truth
 
-
-// You can move thread data to state management later!
-const demoThreads = [
-  // Example threads for each subcategory — add more for realism!
-  {
-    id: "201",
-    title: "Should I negotiate my salary on a remote job?",
-    category: "Salary & Negotiation",
-    replies: 8,
-    createdAt: "2h ago",
-    author: "SarahD",
-  },
-  {
-    id: "202",
-    title: "Building confidence for interviews?",
-    category: "Confidence",
-    replies: 11,
-    createdAt: "3h ago",
-    author: "PixelPro",
-  },
-  {
-    id: "203",
-    title: "Struggling with gym motivation",
-    category: "Fitness",
-    replies: 5,
-    createdAt: "4h ago",
-    author: "StrongAlex",
-  },
-  {
-    id: "204",
-    title: "Recovering from burnout after a layoff",
-    category: "Burnout",
-    replies: 17,
-    createdAt: "1d ago",
-    author: "BurntToast",
-  },
-  {
-    id: "205",
-    title: "Budgeting tips for freelancers?",
-    category: "Budgeting",
-    replies: 3,
-    createdAt: "5h ago",
-    author: "SoloMoney",
-  },
+// In a real app, you would fetch these from your database based on the category.
+const allThreads = [
+    { id: "1", title: "How do I stop overthinking everything?", subcategorySlug: "productivity-systems", replies: 12, createdAt: "2h ago", author: "JessR" },
+    { id: "2", title: "First freelance gig: what should I charge?", subcategorySlug: "freelancing-and-consulting", replies: 5, createdAt: "4h ago", author: "DevMo" },
+    { id: "3", title: "Got lowballed on salary, what now?", subcategorySlug: "salary-negotiation", replies: 9, createdAt: "3h ago", author: "NYCtechie" },
 ];
 
+// Helper to find subtopic name from slug
+const findSubtopicName = (slug) => {
+  for (const category of megaMenuData) {
+    for (const topic of category.topics) {
+      for (const subtopic of topic.subtopics) {
+        if (subtopic.path.endsWith(slug)) {
+          return subtopic.name;
+        }
+      }
+    }
+  }
+  return slug.replace(/-/g, " "); // Fallback
+};
+
 export default function RealTalkCategory() {
-  const { categoryName } = useParams();
+  const { categoryName: categorySlug } = useParams(); // The URL param is a slug
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Show only threads that match this subcategory and the search filter
-  const filteredThreads = demoThreads.filter(
+  const subtopicName = useMemo(() => findSubtopicName(categorySlug), [categorySlug]);
+
+  // This is a placeholder filter. In a real app, you'd fetch threads where subcategorySlug matches.
+  const filteredThreads = allThreads.filter(
     (thread) =>
-      thread.category.toLowerCase() === categoryName.toLowerCase() &&
+      thread.subcategorySlug === categorySlug &&
       thread.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="min-h-screen bg-orange-50 text-gray-900">
       <Helmet>
-        <title>{categoryName} | RealTalk Category</title>
-        <meta
-          name="description"
-          content={`Join honest conversations in the ${categoryName} subcategory. Share your challenges, get support, and talk it out with others who get it.`}
-        />
+        <title>{subtopicName} | RealTalk Category</title>
       </Helmet>
 
       <main className="max-w-7xl mx-auto px-4 py-14 flex gap-8">
-        {/* Sidebar */}
         <RealTalkCategorySidebar />
-
-        {/* Main Content */}
         <div className="flex-1">
           <div className="flex justify-between items-center mb-10">
             <motion.h1
@@ -87,29 +57,27 @@ export default function RealTalkCategory() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {categoryName.replace(/-/g, " ")}
+              {subtopicName}
             </motion.h1>
             <RealTalkStartModal />
           </div>
 
-          {/* Search */}
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Search threads in "${categoryName}"...`}
-            className="w-full p-3 rounded-lg border border-gray-300 shadow-sm mb-8 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder={`Search threads in "${subtopicName}"...`}
+            className="w-full p-3 rounded-lg border border-gray-300 shadow-sm mb-8 focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
 
-          {/* Threads */}
           <div className="space-y-6">
             {filteredThreads.length > 0 ? (
               filteredThreads.map((thread) => (
-                <RealTalkThreadCard key={thread.id} thread={thread} />
+                <RealTalkThreadCard key={thread.id} thread={{ ...thread, subcategory: subtopicName }} />
               ))
             ) : (
-              <p className="text-gray-500 text-lg">
-                No conversations found in this subcategory yet.
+              <p className="text-gray-500 text-lg text-center py-10 bg-white rounded-lg">
+                No conversations found in this category yet. Be the first to start one!
               </p>
             )}
           </div>

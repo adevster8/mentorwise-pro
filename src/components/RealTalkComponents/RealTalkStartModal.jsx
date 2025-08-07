@@ -1,145 +1,80 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { realTalkCategories } from "../../data/realTalkCategories"; 
+import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid';
+
+// This component is now self-contained and does not need to import category data.
 
 export default function RealTalkStartModal() {
-  const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Find the current category object
-  const currentCategoryObj = realTalkCategories.find(c => c.name === category);
-  const subcategories = currentCategoryObj ? currentCategoryObj.subcategories : [];
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!category || !subcategory || !title.trim() || !body.trim()) return;
-    setSubmitting(true);
-
-    setTimeout(() => {
-      setSubmitting(false);
-      setOpen(false);
-      navigate(`/realtalk/category/${encodeURIComponent(category)}`);
-      setCategory("");
-      setSubcategory("");
-      setTitle("");
-      setBody("");
-    }, 900);
+  // In a real app, you might fetch categories here, but for now, we navigate to a general "new post" page.
+  const handleStartConversation = () => {
+    setIsOpen(false);
+    navigate("/realtalk/new"); // Navigate to the page for creating a new post
   };
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl px-6 py-3 shadow transition-all focus:ring-2 focus:ring-blue-300"
-        type="button"
+      <motion.button
+        onClick={() => setIsOpen(true)}
+        className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center gap-2"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.98 }}
       >
-        + Start Conversation
-      </button>
+        <PlusIcon className="w-5 h-5" />
+        Start a Conversation
+      </motion.button>
 
       <AnimatePresence>
-        {open && (
+        {isOpen && (
           <motion.div
-            className="fixed inset-0 z-[9999] bg-black bg-opacity-40 flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[1000] flex items-center justify-center p-4"
+            onClick={() => setIsOpen(false)}
           >
             <motion.div
-              className="bg-white rounded-3xl shadow-2xl p-8 w-[95vw] max-w-xl mx-auto relative border-2 border-orange-200"
-              initial={{ scale: 0.88, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ duration: 0.23 }}
+              initial={{ y: 50, scale: 0.95, opacity: 0 }}
+              animate={{ y: 0, scale: 1, opacity: 1 }}
+              exit={{ y: 50, scale: 0.95, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 relative"
+              onClick={(e) => e.stopPropagation()} // Prevents closing when clicking inside the modal
             >
-              <button
-                className="absolute top-4 right-4 text-2xl text-orange-400 hover:text-orange-700"
-                onClick={() => setOpen(false)}
-                type="button"
-                aria-label="Close"
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+                aria-label="Close modal"
               >
-                &times;
+                <XMarkIcon className="w-6 h-6" />
               </button>
-              <h2 className="text-2xl font-bold text-blue-600 mb-5 text-center">
+              
+              <h2 className="text-2xl font-extrabold text-slate-800 font-manrope text-center mb-4">
                 Start a New Conversation
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-orange-700 font-semibold mb-1">Category</label>
-                  <select
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-400"
-                    value={category}
-                    onChange={(e) => { setCategory(e.target.value); setSubcategory(""); }}
-                    required
-                  >
-                    <option value="">Select a category...</option>
-                    {realTalkCategories.map((cat) => (
-                      <option key={cat.name} value={cat.name}>
-                        {cat.icon} {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {subcategories.length > 0 && (
-                  <div>
-                    <label className="block text-orange-700 font-semibold mb-1">Subcategory</label>
-                    <select
-                      className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-400"
-                      value={subcategory}
-                      onChange={e => setSubcategory(e.target.value)}
-                      required
-                    >
-                      <option value="">Select a subcategory...</option>
-                      {subcategories.map((sub) => (
-                        <option key={sub} value={sub}>{sub}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                <div>
-                  <label className="block text-orange-700 font-semibold mb-1">Title</label>
-                  <input
-                    type="text"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-400"
-                    placeholder="What's your question or topic?"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    maxLength={100}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-orange-700 font-semibold mb-1">Details</label>
-                  <textarea
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-400"
-                    placeholder="Share your situation, story, or what you want to discuss..."
-                    rows={4}
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    maxLength={2000}
-                    required
-                  />
-                </div>
+              <p className="text-center text-slate-600 mb-6 font-lato">
+                Ready to share something? Your post will be visible to the community.
+              </p>
+
+              {/* In a real app, you might have a form here. For now, it's a confirmation. */}
+              <div className="text-center">
+                <p className="text-sm text-slate-500 mb-4">
+                  You'll be taken to a new page to write your post.
+                </p>
                 <button
-                  type="submit"
-                  className={`w-full py-3 rounded-xl text-lg font-bold shadow-md transition
-                    ${submitting
-                      ? "bg-blue-200 text-gray-500 cursor-not-allowed"
-                      : "bg-blue-500 hover:bg-orange-400 text-white"}`}
-                  disabled={submitting}
+                  onClick={handleStartConversation}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
                 >
-                  {submitting ? "Posting..." : "Start Conversation"}
+                  Continue to Post Page
                 </button>
-              </form>
+              </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
-  }
+}

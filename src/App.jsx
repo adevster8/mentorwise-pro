@@ -1,18 +1,25 @@
 // src/App.jsx
 import { HelmetProvider } from "react-helmet-async";
+import { Routes, Route } from "react-router-dom";
+
+// Core Components
 import Navbar from "./components/Navbar";
 import LayoutWithFooter from "./pages/LayoutWithFooter";
 import PasswordGate from "./components/PasswordGate";
-import { Routes, Route } from "react-router-dom";
-
-// RealTalk pages
-import RealTalkLanding from "./pages/RealTalkPages/RealTalkLanding";
-import RealTalkHome from "./pages/RealTalkPages/RealTalkHome";
+import { megaMenuData } from "./data/megaMenuData";
 import RealTalkCategory from "./pages/RealTalkPages/RealTalkCategory";
+
+
+
+
+
+
+// RealTalk Pages
+import RealTalkHome from "./pages/RealTalkPages/RealTalkHome";
 import RealTalkThread from "./pages/RealTalkPages/RealTalkThread";
 import RealTalkNewPost from "./pages/RealTalkPages/RealTalkNewPost";
 
-// Public Pages (with footer)
+// Public Pages
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -20,8 +27,8 @@ import Mentors from "./pages/Mentors";
 import MentorProfile from "./pages/MentorProfile";
 import BecomeMentor from "./pages/BecomeMentor";
 import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import SignUpMentee from "./pages/SignUpMentee";
+import SignUp from "./pages/SignUp"; // The only signup page we need now
+// import SignUpMentee from "./pages/SignUpMentee"; // <-- FIX: This is no longer needed
 import ScheduleCall from "./pages/ScheduleCall";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import MessageMentor from "./pages/MessageMentor";
@@ -73,11 +80,11 @@ export default function App() {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/mentors" element={<Mentors />} />
-              <Route path="/mentors/:id" element={<MentorProfile />} />
+            <Route path="/mentors/:id" element={<MentorProfile />} />
               <Route path="/become-a-mentor" element={<BecomeMentor />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/signup-mentee" element={<SignUpMentee />} />
+              {/* <Route path="/signup-mentee" element={<SignUpMentee />} /> */} {/* <-- FIX: This route is removed */}
               <Route path="/schedule-call" element={<ScheduleCall />} />
               <Route path="/confirmation" element={<BookingConfirmation />} />
               <Route path="/message/:id" element={<MessageMentor />} />
@@ -87,7 +94,6 @@ export default function App() {
               <Route path="/support" element={<Support />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/mentor-setup" element={<MentorSetup />} />
-              
               
               {/* RealTalk Routes */}
               <Route path="/realtalk" element={<RealTalkHome />} />
@@ -124,7 +130,6 @@ export default function App() {
               <Route path="reviews" element={<Reviews />} />
               <Route path="settings" element={<MentorSettings />} />
               <Route path="bookings" element={<MentorBookings />} />
-
             </Route>
           </Routes>
         </>

@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
+
 export default function MessageThread() {
   const { threadId } = useParams(); // URL param for thread
   const [messages, setMessages] = useState([]);
@@ -19,27 +20,30 @@ export default function MessageThread() {
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef(null);
 
-  // Get logged-in user's ID
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) setUserId(user.uid);
-    });
-    return unsubscribe;
-  }, []);
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUserId(user.uid);
+    } else {
+      setUserId(null);
+    }
+  });
+  return () => unsubscribe();
+}, []);
 
-  // Real-time load messages for this thread
-  useEffect(() => {
-    if (!threadId) return;
-    const q = query(
-      collection(db, "messages"),
-      where("threadId", "==", threadId),
-      orderBy("timestamp")
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    return unsubscribe;
-  }, [threadId]);
+// 2. Listen for real-time messages for this thread
+useEffect(() => {
+  if (!threadId) return; // Don't run if there's no thread
+  const q = query(
+    collection(db, "messages"),
+    where("threadId", "==", threadId),
+    orderBy("timestamp")
+  );
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+  });
+  return () => unsubscribe();
+}, [threadId]);
 
   // Auto-scroll to newest message
   useEffect(() => {

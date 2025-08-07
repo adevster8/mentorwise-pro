@@ -1,9 +1,7 @@
-// src/pages/MessageMentor.jsx
-
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { db, auth } from "../firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
 export default function MessageMentor() {
   const location = useLocation();
@@ -13,6 +11,25 @@ export default function MessageMentor() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(""); // Feedback for the user
 
+  // --- Helper to get or create a thread (all inline, no extra files needed) ---
+  async function getOrCreateThread(currentUserId, mentorId) {
+    // Always sort for consistent threadId (prevents duplicates)
+    const participants = [currentUserId, mentorId].sort();
+    const threadId = participants.join("_");
+    const threadRef = doc(db, "threads", threadId);
+
+    // Check if thread exists
+    const threadSnap = await getDoc(threadRef);
+    if (!threadSnap.exists()) {
+      await setDoc(threadRef, {
+        participants,
+        lastMessage: "",
+        lastTimestamp: serverTimestamp(),
+      });
+    }
+    return threadRef;
+  }
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -21,13 +38,32 @@ export default function MessageMentor() {
       setStatus("You must be signed in to send a message.");
       return;
     }
+
+    const currentUserId = auth.currentUser.uid;
+
     try {
-      await addDoc(collection(db, "messages"), {
-        sender: auth.currentUser.uid,
+      // 1. Get or create thread
+      const threadRef = await getOrCreateThread(currentUserId, mentorId);
+
+      // 2. Add message to subcollection
+      await addDoc(collection(threadRef, "messages"), {
+        sender: currentUserId,
         recipient: mentorId,
         content: message,
         createdAt: serverTimestamp(),
       });
+
+      // 3. Update thread metadata
+      await setDoc(
+        threadRef,
+        {
+          participants: [currentUserId, mentorId].sort(),
+          lastMessage: message,
+          lastTimestamp: Date.now(),
+        },
+        { merge: true }
+      );
+
       setStatus("Message sent successfully!");
       setMessage("");
     } catch (err) {

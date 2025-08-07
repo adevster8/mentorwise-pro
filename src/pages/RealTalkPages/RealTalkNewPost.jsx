@@ -1,168 +1,54 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 
-// MASSIVE CATEGORY LIST (same as sidebar/modal)
-const categories = [
-  { 
-    name: "Career & Business", 
-    subs: [
-      "Interviews & Job Search",
-      "Remote Work",
-      "Entrepreneurship",
-      "Office Politics",
-      "Salary & Negotiation",
-      "Networking",
-    ],
-  },
-  { 
-    name: "Personal Growth", 
-    subs: [
-      "Productivity",
-      "Goal Setting",
-      "Confidence",
-      "Habits",
-      "Self-Discovery",
-      "Overcoming Fear",
-    ],
-  },
-  { 
-    name: "Health & Wellness", 
-    subs: [
-      "Fitness",
-      "Mental Health",
-      "Nutrition",
-      "Sleep",
-      "Chronic Illness",
-      "Healthy Aging",
-    ],
-  },
-  { 
-    name: "Finance & Money", 
-    subs: [
-      "Budgeting",
-      "Investing",
-      "Crypto & Stocks",
-      "Debt & Credit",
-      "Retirement",
-      "Side Hustles",
-    ],
-  },
-  { 
-    name: "Relationships", 
-    subs: [
-      "Dating",
-      "Marriage",
-      "Friendships",
-      "Family",
-      "Breakups",
-      "Conflict Resolution",
-    ],
-  },
-  { 
-    name: "Creative Life", 
-    subs: [
-      "Writing & Publishing",
-      "Art & Design",
-      "Music & Performing",
-      "Content Creation",
-      "Photography",
-      "Filmmaking",
-    ],
-  },
-  { 
-    name: "Tech & Learning", 
-    subs: [
-      "Coding & Dev",
-      "AI & Machine Learning",
-      "Math & Science",
-      "Language Learning",
-      "Online Courses",
-      "Career Change",
-    ],
-  },
-  { 
-    name: "Emotional Support", 
-    subs: [
-      "Anxiety",
-      "Depression",
-      "Grief & Loss",
-      "Addiction Recovery",
-      "Isolation & Loneliness",
-      "Burnout",
-    ],
-  },
-  { 
-    name: "Life Challenges", 
-    subs: [
-      "Major Transitions",
-      "Moving/Relocation",
-      "Parenthood",
-      "Divorce",
-      "Legal Issues",
-      "Financial Hardship",
-    ],
-  },
-  { 
-    name: "Student Life", 
-    subs: [
-      "Study Tips",
-      "Exams",
-      "School Stress",
-      "College Apps",
-      "Grad School",
-      "Campus Life",
-    ],
-  },
-  { 
-    name: "LGBTQ+ & Identity", 
-    subs: [
-      "Coming Out",
-      "Relationships",
-      "Workplace Inclusion",
-      "Trans Life",
-      "Family Issues",
-      "Community",
-    ],
-  },
-  { 
-    name: "Just for Fun", 
-    subs: [
-      "Pop Culture",
-      "Sports & Fitness",
-      "Gaming",
-      "Travel",
-      "Food & Cooking",
-      "Random Chat",
-    ],
-  },
-  // ...add even more if you like!
-];
+// THE FIX: Import data from the single source of truth.
+import { megaMenuData } from "../../data/megaMenuData.js";
 
 export default function RealTalkNewPost() {
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [selectedSubtopic, setSelectedSubtopic] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  // When changing category, reset subcategory
+  // THE FIX: Dynamically find available subtopics based on the selected main category.
+  const availableSubtopics = useMemo(() => {
+    if (!selectedCategoryName) return [];
+    const category = megaMenuData.find(c => c.name === selectedCategoryName);
+    return category ? category.topics.flatMap(t => t.subtopics) : [];
+  }, [selectedCategoryName]);
+
   const handleCategoryChange = (e) => {
-    setCategory(e.target.value);
-    setSubcategory("");
+    setSelectedCategoryName(e.target.value);
+    setSelectedSubtopic(""); // Reset subtopic when main category changes
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!category || !subcategory || !title.trim() || !body.trim()) return;
+    if (!selectedCategoryName || !selectedSubtopic || !title.trim() || !body.trim()) return;
     setSubmitting(true);
 
-    // Simulate post, then redirect to RealTalk category
+    // In a real app, you would send this data to Firebase.
+    console.log({
+      category: selectedCategoryName,
+      subtopic: selectedSubtopic,
+      title,
+      body,
+    });
+
+    // Simulate post, then redirect to the subtopic's category page
     setTimeout(() => {
       setSubmitting(false);
-      navigate(`/realtalk/category/${encodeURIComponent(subcategory)}`);
+      // Find the path for the selected subtopic to redirect correctly
+      const subtopicData = availableSubtopics.find(s => s.name === selectedSubtopic);
+      if (subtopicData) {
+        navigate(subtopicData.path);
+      } else {
+        navigate("/realtalk"); // Fallback
+      }
     }, 900);
   };
 
@@ -170,10 +56,6 @@ export default function RealTalkNewPost() {
     <div className="min-h-screen bg-orange-50 text-gray-900">
       <Helmet>
         <title>Start a New Conversation | RealTalk</title>
-        <meta
-          name="description"
-          content="Start a new peer support chat. Pick a category, add your question, and connect instantly with others on RealTalk."
-        />
       </Helmet>
 
       <main className="max-w-xl mx-auto pt-16 px-4 pb-20">
@@ -187,45 +69,45 @@ export default function RealTalkNewPost() {
             Start a New Conversation
           </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Main Category */}
+            {/* Main Category Dropdown */}
             <div>
               <label className="block text-orange-700 font-semibold mb-1">Main Topic</label>
               <select
                 className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-400"
-                value={category}
+                value={selectedCategoryName}
                 onChange={handleCategoryChange}
                 required
               >
                 <option value="">Select a main topic...</option>
-                {categories.map((cat) => (
+                {megaMenuData.map((cat) => (
                   <option key={cat.name} value={cat.name}>
                     {cat.name}
                   </option>
                 ))}
               </select>
             </div>
-            {/* Subcategory */}
-            {category && (
+            
+            {/* Subtopic Dropdown */}
+            {selectedCategoryName && (
               <div>
                 <label className="block text-orange-700 font-semibold mb-1">Subtopic</label>
                 <select
                   className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-400"
-                  value={subcategory}
-                  onChange={(e) => setSubcategory(e.target.value)}
+                  value={selectedSubtopic}
+                  onChange={(e) => setSelectedSubtopic(e.target.value)}
                   required
                 >
-                  <option value="">Select a subtopic...</option>
-                  {categories
-                    .find((cat) => cat.name === category)
-                    .subs.map((sub) => (
-                      <option key={sub} value={sub}>
-                        {sub}
-                      </option>
-                    ))}
+                  <option value="">Select a specific subtopic...</option>
+                  {availableSubtopics.map((sub) => (
+                    <option key={sub.name} value={sub.name}>
+                      {sub.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             )}
-            {/* Title */}
+            
+            {/* Title Input */}
             <div>
               <label className="block text-orange-700 font-semibold mb-1">Title</label>
               <input
@@ -238,7 +120,8 @@ export default function RealTalkNewPost() {
                 required
               />
             </div>
-            {/* Body */}
+            
+            {/* Body Textarea */}
             <div>
               <label className="block text-orange-700 font-semibold mb-1">Details</label>
               <textarea
@@ -251,13 +134,16 @@ export default function RealTalkNewPost() {
                 required
               />
             </div>
+            
+            {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full py-3 rounded-xl text-lg font-bold shadow-md transition
-                ${submitting
-                  ? "bg-blue-200 text-gray-500 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-orange-400 text-white"}`}
-              disabled={submitting}
+              className={`w-full py-3 rounded-xl text-lg font-bold shadow-md transition ${
+                submitting || !selectedSubtopic
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-orange-500 text-white"
+              }`}
+              disabled={submitting || !selectedSubtopic}
             >
               {submitting ? "Posting..." : "Start Conversation"}
             </button>

@@ -1,63 +1,87 @@
 import React from "react";
+import { motion } from "framer-motion";
 
-export default function BecomeMentor() {
+export default function BecomeMentorDash() {
   return (
-    <div className="min-h-screen bg-orange-50">
-      {/* Main Content */}
-      <div className="p-8">
-        <h1 className="text-3xl font-bold text-orange-600 mb-6">Become a Mentor</h1>
-        <p className="text-gray-700 mb-6 max-w-2xl">
-          Share your expertise and make a meaningful impact in someone's journey. As a mentor on MentorWise,
-          you'll have the opportunity to connect with mentees seeking real guidance, professional insights,
-          and personal support in areas where you truly shine.
-        </p>
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-slate-100">
+      <div className="max-w-3xl mx-auto py-12 px-6">
+        <motion.h1
+          className="text-4xl font-extrabold font-manrope text-orange-600 mb-7 text-center tracking-tight"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          Become a Mentor
+        </motion.h1>
+        <motion.p
+          className="text-gray-600 mb-8 text-lg text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15 }}
+        >
+          Share your expertise and make a meaningful impact. MentorWise gives you the power to connect and support those who need your wisdom — while building your brand.
+        </motion.p>
 
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-orange-700 mb-4">Why Mentor with Us?</h2>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
+        {/* Why Mentor */}
+        <motion.div
+          className="bg-white/90 shadow-xl rounded-2xl p-8 mb-8"
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h2 className="text-2xl font-bold text-orange-700 mb-3 font-manrope">Why Mentor with Us?</h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2 text-base font-lato">
             <li>Set your own rates and availability</li>
-            <li>Help others avoid costly mistakes and wasted time</li>
-            <li>Build your personal brand and grow your influence</li>
-            <li>Make a difference in someone’s life — while getting paid</li>
+            <li>Help others avoid costly mistakes</li>
+            <li>Build your personal brand and influence</li>
+            <li>Make a real difference — and earn income</li>
           </ul>
-        </div>
+        </motion.div>
 
-        <div className="bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-orange-700 mb-4">How to Get Started</h2>
-          <ol className="list-decimal list-inside text-gray-700 space-y-2">
-            <li>Fill out your mentor profile with details about your expertise</li>
-            <li>Set your hourly rate and available hours</li>
-            <li>Submit your profile for review</li>
-            <li>Once approved, mentees can book sessions with you directly</li>
+        {/* How to Get Started */}
+        <motion.div
+          className="bg-white/90 shadow-xl rounded-2xl p-8"
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className="text-2xl font-bold text-orange-700 mb-3 font-manrope">How to Get Started</h2>
+          <ol className="list-decimal list-inside text-gray-700 space-y-2 text-base font-lato">
+            <li>Fill out your mentor profile</li>
+            <li>Set your rates and hours</li>
+            <li>Submit for review</li>
+            <li>Start accepting mentees</li>
           </ol>
-
-          <button className="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded">
+          <button className="mt-7 w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-8 rounded-xl font-bold text-lg shadow-md transition-all">
             Apply to Become a Mentor
           </button>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Visual CTA Section - Find Clients */}
-      <section className="relative h-[500px] md:h-[600px] overflow-hidden">
-        {/* Background Image with Dark Overlay */}
+      {/* Visual CTA */}
+      <section className="relative h-[380px] md:h-[520px] mt-12 overflow-hidden flex items-end">
         <img
           src="/find-clients.png"
           alt="Find Clients"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/60" />
-
-        {/* Centered Text Box */}
-        <div className="relative z-10 h-full flex items-end justify-center px-6 pb-12 text-center">
-          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-xl max-w-2xl">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-orange-600 mb-3 font-heading">
-              Attract Clients, Structure Long-Term Growth
+        <motion.div
+          className="relative z-10 w-full flex items-center justify-center pb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          <div className="bg-white/90 backdrop-blur-md px-8 py-7 rounded-2xl shadow-2xl text-center max-w-xl">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-orange-600 mb-3 font-manrope">
+              Attract Clients, Grow Long-Term
             </h2>
-            <p className="text-gray-800 text-base md:text-lg font-body">
-              Learn how to design flexible coaching offers — from one-off strategy calls to structured 12-week transformations. Our platform helps you match with clients seeking everything from quick clarity to deep change.
+            <p className="text-gray-800 text-lg font-lato">
+              Flexible offers, real connections. Our platform helps you build everything from quick-win calls to deep-dive coaching journeys.
             </p>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );
