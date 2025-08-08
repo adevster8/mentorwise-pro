@@ -20,7 +20,7 @@ export default function RealTalkCategorySidebar() {
   };
 
   return (
-    <aside className="hidden md:block w-72 flex-shrink-0">
+    <aside className="hidden md:block w-72 flex-shrink-0 mt-10">
       <motion.div
         className="bg-white rounded-3xl shadow-xl py-8 px-6 border-2 border-blue-100 sticky top-24"
         initial={{ opacity: 0, x: -30 }}
@@ -39,7 +39,6 @@ export default function RealTalkCategorySidebar() {
                 `}
                 onClick={() => toggleCategory(cat.name)}
               >
-                {/* Optional: If your megaMenuData includes icons, use cat.icon */}
                 {cat.icon && <span className="text-xl">{cat.icon}</span>}
                 <span>{cat.name}</span>
                 <span className="ml-auto text-lg">

@@ -6,18 +6,6 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import LayoutWithFooter from "./pages/LayoutWithFooter";
 import PasswordGate from "./components/PasswordGate";
-import { megaMenuData } from "./data/megaMenuData";
-import RealTalkCategory from "./pages/RealTalkPages/RealTalkCategory";
-
-
-
-
-
-
-// RealTalk Pages
-import RealTalkHome from "./pages/RealTalkPages/RealTalkHome";
-import RealTalkThread from "./pages/RealTalkPages/RealTalkThread";
-import RealTalkNewPost from "./pages/RealTalkPages/RealTalkNewPost";
 
 // Public Pages
 import Home from "./pages/Home";
@@ -27,8 +15,7 @@ import Mentors from "./pages/Mentors";
 import MentorProfile from "./pages/MentorProfile";
 import BecomeMentor from "./pages/BecomeMentor";
 import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp"; // The only signup page we need now
-// import SignUpMentee from "./pages/SignUpMentee"; // <-- FIX: This is no longer needed
+import SignUp from "./pages/SignUp";
 import ScheduleCall from "./pages/ScheduleCall";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import MessageMentor from "./pages/MessageMentor";
@@ -38,10 +25,16 @@ import Privacy from "./pages/Privacy";
 import Support from "./pages/Support";
 import Blog from "./pages/Blog";
 import MentorSetup from "./pages/MentorSetup";
+import Locals from "./pages/Locals";
+
+// RealTalk Pages
+import RealTalkHome from "./pages/RealTalkPages/RealTalkHome";
+import RealTalkThread from "./pages/RealTalkPages/RealTalkThread";
+import RealTalkNewPost from "./pages/RealTalkPages/RealTalkNewPost";
+import RealTalkCategory from "./pages/RealTalkPages/RealTalkCategory";
 
 // User Dashboard
 import UserDashboard from "./pages/UserDashboard/UserDashboard";
-import DashboardHome from "./pages/UserDashboard/DashboardHome";
 import Messages from "./pages/UserDashboard/Messages";
 import MessageThread from "./pages/UserDashboard/MessageThread";
 import Profile from "./pages/UserDashboard/Profile";
@@ -71,68 +64,68 @@ export default function App() {
   return (
     <HelmetProvider>
       <PasswordGate>
-        <>
-          <Navbar />
-          <Routes>
-            {/* Public Pages wrapped with layout and footer */}
-            <Route element={<LayoutWithFooter />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/mentors" element={<Mentors />} />
+        <Navbar />
+        <Routes>
+          {/* Public Pages */}
+          <Route element={<LayoutWithFooter />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/mentors" element={<Mentors />} />
             <Route path="/mentors/:id" element={<MentorProfile />} />
-              <Route path="/become-a-mentor" element={<BecomeMentor />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              {/* <Route path="/signup-mentee" element={<SignUpMentee />} /> */} {/* <-- FIX: This route is removed */}
-              <Route path="/schedule-a-call" element={<ScheduleCall />} />
-              <Route path="/confirmation" element={<BookingConfirmation />} />
-              <Route path="/message/:id" element={<MessageMentor />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/mentor-setup" element={<MentorSetup />} />
-              
-              {/* RealTalk Routes */}
-              <Route path="/realtalk" element={<RealTalkHome />} />
-              <Route path="/realtalk/category/:categoryName" element={<RealTalkCategory />} />
-              <Route path="/realtalk/thread/:threadId" element={<RealTalkThread />} />
-              <Route path="/realtalk/new" element={<RealTalkNewPost />} />
-            </Route>
+            <Route path="/become-a-mentor" element={<BecomeMentor />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/schedule-a-call" element={<ScheduleCall />} />
+            <Route path="/confirmation" element={<BookingConfirmation />} />
+            <Route path="/message/:id" element={<MessageMentor />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/mentor-setup" element={<MentorSetup />} />
+            <Route path="/locals" element={<Locals />} />
 
-            {/* User Dashboard Routes */}
-            <Route path="/dashboard" element={<UserDashboard />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="messages" element={<Messages />} />
-              <Route path="messages/:threadId" element={<MessageThread />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="billing" element={<Billing />} />
-              <Route path="schedule" element={<Schedule />} />
-              <Route path="bookings" element={<Bookings />} />
-              <Route path="edit-profile" element={<EditProfile />} />
-              <Route path="help" element={<Help />} />
-              <Route path="invite" element={<Invite />} />
-              <Route path="logout" element={<Logout />} />
-              <Route path="become-mentor" element={<BecomeMentorDash />} />
-              <Route path="settings" element={<Settings />} />
-            </Route>
 
-            {/* Mentor Dashboard Routes */}
-            <Route path="/mentor-dashboard" element={<MentorDashboard />}>
-              <Route path="availability" element={<Availability />} />
-              <Route path="earnings" element={<Earnings />} />
-              <Route path="edit-profile" element={<EditMentorProfile />} />
-              <Route path="help" element={<MentorHelp />} />
-              <Route path="messages" element={<MentorMessages />} />
-              <Route path="requests" element={<Requests />} />
-              <Route path="reviews" element={<Reviews />} />
-              <Route path="settings" element={<MentorSettings />} />
-              <Route path="bookings" element={<MentorBookings />} />
-            </Route>
-          </Routes>
-        </>
+            {/* RealTalk */}
+            <Route path="/realtalk" element={<RealTalkHome />} />
+            <Route path="/realtalk/category/:categoryName" element={<RealTalkCategory />} />
+            <Route path="/realtalk/thread/:threadId" element={<RealTalkThread />} />
+            <Route path="/realtalk/new" element={<RealTalkNewPost />} />
+          </Route>
+
+          {/* User Dashboard */}
+      <Route path="/dashboard" element={<UserDashboard />}>
+  <Route path="messages" element={<Messages />} />
+  <Route path="messages/:threadId" element={<MessageThread />} />
+  <Route path="schedule" element={<Schedule />} />
+  <Route path="goals" element={<Schedule />} /> {/* Replace if you create a real Goals page */}
+  <Route path="billing" element={<Billing />} />
+  <Route path="edit-profile" element={<EditProfile />} />
+  <Route path="favorites" element={<Profile />} /> {/* Replace if you create Favorites page */}
+  <Route path="profile" element={<Profile />} />
+  <Route path="bookings" element={<Bookings />} />
+  <Route path="invite" element={<Invite />} />
+  <Route path="logout" element={<Logout />} />
+  <Route path="become-mentor" element={<BecomeMentorDash />} />
+  <Route path="settings" element={<Settings />} />
+  <Route path="help" element={<Help />} />
+</Route>
+
+          {/* Mentor Dashboard */}
+          <Route path="/mentor-dashboard" element={<MentorDashboard />}>
+            <Route path="availability" element={<Availability />} />
+            <Route path="earnings" element={<Earnings />} />
+            <Route path="edit-profile" element={<EditMentorProfile />} />
+            <Route path="help" element={<MentorHelp />} />
+            <Route path="messages" element={<MentorMessages />} />
+            <Route path="requests" element={<Requests />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="settings" element={<MentorSettings />} />
+            <Route path="bookings" element={<MentorBookings />} />
+          </Route>
+        </Routes>
       </PasswordGate>
     </HelmetProvider>
   );

@@ -1,9 +1,12 @@
+// src/pages/Mentors.jsx
+
 import { useEffect, useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { mentors as mockMentors } from "../data/mentorsData";
 import { db } from "../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { motion } from 'framer-motion';
+import { mentors as mockMentors } from "../data/mentorsData";
+import { megaMenuData } from "../data/megaMenuData";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AVATAR_FALLBACK = "/default-avatar.png";
 
@@ -14,13 +17,13 @@ export default function Mentors() {
 
   const [allMentors, setAllMentors] = useState([]);
   const [filteredMentors, setFilteredMentors] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState(null);
   const [isRelated, setIsRelated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(""); // <-- New search state
 
-  // Fetch and merge mentors once
   useEffect(() => {
-    async function fetchAndSetMentors() {
+    async function fetchMentors() {
       setIsLoading(true);
       const q = query(collection(db, "users"), where("role", "==", "mentor"));
       const snapshot = await getDocs(q);
@@ -28,89 +31,136 @@ export default function Mentors() {
 
       const combined = [
         ...liveMentors,
-        ...mockMentors.filter(mock => !liveMentors.some(live => live.id === mock.id || (live.email && mock.email === live.email)))
+        ...mockMentors.filter(
+          mock => !liveMentors.some(live => live.id === mock.id || (live.email && mock.email === live.email))
+        ),
       ].map(m => ({ ...m, image: m.image || AVATAR_FALLBACK }));
 
       setAllMentors(combined);
       setIsLoading(false);
     }
-    fetchAndSetMentors();
+
+    fetchMentors();
   }, []);
 
-  // Filtering logic combined with search
   useEffect(() => {
     if (isLoading) return;
 
-    let baseFiltered;
+    let base = allMentors;
 
     if (selectedTopic) {
-      let exactMatches = allMentors.filter(mentor =>
-        mentor.specialties?.some(s => s.toLowerCase() === selectedTopic.toLowerCase())
+      const exact = base.filter(m =>
+        m.specialties?.some(s => s.toLowerCase() === selectedTopic.toLowerCase())
       );
-
-      if (exactMatches.length > 0) {
-        baseFiltered = exactMatches;
-        setIsRelated(false);
-      } else {
-        const relatedMatches = allMentors.filter(mentor =>
-          mentor.specialties?.some(s => s.toLowerCase().includes(selectedTopic.toLowerCase()))
-        );
-        baseFiltered = relatedMatches;
-        setIsRelated(true);
-      }
-    } else {
-      baseFiltered = allMentors;
-      setIsRelated(false);
+      base = exact.length > 0 ? exact : base.filter(m =>
+        m.specialties?.some(s => s.toLowerCase().includes(selectedTopic.toLowerCase()))
+      );
+      setIsRelated(exact.length === 0);
     }
 
-    // Apply search filter on top of topic filtering
+    if (selectedFilter) {
+      base = base.filter(m =>
+        m.specialties?.some(s => s.toLowerCase() === selectedFilter.toLowerCase())
+      );
+    }
+
     if (searchQuery.trim() !== "") {
-      const lowerSearch = searchQuery.toLowerCase();
-      baseFiltered = baseFiltered.filter(mentor =>
-        (mentor.name?.toLowerCase().includes(lowerSearch)) ||
-        (mentor.specialties?.some(s => s.toLowerCase().includes(lowerSearch)))
+      const q = searchQuery.toLowerCase();
+      base = base.filter(m =>
+        m.name?.toLowerCase().includes(q) ||
+        m.specialties?.some(s => s.toLowerCase().includes(q))
       );
     }
 
-    setFilteredMentors(baseFiltered);
-  }, [selectedTopic, allMentors, isLoading, searchQuery]);
+    setFilteredMentors(base);
+  }, [allMentors, selectedTopic, selectedFilter, searchQuery, isLoading]);
 
-  // Unique list of specialties for filter bar
   const allSpecialties = useMemo(() => {
-    const specialtiesSet = new Set();
-    allMentors.forEach(mentor => {
-      mentor.specialties?.forEach(spec => specialtiesSet.add(spec));
+    const set = new Set();
+    allMentors.forEach(m => {
+      m.specialties?.forEach(s => set.add(s));
     });
-    return Array.from(specialtiesSet).sort();
+    return Array.from(set).sort();
   }, [allMentors]);
 
   return (
-    <div className="w-full min-h-screen bg-orange-50 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* === HEADER === */}
-        <div className="text-center mb-6">
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-2 font-manrope">
-            Find Your Mentor
-          </h1>
-          <p className="text-lg text-gray-600 font-lato max-w-2xl mx-auto">
-            Browse our community of experts. Click a category below to filter by specialty.
-          </p>
+    <div className="flex w-full min-h-screen bg-orange-50 py-16 px-4 sm:px-6 lg:px-8">
+      {/* === SIDEBAR === */}
+      <aside className="w-64 hidden lg:block pr-8">
+        <div className="sticky top-24 space-y-4">
+          <h3 className="text-xl font-bold text-gray-800 mb-2 font-manrope">Filter by Topic</h3>
+          <div className="space-y-2">
+            {megaMenuData.map(cat => (
+              <div key={cat.title}>
+                <p className="font-semibold text-sm text-gray-500 uppercase tracking-wide">{cat.title}</p>
+                {cat.topics.map(topic => (
+                  <div key={topic.title} className="ml-2 mt-1">
+                    <p className="font-medium text-gray-600 text-sm">{topic.title}</p>
+                    {topic.subtopics.map(sub => (
+                      <button
+                        key={sub.name}
+                        onClick={() => setSelectedFilter(sub.name)}
+                        className={`block text-left w-full px-4 py-1.5 rounded-md text-sm font-medium transition mt-1 ml-2 ${
+                          selectedFilter === sub.name
+                            ? "bg-orange-500 text-white shadow"
+                            : "bg-white text-gray-700 hover:bg-orange-100"
+                        }`}
+                      >
+                        {sub.name}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ))}
+            <button
+              onClick={() => setSelectedFilter(null)}
+              className="block text-left w-full mt-4 px-4 py-2 text-sm rounded-md bg-gray-200 hover:bg-gray-300 font-medium text-gray-800"
+            >
+              Clear Filter
+            </button>
+          </div>
         </div>
+      </aside>
 
-        {/* === SEARCH BAR === */}
-        <div className="max-w-md mx-auto mb-8">
+      {/* === MAIN CONTENT === */}
+      <div className="flex-1 max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 font-manrope">Find Your Mentor</h1>
+          <p className="text-base sm:text-lg text-gray-600 font-lato max-w-2xl mx-auto">
+            Browse our expert mentors. Use search, category bar, or the sidebar to filter.
+          </p>
+        </motion.div>
+
+        {/* Search */}
+        <motion.div 
+          className="max-w-md mx-auto mb-8"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+        >
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search mentors by name or specialty..."
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
           />
-        </div>
+        </motion.div>
 
-        {/* === CATEGORY FILTER BAR === */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        {/* Top Category Filter Bar */}
+        <motion.div
+          className="flex flex-wrap justify-center gap-3 mb-12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <Link
             to="/mentors"
             className={`px-4 py-2 rounded-full font-bold transition-colors duration-200 ${!selectedTopic ? 'bg-orange-500 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-orange-100'}`}
@@ -126,36 +176,30 @@ export default function Mentors() {
               {topic}
             </Link>
           ))}
-        </div>
+        </motion.div>
 
-        {/* === RESULTS AREA === */}
+        {/* Results */}
         {isLoading ? (
-          <p className="text-center text-gray-500">Loading...</p>
+          <p className="text-center text-gray-500">Loading mentors...</p>
         ) : filteredMentors.length === 0 ? (
           <div className="text-center py-16 px-6 bg-white rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-700">No Mentors Found for "{selectedTopic || searchQuery}"</h3>
-            <p className="text-gray-500 mt-2">Try selecting another category, using different search terms, or viewing all mentors.</p>
+            <h3 className="text-xl font-semibold text-gray-700">
+              No mentors found for "{selectedTopic || selectedFilter || searchQuery}"
+            </h3>
+            <p className="text-gray-500 mt-2">Try clearing filters or searching again.</p>
           </div>
         ) : (
-          <>
-            {selectedTopic && (
-              <p className="text-center text-sm text-gray-600 mb-6">
-                {isRelated && <span className="font-bold text-orange-500">No exact matches found. </span>}
-                Showing mentors for: <span className="font-semibold text-gray-800">{selectedTopic}</span>
-              </p>
-            )}
-            <motion.div 
-              layout
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
-            >
-              {filteredMentors.map((mentor) => (
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+            <AnimatePresence>
+              {filteredMentors.map(mentor => (
                 <motion.div
                   layout
                   key={mentor.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-2xl hover:-translate-y-2"
+                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                 >
                   <img
                     src={mentor.image || AVATAR_FALLBACK}
@@ -173,15 +217,15 @@ export default function Mentors() {
                     </p>
                     <Link
                       to={`/mentors/${mentor.id}`}
-                      className="mt-4 w-full text-center px-6 py-2.5 bg-orange-500 text-white rounded-lg font-bold text-sm hover:bg-orange-600 shadow-md group-hover:shadow-lg transition-all"
+                      className="mt-auto w-full text-center px-6 py-2.5 bg-orange-500 text-white rounded-lg font-bold text-sm hover:bg-orange-600 shadow-md group-hover:shadow-lg transition-all"
                     >
                       View Profile
                     </Link>
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
-          </>
+            </AnimatePresence>
+          </motion.div>
         )}
       </div>
     </div>

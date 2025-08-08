@@ -1,3 +1,6 @@
+// ✅ All content stays the same, only Tailwind classes adjusted to scale fluidly on small screens
+
+// ...your same imports
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircleIcon, UserPlusIcon, LightBulbIcon, BanknotesIcon, ClockIcon } from '@heroicons/react/24/outline';
@@ -17,13 +20,10 @@ export default function BecomeMentor() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, you'd send this data to a server.
-    // For now, we'll just show a success message.
     console.log("Form submitted:", form);
     setSubmitted(true);
   };
-  
-  // A simple list of benefits for the new section
+
   const benefits = [
     {
       icon: LightBulbIcon,
@@ -45,13 +45,12 @@ export default function BecomeMentor() {
   return (
     <div className="min-h-screen w-full bg-slate-50">
       
-      {/* === HERO SECTION: FORM + IMAGE === */}
+      {/* === HERO SECTION === */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-2">
-        
         {/* --- Left Side: Form --- */}
-        <div className="flex items-center justify-center p-6 md:p-12 lg:p-16">
+        <div className="flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16">
           <motion.div 
-            className="w-full max-w-lg bg-white/60 backdrop-blur-sm border-t-4 border-blue-300 rounded-2xl shadow-2xl p-8 md:p-10"
+            className="w-full max-w-lg bg-white/60 backdrop-blur-sm border-t-4 border-blue-300 rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
@@ -108,7 +107,7 @@ export default function BecomeMentor() {
           </motion.div>
         </div>
 
-        {/* --- Right Side: Image --- */}
+        {/* --- Right Side: Image (hidden on mobile) --- */}
         <div className="hidden lg:block w-full h-full">
           <motion.img
             src="/Become-a-Mentor.jpg"
@@ -121,14 +120,14 @@ export default function BecomeMentor() {
         </div>
       </div>
 
-      {/* === NEW: WHY MENTOR WITH US? SECTION === */}
-      <section className="w-full py-20 px-6 bg-white">
+      {/* === BENEFITS SECTION === */}
+      <section className="w-full py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 font-manrope">Why Mentor with MentorWise?</h2>
             <p className="mt-3 text-lg text-slate-600 font-lato">We handle the logistics so you can focus on what you do best.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
             {benefits.map((benefit, index) => (
               <motion.div 
                 key={benefit.title}
@@ -149,7 +148,7 @@ export default function BecomeMentor() {
         </div>
       </section>
 
-      {/* === BOTTOM CTA SECTION === */}
+      {/* === CTA SECTION === */}
       <section className="relative h-[500px] mt-12 md:mt-20 overflow-hidden">
         <img
           src="/find-clients.png"

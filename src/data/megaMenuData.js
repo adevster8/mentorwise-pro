@@ -11,14 +11,13 @@ const slugify = (text) =>
     .replace(/[^\w\-]+/g, '')
     .replace(/\-\-+/g, '-');
 
-// Helper: add URL path to subtopics
+// ✅ Updated: Helper to link subtopics to /mentors?topic=...
 const createSubtopics = (subtopics, cat, topic) =>
   subtopics.map(sub => ({
     name: sub,
-    // Route points to a page by subtopic, but you can change this if needed
-    path: `/realtalk/category/${slugify(cat)}/${slugify(topic)}/${slugify(sub)}`
+    // Now routes to the mentors page with ?topic=SUBTOPIC
+    path: `/mentors?topic=${encodeURIComponent(sub)}`
   }));
-
 export const megaMenuData = [
   // ==========================================================
   // 1. Career & Business

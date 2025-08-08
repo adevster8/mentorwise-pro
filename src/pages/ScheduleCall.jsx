@@ -2,14 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function ScheduleCall() {
-  // Animation variants for staggering items
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
@@ -32,7 +29,7 @@ export default function ScheduleCall() {
           Let Us Find <span className="text-orange-600">Your</span> Perfect Coach
         </motion.h1>
         <motion.p 
-          className="text-lg text-slate-600 font-lato"
+          className="text-lg text-slate-600 font-lato px-4 md:px-0"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -42,13 +39,11 @@ export default function ScheduleCall() {
       </div>
 
       {/* === MAIN CONTENT GRID === */}
-      {/* This is the key change: The container is now full-width with padding, and the grid is defined with responsive Tailwind classes */}
-      <div
-        className="w-full flex-grow mx-auto px-6 md:px-8 lg:px-12 py-14 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 items-start"
-      >
-        {/* === Left Form: Send a Message === */}
+      <div className="w-full flex-grow mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-14 grid grid-cols-1 gap-10 md:grid-cols-[1fr_auto_1fr] items-start">
+        
+        {/* === Left Form === */}
         <motion.div 
-          className="bg-white/50 border-t-4 border-orange-300 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col p-8 md:p-10 h-full"
+          className="bg-white/50 border-t-4 border-orange-300 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col p-6 sm:p-8 md:p-10"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -57,15 +52,15 @@ export default function ScheduleCall() {
           <form className="space-y-5 text-sm text-slate-800 font-lato">
             <div>
               <label className="block mb-1.5 font-semibold text-slate-700">Full Name</label>
-              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Your name" />
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80" placeholder="Your name" />
             </div>
             <div>
               <label className="block mb-1.5 font-semibold text-slate-700">Email Address</label>
-              <input type="email" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="you@example.com" />
+              <input type="email" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80" placeholder="you@example.com" />
             </div>
             <div>
               <label className="block mb-1.5 font-semibold text-slate-700">What are you looking for?</label>
-              <textarea rows="5" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Describe your goals or what kind of coach you're looking for..." />
+              <textarea rows="5" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80" placeholder="Describe your goals or what kind of coach you're looking for..." />
             </div>
             <button type="submit" className="w-full bg-orange-500 hover:bg-blue-300 text-white py-3 px-7 rounded-lg shadow-md hover:shadow-lg font-semibold transition-all hover:-translate-y-0.5 transform">
               Submit Request
@@ -73,9 +68,9 @@ export default function ScheduleCall() {
           </form>
         </motion.div>
 
-        {/* === Center Image === */}
+        {/* === Center Image (hidden on small screens) === */}
         <motion.div 
-          className="hidden md:flex items-center justify-center pt-6" // pt-6 aligns it better vertically with the forms
+          className="hidden md:flex items-center justify-center pt-6"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
@@ -87,9 +82,9 @@ export default function ScheduleCall() {
           />
         </motion.div>
 
-        {/* === Right Form: Request a Zoom Call === */}
+        {/* === Right Form === */}
         <motion.div 
-          className="bg-white/50 border-t-4 border-blue-300 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col p-8 md:p-10 h-full"
+          className="bg-white/50 border-t-4 border-blue-300 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col p-6 sm:p-8 md:p-10"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -98,19 +93,19 @@ export default function ScheduleCall() {
           <form className="space-y-5 text-sm text-slate-800 font-lato">
             <div>
               <label className="block mb-1.5 font-semibold text-slate-700">Full Name</label>
-              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Your name" />
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80" placeholder="Your name" />
             </div>
             <div>
               <label className="block mb-1.5 font-semibold text-slate-700">Email Address</label>
-              <input type="email" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="you@example.com" />
+              <input type="email" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80" placeholder="you@example.com" />
             </div>
             <div>
               <label className="block mb-1.5 font-semibold text-slate-700">Preferred Times</label>
-              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="e.g. Mornings, Weekends, etc." />
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80" placeholder="e.g. Mornings, Weekends, etc." />
             </div>
             <div>
               <label className="block mb-1.5 font-semibold text-slate-700">Topic or Area of Coaching</label>
-              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80 transition duration-200" placeholder="Career, Mindset, Finance..." />
+              <input type="text" className="w-full p-3 rounded-lg border border-slate-300/70 focus:ring-2 focus:ring-orange-400 shadow-sm bg-white/80" placeholder="Career, Mindset, Finance..." />
             </div>
             <button type="submit" className="w-full bg-orange-500 hover:bg-blue-300 text-white py-3 px-7 rounded-lg shadow-md hover:shadow-lg font-semibold transition-all hover:-translate-y-0.5 transform">
               Schedule Call
