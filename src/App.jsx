@@ -85,7 +85,7 @@ export default function App() {
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
               {/* <Route path="/signup-mentee" element={<SignUpMentee />} /> */} {/* <-- FIX: This route is removed */}
-              <Route path="/schedule-call" element={<ScheduleCall />} />
+              <Route path="/schedule-a-call" element={<ScheduleCall />} />
               <Route path="/confirmation" element={<BookingConfirmation />} />
               <Route path="/message/:id" element={<MessageMentor />} />
               <Route path="/faq" element={<FAQ />} />

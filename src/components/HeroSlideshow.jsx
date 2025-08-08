@@ -24,16 +24,17 @@ export default function HeroSlideshow() {
       />
 
       {/* Gradient for readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10" />
 
       {/* Centered Text Content */}
       <motion.div
-        className="relative z-20 flex flex-col items-center max-w-3xl px-6"
+        className="relative z-30 flex flex-col items-center max-w-3xl px-7"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
       >
-        <div className="w-full md:w-auto bg-white/75 backdrop-blur-md rounded-3xl px-6 py-8 md:px-12 md:py-10 shadow-xl mb-6 transition-all">
+       <div className="w-full md:w-auto bg-white/100 backdrop-blur-md rounded-3xl px-6 py-8 md:px-12 md:py-14 shadow-xl -mt-9 mb-6 transition-all">
+
           <h1 className="text-4xl md:text-6xl font-extrabold text-[#181C2A] drop-shadow-lg font-manrope leading-tight text-center">
             Mentorship That Moves <br /> You <span className="text-orange-600">Forward</span>
           </h1>
