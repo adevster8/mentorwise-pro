@@ -6,6 +6,7 @@ import ModernDropdown from "../components/ModernDropdown";
 import ParallaxCardSection from "../components/ParallaxCardSection";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import HeroSlideshow from "../components/HeroSlideshow";
+import { Rocket, GraduationCap, Map, Sparkles, MessageSquare, Wallet, CalendarCheck, Users } from "lucide-react";
 
 import {
 PaintBrushIcon,
@@ -52,6 +53,7 @@ content="Get matched with experienced mentors and coaches in skills, finance, an
 <main role="main">
 {/* 1) Hero */}
 <HeroSlideshow />
+
 
 {/* 2) Category Dropdowns */}
 <section className="bg-orange-100 py-20 px-4 sm:px-6 lg:px-8 relative z-30">
@@ -176,6 +178,118 @@ viewport={{ once: true }}
 </div>
 </section>
 
+
+{/* === Option Choose === */}
+<section className="w-full bg-gradient-to-b from-orange-50 to-white py-16">
+  {/* Full-bleed container with generous side padding */}
+  <div className="w-full px-4 sm:px-6 lg:px-12">
+    <div className="grid lg:grid-cols-2 gap-8">
+
+      {/* Left Card — Find a mentor */}
+      <div className="bg-white rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-8 lg:p-10 flex flex-col justify-between">
+        <div>
+          {/* Icon badge */}
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 mb-6">
+            <Rocket className="w-7 h-7" />
+          </div>
+
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#181C2A] mb-4">
+            I want to achieve a goal.
+          </h2>
+          <p className="text-gray-600 mb-7 max-w-2xl">
+            Find a vetted expert to help you master a skill, complete a project, or launch your next big idea.
+          </p>
+
+          <ul className="space-y-5">
+            <li className="flex gap-4">
+              <div className="mt-1 text-orange-600"><Map className="w-5 h-5" /></div>
+              <div>
+                <p className="font-semibold text-[#181C2A]">Get a Step-by-Step Roadmap</p>
+                <p className="text-gray-600">Follow a clear plan with milestones tailored to your specific goal.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <div className="mt-1 text-orange-600"><Sparkles className="w-5 h-5" /></div>
+              <div>
+                <p className="font-semibold text-[#181C2A]">Master Skills with 1-on-1 Guidance</p>
+                <p className="text-gray-600">Receive personalized feedback and support from a true expert.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <div className="mt-1 text-orange-600"><MessageSquare className="w-5 h-5" /></div>
+              <div>
+                <p className="font-semibold text-[#181C2A]">Build Confidence & Get Results</p>
+                <p className="text-gray-600">Move forward faster with a partner dedicated to your success.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div className="mt-8">
+          <Link
+            to="/mentors"
+            className="inline-flex items-center justify-center w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-7 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition"
+          >
+            Find Your Mentor →
+          </Link>
+        </div>
+      </div>
+
+      {/* Right Card — Become a coach */}
+      <div className="bg-slate-100 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] p-8 lg:p-10 flex flex-col justify-between">
+        <div>
+          {/* Icon badge */}
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 mb-6">
+            <GraduationCap className="w-7 h-7" />
+          </div>
+
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#181C2A] mb-4">
+            I want to share my expertise.
+          </h2>
+          <p className="text-gray-600 mb-7 max-w-2xl">
+            Turn your skills into a sustainable business with low fees, flexible offer types, and high-quality clients.
+          </p>
+
+          <ul className="space-y-5">
+            <li className="flex gap-4">
+              <div className="mt-1 text-orange-600"><Wallet className="w-5 h-5" /></div>
+              <div>
+                <p className="font-semibold text-[#181C2A]">Monetize with Low 12% Fees</p>
+                <p className="text-gray-600">Keep more of what you earn compared to other platforms.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <div className="mt-1 text-orange-600"><CalendarCheck className="w-5 h-5" /></div>
+              <div>
+                <p className="font-semibold text-[#181C2A]">Offer Flexible Plans & Retainers</p>
+                <p className="text-gray-600">Sell your expertise your way — not just as one-off gigs.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <div className="mt-1 text-orange-600"><Users className="w-5 h-5" /></div>
+              <div>
+                <p className="font-semibold text-[#181C2A]">Grow with High-Quality Clients</p>
+                <p className="text-gray-600">Connect with users who are invested in achieving real outcomes.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div className="mt-8">
+          <Link
+            to="/become-a-mentor"
+            className="inline-flex items-center justify-center w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-7 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition"
+          >
+            Become a Coach →
+          </Link>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
 {/* === Video Section === */}
 <section className="relative w-full overflow-hidden">
 <div className="relative w-full h-[500px] md:h-[650px] lg:h-[750px]">
@@ -211,7 +325,7 @@ Find Your Mentor
 </section>
 
 {/* 7) Join the Conversation (RealTalk) */}
-<section className="w-full bg-slate-50 py-20 md:py-28">
+<section className="w-full bg-sky-50 py-20 md:py-28">
 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 <motion.div
 className="relative"

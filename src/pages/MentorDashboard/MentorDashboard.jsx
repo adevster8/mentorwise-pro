@@ -1,5 +1,5 @@
 // src/pages/MentorDashboard/MentorDashboard.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase";
@@ -13,6 +13,7 @@ import {
   Star,
   Settings,
   HelpCircle,
+  FileText, // ✅ for Projects
 } from "lucide-react";
 
 export default function MentorDashboard() {
@@ -34,17 +35,35 @@ export default function MentorDashboard() {
     if (!checking && !uid) navigate("/signin");
   }, [checking, uid, navigate]);
 
-  const links = [
-    { name: "Dashboard", path: "/mentor-dashboard", icon: <LayoutDashboard /> },
-    { name: "Messages", path: "/mentor-dashboard/messages", icon: <MessageCircle /> },
-    { name: "Bookings", path: "/mentor-dashboard/bookings", icon: <CalendarCheck /> },
-    { name: "Requests", path: "/mentor-dashboard/requests", icon: <ClipboardList /> },
-    { name: "Availability", path: "/mentor-dashboard/availability", icon: <CalendarCheck /> },
-    { name: "Earnings", path: "/mentor-dashboard/earnings", icon: <DollarSign /> },
-    { name: "Reviews", path: "/mentor-dashboard/reviews", icon: <Star /> },
-    { name: "Settings", path: "/mentor-dashboard/settings", icon: <Settings /> },
-    { name: "Help", path: "/mentor-dashboard/help", icon: <HelpCircle /> },
-  ];
+  const links = useMemo(
+    () => [
+      { name: "Dashboard", path: "/mentor-dashboard", icon: <LayoutDashboard /> },
+      { name: "Messages", path: "/mentor-dashboard/messages", icon: <MessageCircle /> },
+      { name: "Bookings", path: "/mentor-dashboard/bookings", icon: <CalendarCheck /> },
+      { name: "Requests", path: "/mentor-dashboard/requests", icon: <ClipboardList /> },
+      { name: "Projects", path: "/mentor-dashboard/projects", icon: <FileText /> }, // ✅ NEW
+      { name: "Availability", path: "/mentor-dashboard/availability", icon: <CalendarCheck /> },
+      { name: "Earnings", path: "/mentor-dashboard/earnings", icon: <DollarSign /> },
+      { name: "Reviews", path: "/mentor-dashboard/reviews", icon: <Star /> },
+      { name: "Settings", path: "/mentor-dashboard/settings", icon: <Settings /> },
+      { name: "Help", path: "/mentor-dashboard/help", icon: <HelpCircle /> },
+    ],
+    []
+  );
+
+  // active state should match nested paths too (e.g., /mentor-dashboard/messages/123)
+  const isActive = (p) =>
+    location.pathname === p || location.pathname.startsWith(p + "/");
+
+  const onRoot = location.pathname === "/mentor-dashboard";
+
+  if (checking) {
+    return (
+      <div className="min-h-screen grid place-items-center bg-orange-50">
+        <div className="text-slate-700">Loading dashboard…</div>
+      </div>
+    );
+  }
 
   // Cards shown on the base dashboard page
   const cards = [
@@ -70,18 +89,18 @@ export default function MentorDashboard() {
       desc: "Review new client plans to accept.",
     },
     {
+      title: "Projects",
+      value: "Create & manage",
+      to: "/mentor-dashboard/projects", // ✅ NEW quick link
+      icon: <FileText className="w-6 h-6 text-orange-500" />,
+      desc: "Scopes, budgets, milestones.",
+    },
+    {
       title: "Earnings (Month)",
       value: "$1,240",
       to: "/mentor-dashboard/earnings",
       icon: <DollarSign className="w-6 h-6 text-orange-500" />,
       desc: "Track payouts and fees.",
-    },
-    {
-      title: "Reviews",
-      value: "4.9 ★",
-      to: "/mentor-dashboard/reviews",
-      icon: <Star className="w-6 h-6 text-orange-500" />,
-      desc: "See feedback & improve your profile.",
     },
     {
       title: "Availability",
@@ -92,21 +111,13 @@ export default function MentorDashboard() {
     },
   ];
 
-  if (checking) {
-    return (
-      <div className="min-h-screen grid place-items-center bg-orange-50">
-        <div className="text-slate-700">Loading dashboard…</div>
-      </div>
-    );
-  }
-
-  const onRoot = location.pathname === "/mentor-dashboard";
-
   return (
     <div className="min-h-screen flex bg-orange-50 font-manrope">
       {/* Sidebar */}
       <aside className="w-72 bg-white border-r border-orange-100 shadow-2xl px-6 py-10 sticky top-0 hidden md:block">
-        <h2 className="text-2xl font-bold text-orange-600 mb-10 tracking-tight">Mentor Dashboard</h2>
+        <h2 className="text-2xl font-bold text-orange-600 mb-10 tracking-tight">
+          Mentor Dashboard
+        </h2>
         <nav className="space-y-3">
           {links.map((link) => (
             <Link
@@ -114,7 +125,7 @@ export default function MentorDashboard() {
               to={link.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition text-base font-semibold
                 ${
-                  location.pathname === link.path
+                  isActive(link.path)
                     ? "bg-orange-100 text-orange-700 shadow-sm"
                     : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                 }`}
@@ -136,27 +147,21 @@ export default function MentorDashboard() {
                 Welcome back, Coach
               </h1>
               <p className="text-slate-600 mt-2">
-                Manage requests, bookings, and earnings—all in one place.
+                Manage requests, projects, bookings, and earnings — all in one place.
               </p>
             </div>
 
-            {/* Cards grid (How-It-Works style glass cards) */}
+            {/* Cards grid */}
             <motion.div
               className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
               initial="hidden"
               animate="visible"
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.08 } },
-              }}
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
             >
               {cards.map((c) => (
                 <motion.div
                   key={c.title}
-                  variants={{
-                    hidden: { opacity: 0, y: 18 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
+                  variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0 } }}
                 >
                   <Link
                     to={c.to}
@@ -193,7 +198,7 @@ export default function MentorDashboard() {
           </>
         )}
 
-        {/* Nested routes render here */}
+        {/* Nested routes render here (Messages, Projects, etc.) */}
         <Outlet />
       </main>
     </div>

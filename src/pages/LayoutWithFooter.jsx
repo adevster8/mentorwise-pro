@@ -1,17 +1,24 @@
 import { Outlet } from "react-router-dom";
-import Footer from "../components/Footer";
 import NewsletterSection from "../components/NewsletterSection";
-import BottomPanelArt from "../components/BottomPanelArt"; // or BodyPanelArt
-
+import Footer from "../components/Footer";
+import BottomPanelArt from "../components/BottomPanelArt";
 
 export default function LayoutWithFooter() {
-  
   return (
-    <>
-      <Outlet />               {/* Main page content goes here */}
-     <NewsletterSection />    {/* Newsletter signup */}
-     <BottomPanelArt />       {/* Art tile */}
-     <Footer />               {/* Footer */}
-    </>
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* Page content */}
+      <main className="flex-1">
+        <Outlet />
+      </main>
+
+      {/* Keep your sitewide newsletter above the footer (unchanged) */}
+      <NewsletterSection />
+
+      {/* Decorative Bottom Panel - top-cropped art shown on ALL pages */}
+      <BottomPanelArt />
+
+      {/* Footer (unchanged) */}
+      <Footer />
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export default function NewsletterSection() {
   return (
-    <section className="bg-blue-100 py-24 px-6 -mb-1">
+    <section className="bg-sky-50 py-24 px-6 -mb-1">
       <div className="max-w-7xl mx-auto text-center">
         <motion.h2
           className="text-4xl font-bold text-orange-600 mb-6 font-manrope"

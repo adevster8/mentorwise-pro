@@ -28,7 +28,7 @@ import MentorSetup from "./pages/MentorSetup";
 import Locals from "./pages/Locals";
 
 // How It Works pages
-import HowItWorks from "./pages/HowItWorks";              // main /how-it-works
+import HowItWorks from "./pages/HowItWorks";              // /how-it-works
 import HowItWorksClients from "./pages/HowItWorksClients"; // /how-it-works/clients
 import HowItWorksCoaches from "./pages/HowItWorksCoaches"; // /how-it-works/coaches
 
@@ -52,7 +52,8 @@ import Invite from "./pages/UserDashboard/Invite";
 import Logout from "./pages/UserDashboard/Logout";
 import BecomeMentorDash from "./pages/UserDashboard/BecomeMentorDash";
 import Settings from "./pages/UserDashboard/Settings";
-
+import Projects from "./pages/UserDashboard/Projects.jsx";
+import Goals from "./pages/UserDashboard/Goals.jsx";
 
 // Mentor Dashboard
 import MentorDashboard from "./pages/MentorDashboard/MentorDashboard";
@@ -66,6 +67,7 @@ import Reviews from "./pages/MentorDashboard/Reviews";
 import MentorSettings from "./pages/MentorDashboard/Settings";
 import MentorBookings from "./pages/MentorDashboard/MentorBookings";
 import MentorMessageThread from "./pages/MentorDashboard/MessageThread";
+import MentorProjects from "./pages/MentorDashboard/Projects";
 
 export default function App() {
   return (
@@ -111,10 +113,11 @@ export default function App() {
             <Route path="messages" element={<Messages />} />
             <Route path="messages/:threadId" element={<MessageThread />} />
             <Route path="schedule" element={<Schedule />} />
-            <Route path="goals" element={<Schedule />} /> {/* replace later */}
+            <Route path="goals" element={<Goals />} />
+            <Route path="projects" element={<Projects />} />
             <Route path="billing" element={<Billing />} />
             <Route path="edit-profile" element={<EditProfile />} />
-            <Route path="favorites" element={<Profile />} /> {/* replace later */}
+            <Route path="favorites" element={<Profile />} />
             <Route path="profile" element={<Profile />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="invite" element={<Invite />} />
@@ -128,6 +131,7 @@ export default function App() {
           <Route path="/mentor-dashboard" element={<MentorDashboard />}>
             <Route path="availability" element={<Availability />} />
             <Route path="earnings" element={<Earnings />} />
+            <Route path="projects" element={<MentorProjects />} />
             <Route path="edit-profile" element={<EditMentorProfile />} />
             <Route path="help" element={<MentorHelp />} />
             <Route path="messages" element={<MentorMessages />} />

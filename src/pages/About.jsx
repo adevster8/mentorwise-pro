@@ -1,90 +1,206 @@
+import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 
-export default function About() {
-  return (
-    <div className="min-h-screen text-gray-800 flex flex-col items-center">
-      {/* Top Section */}
-      <motion.div
-        className="bg-orange-50 w-full px-4 sm:px-8 py-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start gap-16 md:gap-24">
-          {/* Text Box (left side now) */}
-          <motion.div
-            className="md:w-[52%] bg-blue-100/95 rounded-3xl shadow-2xl p-10 md:p-16 flex flex-col justify-center"
-            initial={{ x: -60, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            style={{
-              minHeight: "860px", // 2 * image height + gap
-              display: "flex",
-              alignItems: "flex-start",
-            }}
-          >
-            <h1 className="font-heading text-5xl font-extrabold text-orange-600 mb-5">
-              Why We Built MentorWise
-            </h1>
-            <div className="space-y-5">
-              <p className="font-body text-base md:text-lg leading-relaxed">
-                Life doesn't hand out roadmaps. Most of us spend years wandering, unsure if we're headed in the right direction or even how to start finding our way. At MentorWise, we knew there had to be a better option than guessing our way forward. 
-              </p>
-              <p className="font-body text-base md:text-lg leading-relaxed">
-                We created this platform because each of us remembers the turning points in our own lives, those pivotal moments when the right conversation at the right time shifted everything, and opening doors we didn't even know existed, or simply giving us the confidence to walk through them.
-              </p>
-              <p className="font-body text-base md:text-lg leading-relaxed">
-                Life doesn't hand out roadmaps. Most of us spend years wandering, unsure if we're headed in the right direction or even how to start finding our way. At MentorWise, we knew there had to be a better option than guessing our way forward. 
-              </p>
-              <p className="font-body text-base md:text-lg leading-relaxed">
-                Maybe you're feeling trapped in a job that drains you instead of filling you up, overwhelmed by choices that all seem confusing, or yearning for genuine advice from someone who's walked your path already. Whatever your story, MentorWise is here to connect you with people who get it, who have navigated similar waters, and who genuinely want to help.
-              </p>
-              <p className="font-body text-base md:text-lg leading-relaxed">
-                So bring your challenges, your questions, your uncertainties. MentorWise isn't just a website; it's a thriving network of individuals who believe deeply in the power of sharing experiences, lifting each other up, and moving forward together. Welcome home.
-              </p>
-            </div>
-          </motion.div>
-          {/* Stacked Images (right side now) */}
-          <div className="md:w-[48%] flex flex-col items-center gap-12">
-            <img
-              src="/about-photo.jpg"
-              alt="Mentorship journey"
-              className="w-full h-[420px] object-cover rounded-3xl shadow-2xl border-2 border-orange-100"
-              style={{ maxWidth: "600px" }}
-            />
-            <img
-              src="/about-2.jpg"
-              alt="Mentorship real life"
-              className="w-full h-[420px] object-cover rounded-3xl shadow-2xl border-2 border-orange-200"
-              style={{ maxWidth: "600px" }}
-            />
-          </div>
-        </div>
-      </motion.div>
+// Icons from heroicons
+import {
+  RocketLaunchIcon,
+  UserGroupIcon,
+  FlagIcon,
+  SparklesIcon,
+  AcademicCapIcon,
+  BanknotesIcon,
+} from "@heroicons/react/24/outline";
 
-      {/* Bottom Section with background tone */}
-      <motion.div
-        className="bg-orange-100 px-6 py-24 w-full"
-        initial={{ y: 30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-      >
-        <div className="max-w-5xl mx-auto text-center space-y-6">
-          <h2 className="font-heading text-4xl font-bold text-orange-500">
-            Everyone deserves a mentor.
-          </h2>
-          <p className="font-body text-base md:text-lg leading-relaxed text-gray-700">
-            You don’t need to “fix yourself” before you reach out. You don’t need all the answers. You just need the willingness to begin. And someone who gets it.
-          </p>
-          <motion.a
-            href="/mentors"
-            className="inline-block mt-8 bg-orange-500 text-white px-8 py-4 rounded-xl hover:bg-orange-600 transition text-lg font-semibold font-heading"
-            whileHover={{ scale: 1.05 }}
-          >
-            Find Your Mentor
-          </motion.a>
-        </div>
-      </motion.div>
-    </div>
+// Helper for animations
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1], delay },
+});
+
+// The main About component
+export default function About() {
+  const learnerSteps = [
+    {
+      icon: FlagIcon,
+      title: "State Your Goal",
+      description: "Tell us what you want to achieve—launch a podcast, learn to code, change careers, etc.",
+    },
+    {
+      icon: RocketLaunchIcon,
+      title: "Partner with an Expert",
+      description: "We'll match you with a vetted mentor who has the exact experience you need.",
+    },
+    {
+      icon: SparklesIcon,
+      title: "Achieve Your Outcome",
+      description: "Work together through a clear, step-by-step plan to get real, tangible results.",
+    },
+  ];
+
+  const expertSteps = [
+    {
+      icon: AcademicCapIcon,
+      title: "Offer Your Expertise",
+      description: "Package your skills into flexible offers like goal-based plans, retainers, or one-time gigs.",
+    },
+    {
+      icon: UserGroupIcon,
+      title: "Connect with Clients",
+      description: "Get matched with motivated learners who are ready to invest in achieving their goals.",
+    },
+    {
+      icon: BanknotesIcon,
+      title: "Grow Your Business",
+      description: "Build a sustainable coaching business with low fees and tools designed for long-term success.",
+    },
+  ];
+
+  return (
+    <motion.div
+      className="min-h-screen bg-orange-50/70 text-slate-700 overflow-x-hidden font-lato"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, ease: "easeInOut" }}
+    >
+      <Helmet>
+        <title>About Us | The MentorWise Mission</title>
+        <meta
+          name="description"
+          content="Learn why we built MentorWise—a platform dedicated to connecting learners with expert mentors to build skills and achieve real-world goals."
+        />
+      </Helmet>
+
+      <main role="main">
+        {/* 1) Hero Section */}
+        <section className="bg-white py-20 md:py-28 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <motion.p {...fadeUp(0)} className="text-base font-semibold text-orange-600 uppercase tracking-wider">Our Mission</motion.p>
+            <motion.h1 
+              {...fadeUp(0.1)} 
+              className="mt-4 text-4xl md:text-6xl font-extrabold text-slate-800 font-manrope leading-tight"
+            >
+              Guidance shouldn't be a <br className="hidden md:inline" /> luxury. It should be a given.
+            </motion.h1>
+            <motion.p 
+              {...fadeUp(0.2)} 
+              className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-600 leading-relaxed"
+            >
+              We built MentorWise because we believe everyone deserves a clear path forward. Life doesn't hand out roadmaps, so we decided to create them, connecting people who have the knowledge with those who seek it.
+            </motion.p>
+          </div>
+        </section>
+
+        {/* 2) "Why We Built MentorWise" Section */}
+        <section className="py-20 md:py-24 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            <motion.div className="lg:w-1/2" {...fadeUp(0)}>
+              <img
+                src="/about-photo.jpg"
+                alt="Two people collaborating on a project"
+                className="w-full h-auto object-cover rounded-3xl shadow-2xl border-2 border-white"
+              />
+            </motion.div>
+            <motion.div className="lg:w-1/2" {...fadeUp(0.2)}>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 font-manrope">Why We Built MentorWise</h2>
+              <div className="mt-6 space-y-5 text-base md:text-lg text-slate-600 leading-relaxed">
+                <p>
+                  Each of us remembers the turning points in our own lives—those pivotal moments when the right conversation at the right time shifted everything, opening doors we didn't even know existed.
+                </p>
+                <p>
+                  Maybe you're feeling trapped in a job that drains you, overwhelmed by choices, or yearning for genuine advice from someone who's walked your path already. Whatever your story, MentorWise is here to connect you with people who get it.
+                </p>
+                <p>
+                  This isn't just a website; it's a community built on the power of sharing experience, lifting each other up, and moving forward, together.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* 3) "How It Works" for Both Sides */}
+        <section className="bg-white py-20 md:py-28 px-4 sm:px-6 lg:px-8 border-y border-orange-200/60">
+            <div className="max-w-7xl mx-auto">
+                <div className="text-center mb-16">
+                    <motion.h2 {...fadeUp(0)} className="text-4xl md:text-5xl font-extrabold text-slate-800 font-manrope">A Platform for Progress</motion.h2>
+                    <motion.p {...fadeUp(0.1)} className="mt-4 max-w-3xl mx-auto text-lg text-slate-600">
+                        We provide a clear, structured path to success for both learners seeking guidance and experts ready to share their knowledge.
+                    </motion.p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+                    {/* For Learners */}
+                    <motion.div {...fadeUp(0.2)}>
+                        <div className="p-8 bg-orange-50/50 rounded-3xl border border-orange-200/80 h-full">
+                            <h3 className="text-2xl font-bold text-orange-600 font-manrope mb-6">For Learners</h3>
+                            <ul className="space-y-6">
+                                {learnerSteps.map((step, index) => (
+                                    <li key={index} className="flex items-start gap-4">
+                                        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white rounded-xl shadow-md ring-1 ring-orange-200">
+                                            <step.icon className="w-7 h-7 text-orange-600" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-800 text-lg">{step.title}</h4>
+                                            <p className="text-slate-600">{step.description}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </motion.div>
+
+                    {/* For Experts */}
+                    <motion.div {...fadeUp(0.3)}>
+                        <div className="p-8 bg-slate-800 rounded-3xl h-full">
+                            <h3 className="text-2xl font-bold text-white font-manrope mb-6">For Experts</h3>
+                             <ul className="space-y-6">
+                                {expertSteps.map((step, index) => (
+                                    <li key={index} className="flex items-start gap-4">
+                                        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-slate-700 rounded-xl shadow-md ring-1 ring-slate-600">
+                                            <step.icon className="w-7 h-7 text-orange-400" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-white text-lg">{step.title}</h4>
+                                            <p className="text-slate-400">{step.description}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+        </section>
+
+        {/* 4) Final CTA */}
+        <section className="py-24 px-6 text-center">
+            <motion.div {...fadeUp(0)}>
+                <h2 className="font-heading text-4xl font-bold text-slate-800">
+                    Everyone deserves a guide.
+                </h2>
+                <p className="font-body text-lg md:text-xl leading-relaxed text-slate-600 max-w-2xl mx-auto mt-4">
+                    You don’t need to have all the answers. You just need the willingness to begin.
+                </p>
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link
+                        to="/mentors"
+                        className="inline-block w-full sm:w-auto bg-orange-600 text-white px-8 py-4 rounded-xl hover:bg-orange-700 transition text-lg font-semibold font-heading shadow-lg hover:shadow-xl"
+                    >
+                        Find Your Mentor
+                    </Link>
+                    <Link
+                        to="/how-it-works-coaches"
+                        className="inline-block w-full sm:w-auto bg-white text-orange-600 px-8 py-4 rounded-xl hover:bg-orange-100/50 transition text-lg font-semibold font-heading border border-orange-300 shadow-lg hover:shadow-xl"
+                    >
+                        Become an Expert
+                    </Link>
+                </div>
+            </motion.div>
+        </section>
+
+      </main>
+    </motion.div>
   );
 }

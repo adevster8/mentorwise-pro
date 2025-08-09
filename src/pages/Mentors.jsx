@@ -9,6 +9,50 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const AVATAR_FALLBACK = "/default-avatar.png";
 
+/* --- helpers --- */
+const getLabel = (obj) =>
+  obj?.title ?? obj?.name ?? obj?.label ?? obj?.category ?? "";
+
+/** Small chevron (no extra deps) */
+function Chevron({ open, className = "w-4 h-4" }) {
+  return (
+    <motion.svg
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      initial={false}
+      animate={{ rotate: open ? 180 : 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <path
+        fillRule="evenodd"
+        d="M5.23 7.21a.75.75 0 011.06.02L10 11.085l3.71-3.854a.75.75 0 111.08 1.04l-4.24 4.4a.75.75 0 01-1.08 0l-4.24-4.4a.75.75 0 01.02-1.06z"
+        clipRule="evenodd"
+      />
+    </motion.svg>
+  );
+}
+
+/** Collapsible with height animation */
+function Collapsible({ isOpen, children }) {
+  return (
+    <AnimatePresence initial={false}>
+      {isOpen && (
+        <motion.div
+          key="content"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.22 }}
+          className="overflow-hidden"
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function Mentors() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -20,6 +64,36 @@ export default function Mentors() {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [isRelated, setIsRelated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // dropdown state
+  const [openCats, setOpenCats] = useState({});     // { [cIdx]: boolean }
+  const [openTopics, setOpenTopics] = useState({}); // { [`c-t`]: boolean }
+
+  const toggleCat = (cIdx) =>
+    setOpenCats((s) => ({ ...s, [cIdx]: !s[cIdx] }));
+
+  const toggleTopic = (cIdx, tIdx) => {
+    const key = `${cIdx}-${tIdx}`;
+    setOpenTopics((s) => ({ ...s, [key]: !s[key] }));
+  };
+
+  const expandAll = () => {
+    const cats = {};
+    const topics = {};
+    megaMenuData.forEach((cat, cIdx) => {
+      cats[cIdx] = true;
+      (cat.topics || []).forEach((_, tIdx) => {
+        topics[`${cIdx}-${tIdx}`] = true;
+      });
+    });
+    setOpenCats(cats);
+    setOpenTopics(topics);
+  };
+
+  const collapseAll = () => {
+    setOpenCats({});
+    setOpenTopics({});
+  };
 
   // Load mentors (live + mock fallback)
   useEffect(() => {
@@ -113,41 +187,126 @@ export default function Mentors() {
     return Array.from(set).sort();
   }, [allMentors]);
 
+  // Auto-open the category/topic that contains the selected query filter
+  useEffect(() => {
+    const target = selectedFilter || selectedTopic;
+    if (!target) return;
+
+    let nextCats = { ...openCats };
+    let nextTopics = { ...openTopics };
+
+    megaMenuData.forEach((cat, cIdx) => {
+      (cat.topics || []).forEach((topic, tIdx) => {
+        const tLabel = getLabel(topic)?.toLowerCase();
+        const matchTopic = tLabel === target.toLowerCase();
+        const matchSub = (topic.subtopics || []).some(
+          (s) => (s.name || "").toLowerCase() === target.toLowerCase()
+        );
+        if (matchTopic || matchSub) {
+          nextCats[cIdx] = true;
+          nextTopics[`${cIdx}-${tIdx}`] = true;
+        }
+      });
+    });
+
+    setOpenCats(nextCats);
+    setOpenTopics(nextTopics);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFilter, selectedTopic]);
+
   return (
     <div className="flex w-full min-h-screen bg-orange-50 py-16 px-4 sm:px-6 lg:px-8">
-      {/* === SIDEBAR === */}
+      {/* === SIDEBAR (dropdowns) === */}
       <aside className="w-64 hidden lg:block pr-8">
         <div className="sticky top-24 space-y-4">
-          <h3 className="text-xl font-bold text-gray-800 mb-2 font-manrope">Filter by Topic</h3>
-          <div className="space-y-2">
-            {megaMenuData.map((cat, cIdx) => (
-              <div key={`cat-${cIdx}-${cat.title}`}>
-                <p className="font-semibold text-sm text-gray-500 uppercase tracking-wide">
-                  {cat.title}
-                </p>
-                {cat.topics.map((topic, tIdx) => (
-                  <div key={`topic-${cIdx}-${tIdx}-${topic.title}`} className="ml-2 mt-1">
-                    <p className="font-medium text-gray-600 text-sm">{topic.title}</p>
-                    {topic.subtopics.map((sub, sIdx) => (
-                      <button
-                        key={`sub-${cIdx}-${tIdx}-${sIdx}-${sub.name}`}
-                        onClick={() => setSelectedFilter(sub.name)}
-                        className={`block text-left w-full px-4 py-1.5 rounded-md text-sm font-medium transition mt-1 ml-2 ${
-                          selectedFilter === sub.name
-                            ? "bg-orange-500 text-white shadow"
-                            : "bg-white text-gray-700 hover:bg-orange-100"
-                        }`}
-                      >
-                        {sub.name}
-                      </button>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ))}
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold text-gray-800 font-manrope">
+              Filter by <span className="sr-only">Topic</span> Topic
+            </h3>
+            <div className="text-xs text-gray-500 space-x-2">
+              <button onClick={expandAll} className="underline hover:text-gray-700">
+                Expand all
+              </button>
+              <button onClick={collapseAll} className="underline hover:text-gray-700">
+                Collapse all
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {megaMenuData.map((cat, cIdx) => {
+              const catOpen = !!openCats[cIdx];
+              const catLabel = getLabel(cat) || `Category ${cIdx + 1}`;
+              return (
+                <div
+                  key={`cat-${cIdx}-${catLabel}`}
+                  className="rounded-lg bg-white border border-gray-200 shadow-sm"
+                >
+                  {/* Category header */}
+                  <button
+                    onClick={() => toggleCat(cIdx)}
+                    className="w-full flex items-center justify-between px-3 py-2 text-left"
+                    aria-expanded={catOpen}
+                  >
+                    <span className="font-semibold text-sm text-gray-800 tracking-wide truncate">
+                      {catLabel}
+                    </span>
+                    <span className="text-gray-500">
+                      <Chevron open={catOpen} />
+                    </span>
+                  </button>
+
+                  {/* Category body */}
+                  <Collapsible isOpen={catOpen}>
+                    <div className="px-2 pb-2">
+                      {(cat.topics || []).map((topic, tIdx) => {
+                        const key = `${cIdx}-${tIdx}`;
+                        const topicOpen = !!openTopics[key];
+                        const topicLabel = getLabel(topic) || `Topic ${tIdx + 1}`;
+                        return (
+                          <div key={`topic-${key}-${topicLabel}`} className="rounded-md">
+                            {/* Topic header */}
+                            <button
+                              onClick={() => toggleTopic(cIdx, tIdx)}
+                              className="w-full flex items-center justify-between text-sm font-medium text-gray-700 px-2 py-2 hover:bg-orange-50 rounded-md"
+                              aria-expanded={topicOpen}
+                            >
+                              <span className="truncate">{topicLabel}</span>
+                              <span className="text-gray-400">
+                                <Chevron open={topicOpen} className="w-3.5 h-3.5" />
+                              </span>
+                            </button>
+
+                            {/* Subtopics */}
+                            <Collapsible isOpen={topicOpen}>
+                              <div className="pl-2 pb-2">
+                                {(topic.subtopics || []).map((sub, sIdx) => (
+                                  <button
+                                    key={`sub-${key}-${sIdx}-${sub.name || sIdx}`}
+                                    onClick={() => setSelectedFilter(sub.name)}
+                                    className={`block text-left w-full px-3 py-1.5 rounded-md text-sm font-medium transition mt-1 ml-2 ${
+                                      selectedFilter === sub.name
+                                        ? "bg-orange-500 text-white shadow"
+                                        : "bg-white text-gray-700 hover:bg-orange-100"
+                                    }`}
+                                  >
+                                    {sub.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </Collapsible>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Collapsible>
+                </div>
+              );
+            })}
+
             <button
               onClick={() => setSelectedFilter(null)}
-              className="block text-left w-full mt-4 px-4 py-2 text-sm rounded-md bg-gray-200 hover:bg-gray-300 font-medium text-gray-800"
+              className="block text-left w-full mt-1 px-4 py-2 text-sm rounded-md bg-gray-200 hover:bg-gray-300 font-medium text-gray-800"
             >
               Clear Filter
             </button>
@@ -193,7 +352,7 @@ export default function Mentors() {
           />
         </motion.div>
 
-        {/* Top Category Filter Bar */}
+        {/* Top chips */}
         <motion.div
           className="flex flex-wrap justify-center gap-3 mb-12"
           initial={{ opacity: 0 }}

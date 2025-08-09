@@ -8,7 +8,7 @@ export default function MegaMenuNavbar() {
 const [openCategory, setOpenCategory] = useState(null);
 
 return (
-<div className="bg-white text-slate-900 shadow-sm border-b border-slate-200 w-full font-lato z-[998] relative hidden md:block">
+<div className="bg-sky-50 text-slate-900 shadow-sm border-b border-slate-200 w-full font-lato z-[998] relative hidden md:block">
 <nav className="flex items-center justify-between h-14 px-6 w-full max-w-full">
 {/* Categories */}
 <div className="flex justify-between flex-grow mx-6">
