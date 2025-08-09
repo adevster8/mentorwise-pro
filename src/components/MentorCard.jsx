@@ -1,5 +1,3 @@
-// src/components/MentorCard.jsx
-
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -28,9 +26,9 @@ export default function MentorCard({ mentor }) {
       <p className="text-sm text-orange-600 mb-3 font-semibold">{mentor.title || "Mentor"}</p>
       
       <div className="flex flex-wrap justify-center gap-1.5 mb-4 h-12 overflow-hidden">
-        {mentor.specialties?.slice(0, 3).map((topic) => (
+        {mentor.specialties?.slice(0, 3).map((topic, idx) => (
           <span
-            key={topic}
+            key={idx}
             className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-medium"
           >
             {topic}
@@ -40,9 +38,16 @@ export default function MentorCard({ mentor }) {
 
       <Link
         to={`/mentors/${mentor.id}`}
-        className="mt-auto w-full text-center px-6 py-2.5 bg-orange-500 text-white rounded-lg font-bold text-sm hover:bg-orange-600 shadow-md hover:shadow-lg transition-all"
+        className="w-full text-center px-6 py-2.5 bg-orange-500 text-white rounded-lg font-bold text-sm hover:bg-orange-600 shadow-md hover:shadow-lg transition-all"
       >
         View Profile
+      </Link>
+
+      <Link
+        to={`/message-mentor?mentorId=${mentor.uid || mentor.id}`}
+        className="mt-3 w-full text-center px-6 py-2.5 bg-blue-100 text-gray-900 rounded-lg font-bold text-sm hover:bg-blue-200 shadow-md hover:shadow-lg transition-all flex justify-center items-center"
+      >
+        Send Message
       </Link>
     </motion.div>
   );

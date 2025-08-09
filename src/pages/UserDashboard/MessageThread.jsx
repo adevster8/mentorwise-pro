@@ -4,65 +4,62 @@ import { db, auth } from "../../firebase";
 import {
   collection,
   query,
-  where,
   orderBy,
   onSnapshot,
   addDoc,
   serverTimestamp,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
-
 export default function MessageThread() {
-  const { threadId } = useParams(); // URL param for thread
+  const { threadId } = useParams();
   const [messages, setMessages] = useState([]);
   const [userId, setUserId] = useState(null);
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setUserId(user.uid);
-    } else {
-      setUserId(null);
-    }
-  });
-  return () => unsubscribe();
-}, []);
+    const unsub = onAuthStateChanged(auth, (user) => setUserId(user?.uid || null));
+    return unsub;
+  }, []);
 
-// 2. Listen for real-time messages for this thread
-useEffect(() => {
-  if (!threadId) return; // Don't run if there's no thread
-  const q = query(
-    collection(db, "messages"),
-    where("threadId", "==", threadId),
-    orderBy("timestamp")
-  );
-  const unsubscribe = onSnapshot(q, (snapshot) => {
-    setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  });
-  return () => unsubscribe();
-}, [threadId]);
-
-  // Auto-scroll to newest message
+  // listen to /threads/{threadId}/messages
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    if (!threadId) return;
+    const q = query(
+      collection(db, "threads", threadId, "messages"),
+      orderBy("createdAt", "asc")
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+    return unsub;
+  }, [threadId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Send a message
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim() || !userId) return;
-    await addDoc(collection(db, "messages"), {
-      threadId,
+    if (!message.trim() || !userId || !threadId) return;
+
+    // write message to subcollection
+    await addDoc(collection(db, "threads", threadId, "messages"), {
+      text: message.trim(),
       senderId: userId,
-      text: message,
-      timestamp: Date.now(),
-      read: false, // mark as unread for recipient
+      createdAt: serverTimestamp(),
+      readBy: [userId],
     });
+
+    // update thread summary
+    await updateDoc(doc(db, "threads", threadId), {
+      lastMessage: { text: message.trim(), senderId: userId, createdAt: serverTimestamp() },
+      updatedAt: serverTimestamp(),
+    });
+
     setMessage("");
   };
 
@@ -77,22 +74,16 @@ useEffect(() => {
             messages.map(msg => (
               <div
                 key={msg.id}
-                className={`flex ${
-                  msg.senderId === userId ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`px-4 py-2 rounded-2xl shadow text-base max-w-xs ${
-                    msg.senderId === userId
-                      ? "bg-orange-100 text-orange-800"
-                      : "bg-gray-100 text-gray-700"
+                    msg.senderId === userId ? "bg-orange-100 text-orange-800" : "bg-gray-100 text-gray-700"
                   }`}
                 >
                   {msg.text}
                   <div className="text-xs text-gray-400 mt-1 text-right">
-                    {msg.timestamp
-                      ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                      : ""}
+                    {msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
                   </div>
                 </div>
               </div>
@@ -100,7 +91,7 @@ useEffect(() => {
           )}
           <div ref={messagesEndRef} />
         </div>
-        {/* Message send box */}
+
         <form onSubmit={handleSend} className="flex gap-2 mt-2">
           <input
             type="text"
@@ -110,10 +101,7 @@ useEffect(() => {
             placeholder="Type your message…"
             autoFocus
           />
-          <button
-            type="submit"
-            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-xl font-semibold shadow"
-          >
+          <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-xl font-semibold shadow">
             Send
           </button>
         </form>

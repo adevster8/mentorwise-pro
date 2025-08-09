@@ -4,6 +4,7 @@ import { auth, db } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
+
 import {
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
@@ -77,7 +78,12 @@ export default function Navbar() {
 
         {/* Desktop nav links */}
         <div className="hidden md:flex space-x-20 text-lg tracking-wide items-center">
-          <Link to="/" className="text-white hover:text-orange-400 font-semibold transition-colors">Home</Link>
+<Link
+  to="/how-it-works"
+  className="text-white hover:text-orange-400 font-semibold transition-colors"
+>
+  How It Works
+</Link>
           <Link to="/mentors" className="text-white hover:text-orange-400 font-semibold transition-colors">Mentors</Link>
           <Link to="/become-a-mentor" className="text-white hover:text-orange-400 font-semibold transition-colors">Become a Mentor</Link>
           <Link to="/schedule-a-call" className="text-white hover:text-orange-400 font-semibold transition-colors">Schedule a Call</Link>
