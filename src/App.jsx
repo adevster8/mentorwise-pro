@@ -4,10 +4,10 @@ import { Routes, Route } from "react-router-dom";
 
 // Core Components
 import Navbar from "./components/Navbar";
-import LayoutWithFooter from "./pages/LayoutWithFooter";
 import PasswordGate from "./components/PasswordGate";
+import LayoutWithFooter from "./pages/LayoutWithFooter";
 
-// Public Pages
+// Public pages
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -18,7 +18,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ScheduleCall from "./pages/ScheduleCall";
 import BookingConfirmation from "./pages/BookingConfirmation";
-import MessageMentor from "./pages/MessageMentor"; // <-- ONLY ONCE
+import MessageMentor from "./pages/MessageMentor";
 import FAQ from "./pages/FAQ";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -27,12 +27,12 @@ import Blog from "./pages/Blog";
 import MentorSetup from "./pages/MentorSetup";
 import Locals from "./pages/Locals";
 
-// How It Works pages
-import HowItWorks from "./pages/HowItWorks";              // /how-it-works
-import HowItWorksClients from "./pages/HowItWorksClients"; // /how-it-works/clients
-import HowItWorksCoaches from "./pages/HowItWorksCoaches"; // /how-it-works/coaches
+// How It Works
+import HowItWorks from "./pages/HowItWorks";
+import HowItWorksClients from "./pages/HowItWorksClients";
+import HowItWorksCoaches from "./pages/HowItWorksCoaches";
 
-// RealTalk Pages
+// RealTalk
 import RealTalkHome from "./pages/RealTalkPages/RealTalkHome";
 import RealTalkThread from "./pages/RealTalkPages/RealTalkThread";
 import RealTalkNewPost from "./pages/RealTalkPages/RealTalkNewPost";
@@ -40,20 +40,20 @@ import RealTalkCategory from "./pages/RealTalkPages/RealTalkCategory";
 
 // User Dashboard
 import UserDashboard from "./pages/UserDashboard/UserDashboard";
-import Messages from "./pages/UserDashboard/Messages";
-import MessageThread from "./pages/UserDashboard/MessageThread";
+import UserMessages from "./pages/UserDashboard/Messages";
+import UserMessageThread from "./pages/UserDashboard/MessageThread";
 import Profile from "./pages/UserDashboard/Profile";
 import Billing from "./pages/UserDashboard/Billing";
 import Schedule from "./pages/UserDashboard/Schedule";
 import Bookings from "./pages/UserDashboard/Bookings";
 import EditProfile from "./pages/UserDashboard/EditProfile";
-import Help from "./pages/UserDashboard/Help";
+import UserHelp from "./pages/UserDashboard/Help";
 import Invite from "./pages/UserDashboard/Invite";
 import Logout from "./pages/UserDashboard/Logout";
 import BecomeMentorDash from "./pages/UserDashboard/BecomeMentorDash";
-import Settings from "./pages/UserDashboard/Settings";
-import Projects from "./pages/UserDashboard/Projects.jsx";
-import Goals from "./pages/UserDashboard/Goals.jsx";
+import UserSettings from "./pages/UserDashboard/Settings";
+import Projects from "./pages/UserDashboard/Projects";
+import Goals from "./pages/UserDashboard/Goals";
 
 // Mentor Dashboard
 import MentorDashboard from "./pages/MentorDashboard/MentorDashboard";
@@ -75,7 +75,7 @@ export default function App() {
       <PasswordGate>
         <Navbar />
         <Routes>
-          {/* Public Pages (nested under layout, use RELATIVE paths) */}
+          {/* Public Pages */}
           <Route element={<LayoutWithFooter />}>
             <Route path="/" element={<Home />} />
             <Route path="about" element={<About />} />
@@ -103,15 +103,18 @@ export default function App() {
 
             {/* RealTalk */}
             <Route path="realtalk" element={<RealTalkHome />} />
-            <Route path="realtalk/category/:categoryName" element={<RealTalkCategory />} />
+            <Route
+              path="realtalk/category/:categoryName"
+              element={<RealTalkCategory />}
+            />
             <Route path="realtalk/thread/:threadId" element={<RealTalkThread />} />
             <Route path="realtalk/new" element={<RealTalkNewPost />} />
           </Route>
 
           {/* User Dashboard */}
           <Route path="/dashboard" element={<UserDashboard />}>
-            <Route path="messages" element={<Messages />} />
-            <Route path="messages/:threadId" element={<MessageThread />} />
+            <Route path="messages" element={<UserMessages />} />
+            <Route path="messages/:threadId" element={<UserMessageThread />} />
             <Route path="schedule" element={<Schedule />} />
             <Route path="goals" element={<Goals />} />
             <Route path="projects" element={<Projects />} />
@@ -123,8 +126,8 @@ export default function App() {
             <Route path="invite" element={<Invite />} />
             <Route path="logout" element={<Logout />} />
             <Route path="become-mentor" element={<BecomeMentorDash />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="help" element={<Help />} />
+            <Route path="settings" element={<UserSettings />} />
+            <Route path="help" element={<UserHelp />} />
           </Route>
 
           {/* Mentor Dashboard */}
