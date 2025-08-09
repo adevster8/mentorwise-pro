@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
@@ -14,18 +15,24 @@ import {
   XMarkIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+
 import MegaMenuNavbar from "./MegaMenuNavbar";
 import { megaMenuData } from "../data/megaMenuData";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false); // user avatar menu
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [openCategoryIdx, setOpenCategoryIdx] = useState(null);
+
+  const [openCategoryIdx, setOpenCategoryIdx] = useState(null); // mobile mega accordion
+  const [howOpen, setHowOpen] = useState(false); // How It Works dropdown (desktop)
+
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
+  // Auth state
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -39,6 +46,7 @@ export default function Navbar() {
     return () => unsub();
   }, []);
 
+  // Close avatar dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -71,6 +79,7 @@ export default function Navbar() {
     <>
       {/* Top nav */}
       <nav className="bg-gray-900 px-4 md:px-6 h-20 flex justify-between items-center sticky top-0 z-[999] shadow-lg">
+        {/* Brand */}
         <Link to="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
           <img src="/Compass.png" alt="MentorWise Logo" className="w-10 h-10 object-contain" />
           <h1 className="text-2xl sm:text-3xl font-bold text-orange-600">MentorWise</h1>
@@ -78,16 +87,58 @@ export default function Navbar() {
 
         {/* Desktop nav links */}
         <div className="hidden md:flex space-x-20 text-lg tracking-wide items-center">
-<Link
-  to="/how-it-works"
-  className="text-white hover:text-orange-400 font-semibold transition-colors"
->
-  How It Works
-</Link>
-          <Link to="/mentors" className="text-white hover:text-orange-400 font-semibold transition-colors">Mentors</Link>
-          <Link to="/become-a-mentor" className="text-white hover:text-orange-400 font-semibold transition-colors">Become a Mentor</Link>
-          <Link to="/schedule-a-call" className="text-white hover:text-orange-400 font-semibold transition-colors">Schedule a Call</Link>
-          <Link to="/locals" className="text-white hover:text-orange-400 font-semibold transition-colors">Locals</Link>
+          {/* How It Works (main link + hover dropdown) */}
+          <div
+            className="relative"
+            onMouseEnter={() => setHowOpen(true)}
+            onMouseLeave={() => setHowOpen(false)}
+          >
+            <Link
+              to="/how-it-works"
+              className="text-white hover:text-orange-400 font-semibold transition-colors inline-flex items-center gap-1"
+            >
+              How It Works
+              <ChevronDownIcon className={`w-4 h-4 ${howOpen ? "text-orange-400" : ""}`} />
+            </Link>
+
+            <AnimatePresence>
+              {howOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="absolute left-0 mt-3 w-56 rounded-xl border border-white/10 bg-white/90 backdrop-blur-md shadow-2xl p-2"
+                >
+                  <Link
+                    to="/how-it-works/clients"
+                    className="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-orange-50"
+                  >
+                    For Clients
+                  </Link>
+                  <Link
+                    to="/how-it-works/coaches"
+                    className="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-orange-50"
+                  >
+                    For Coaches
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <Link to="/mentors" className="text-white hover:text-orange-400 font-semibold transition-colors">
+            Mentors
+          </Link>
+          <Link to="/become-a-mentor" className="text-white hover:text-orange-400 font-semibold transition-colors">
+            Become a Mentor
+          </Link>
+          <Link to="/schedule-a-call" className="text-white hover:text-orange-400 font-semibold transition-colors">
+            Get Matched
+          </Link>
+          <Link to="/locals" className="text-white hover:text-orange-400 font-semibold transition-colors">
+            Locals
+          </Link>
         </div>
 
         {/* Desktop right side */}
@@ -123,13 +174,23 @@ export default function Navbar() {
                     className="absolute right-0 mt-3 w-60 bg-gray-800 shadow-lg rounded-lg py-2 z-[9999] border border-gray-700"
                   >
                     <div className="px-4 py-2 border-b border-gray-700">
-                      <p className="text-sm text-white font-semibold truncate">{userData?.name || user?.email}</p>
+                      <p className="text-sm text-white font-semibold truncate">
+                        {userData?.name || user?.email}
+                      </p>
                       <p className="text-xs text-orange-400 capitalize">{userRole}</p>
                     </div>
-                    <Link to={dashboardPath} onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 w-full px-4 py-2 text-white hover:bg-orange-600 transition-colors">
+                    <Link
+                      to={dashboardPath}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 w-full px-4 py-2 text-white hover:bg-orange-600 transition-colors"
+                    >
                       <Squares2X2Icon className="w-5 h-5" /> Dashboard
                     </Link>
-                    <Link to={`${dashboardPath}/settings`} onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 w-full px-4 py-2 text-white hover:bg-orange-600 transition-colors">
+                    <Link
+                      to={`${dashboardPath}/settings`}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 w-full px-4 py-2 text-white hover:bg-orange-600 transition-colors"
+                    >
                       <Cog6ToothIcon className="w-5 h-5" /> Settings
                     </Link>
                     <button
@@ -144,10 +205,16 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="hidden sm:flex items-center gap-2">
-              <Link to="/signin" className="text-white hover:text-orange-400 font-bold px-4 py-2 rounded-lg transition-colors text-base">
+              <Link
+                to="/signin"
+                className="text-white hover:text-orange-400 font-bold px-4 py-2 rounded-lg transition-colors text-base"
+              >
                 Sign In
               </Link>
-              <Link to="/signup" className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded-lg transition-colors text-base">
+              <Link
+                to="/signup"
+                className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded-lg transition-colors text-base"
+              >
                 Sign Up
               </Link>
             </div>
@@ -196,19 +263,62 @@ export default function Navbar() {
 
               <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
                 <nav className="space-y-3">
-                  <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">Home</Link>
-                  <Link to="/mentors" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">Mentors</Link>
-                  <Link to="/become-a-mentor" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">Become a Mentor</Link>
-                  <Link to="/schedule-a-call" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">Schedule a Call</Link>
-                  <Link to="/locals" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">Locals</Link>
+                  <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
+                    Home
+                  </Link>
 
-                  <Link to="/realtalk" onClick={() => setMobileMenuOpen(false)} className="inline-block mt-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-bold shadow">
+                  {/* Optional: plain link to main How It Works */}
+                  <Link
+                    to="/how-it-works"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block hover:text-orange-400"
+                  >
+                    How It Works
+                  </Link>
+
+                  {/* How it works sub-links */}
+                  <div className="rounded-xl border border-gray-800 overflow-hidden">
+                    <Link
+                      to="/how-it-works/clients"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-3 hover:text-orange-400"
+                    >
+                      How It Works — Clients
+                    </Link>
+                    <Link
+                      to="/how-it-works/coaches"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-3 hover:text-orange-400"
+                    >
+                      How It Works — Coaches
+                    </Link>
+                  </div>
+
+                  <Link to="/mentors" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
+                    Mentors
+                  </Link>
+                  <Link to="/become-a-mentor" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
+                    Become a Mentor
+                  </Link>
+                  <Link to="/schedule-a-call" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
+                    Schedule a Call
+                  </Link>
+                  <Link to="/locals" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
+                    Locals
+                  </Link>
+
+                  <Link
+                    to="/realtalk"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="inline-block mt-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-bold shadow"
+                  >
                     🫂 RealTalk
                   </Link>
                 </nav>
 
                 <div className="border-t border-gray-800 my-4" />
 
+                {/* Mobile MegaMenu accordion */}
                 <div>
                   <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Browse Categories</p>
                   <ul className="space-y-1">
@@ -262,22 +372,39 @@ export default function Navbar() {
                   </ul>
                 </div>
 
+                {/* Auth buttons / links */}
                 <div className="mt-4">
                   {!user ? (
                     <div className="flex gap-3">
-                      <Link to="/signin" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700">
+                      <Link
+                        to="/signin"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700"
+                      >
                         Sign In
                       </Link>
-                      <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white">
+                      <Link
+                        to="/signup"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white"
+                      >
                         Sign Up
                       </Link>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Link to={dashboardPath} onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
+                      <Link
+                        to={dashboardPath}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block hover:text-orange-400"
+                      >
                         Dashboard
                       </Link>
-                      <Link to={`${dashboardPath}/settings`} onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
+                      <Link
+                        to={`${dashboardPath}/settings`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block hover:text-orange-400"
+                      >
                         Settings
                       </Link>
                       <button onClick={handleLogout} className="text-left text-red-400 hover:text-red-500">

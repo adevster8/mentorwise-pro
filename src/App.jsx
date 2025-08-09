@@ -26,8 +26,11 @@ import Support from "./pages/Support";
 import Blog from "./pages/Blog";
 import MentorSetup from "./pages/MentorSetup";
 import Locals from "./pages/Locals";
-import HowItWorks from "./pages/HowItWorks";
 
+// How It Works pages
+import HowItWorks from "./pages/HowItWorks";              // main /how-it-works
+import HowItWorksClients from "./pages/HowItWorksClients"; // /how-it-works/clients
+import HowItWorksCoaches from "./pages/HowItWorksCoaches"; // /how-it-works/coaches
 
 // RealTalk Pages
 import RealTalkHome from "./pages/RealTalkPages/RealTalkHome";
@@ -63,8 +66,6 @@ import MentorSettings from "./pages/MentorDashboard/Settings";
 import MentorBookings from "./pages/MentorDashboard/MentorBookings";
 import MentorMessageThread from "./pages/MentorDashboard/MessageThread";
 
-
-
 export default function App() {
   return (
     <HelmetProvider>
@@ -91,7 +92,11 @@ export default function App() {
             <Route path="mentor-setup" element={<MentorSetup />} />
             <Route path="locals" element={<Locals />} />
             <Route path="message-mentor" element={<MessageMentor />} />
-             <Route path="how-it-works" element={<HowItWorks />} />  
+
+            {/* How It Works */}
+            <Route path="how-it-works" element={<HowItWorks />} />
+            <Route path="how-it-works/clients" element={<HowItWorksClients />} />
+            <Route path="how-it-works/coaches" element={<HowItWorksCoaches />} />
 
             {/* RealTalk */}
             <Route path="realtalk" element={<RealTalkHome />} />
@@ -119,18 +124,18 @@ export default function App() {
           </Route>
 
           {/* Mentor Dashboard */}
-        <Route path="/mentor-dashboard" element={<MentorDashboard />}>
-  <Route path="availability" element={<Availability />} />
-  <Route path="earnings" element={<Earnings />} />
-  <Route path="edit-profile" element={<EditMentorProfile />} />
-  <Route path="help" element={<MentorHelp />} />
-  <Route path="messages" element={<MentorMessages />} />
-  <Route path="messages/:threadId" element={<MentorMessageThread />} /> {/* <-- add this */}
-  <Route path="requests" element={<Requests />} />
-  <Route path="reviews" element={<Reviews />} />
-  <Route path="settings" element={<MentorSettings />} />
-  <Route path="bookings" element={<MentorBookings />} />
-</Route>
+          <Route path="/mentor-dashboard" element={<MentorDashboard />}>
+            <Route path="availability" element={<Availability />} />
+            <Route path="earnings" element={<Earnings />} />
+            <Route path="edit-profile" element={<EditMentorProfile />} />
+            <Route path="help" element={<MentorHelp />} />
+            <Route path="messages" element={<MentorMessages />} />
+            <Route path="messages/:threadId" element={<MentorMessageThread />} />
+            <Route path="requests" element={<Requests />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="settings" element={<MentorSettings />} />
+            <Route path="bookings" element={<MentorBookings />} />
+          </Route>
         </Routes>
       </PasswordGate>
     </HelmetProvider>

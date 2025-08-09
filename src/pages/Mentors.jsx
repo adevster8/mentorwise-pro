@@ -1,5 +1,4 @@
 // src/pages/Mentors.jsx
-
 import { useEffect, useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { db } from "../firebase";
@@ -22,63 +21,94 @@ export default function Mentors() {
   const [isRelated, setIsRelated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Load mentors (live + mock fallback)
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchMentors() {
+      if (!isMounted) return;
       setIsLoading(true);
-      const q = query(collection(db, "users"), where("role", "==", "mentor"));
-      const snapshot = await getDocs(q);
-      const liveMentors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      try {
+        const q = query(collection(db, "users"), where("role", "==", "mentor"));
+        const snapshot = await getDocs(q);
+        const liveMentors = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-      const combined = [
-        ...liveMentors,
-        ...mockMentors.filter(
-          mock => !liveMentors.some(live => live.id === mock.id || (live.email && mock.email === live.email))
-        ),
-      ].map(m => ({ ...m, image: m.image || AVATAR_FALLBACK }));
+        const combined = [
+          ...liveMentors,
+          ...mockMentors.filter(
+            (mock) =>
+              !liveMentors.some(
+                (live) =>
+                  live.id === mock.id ||
+                  (live.email && mock.email && live.email === mock.email)
+              )
+          ),
+        ].map((m) => ({ ...m, image: m.image || AVATAR_FALLBACK }));
 
-      setAllMentors(combined);
-      setIsLoading(false);
+        if (isMounted) setAllMentors(combined);
+      } catch (err) {
+        console.error("Mentor fetch failed, using mock data:", err);
+        if (isMounted) {
+          const fallback = mockMentors.map((m) => ({
+            ...m,
+            image: m.image || AVATAR_FALLBACK,
+          }));
+          setAllMentors(fallback);
+        }
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
     }
 
     fetchMentors();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  // Filtering
   useEffect(() => {
     if (isLoading) return;
-
     let base = allMentors;
 
     if (selectedTopic) {
-      const exact = base.filter(m =>
-        m.specialties?.some(s => s.toLowerCase() === selectedTopic.toLowerCase())
+      const exact = base.filter((m) =>
+        m.specialties?.some((s) => s.toLowerCase() === selectedTopic.toLowerCase())
       );
-      base = exact.length > 0 ? exact : base.filter(m =>
-        m.specialties?.some(s => s.toLowerCase().includes(selectedTopic.toLowerCase()))
-      );
+      base =
+        exact.length > 0
+          ? exact
+          : base.filter((m) =>
+              m.specialties?.some((s) =>
+                s.toLowerCase().includes(selectedTopic.toLowerCase())
+              )
+            );
       setIsRelated(exact.length === 0);
     }
 
     if (selectedFilter) {
-      base = base.filter(m =>
-        m.specialties?.some(s => s.toLowerCase() === selectedFilter.toLowerCase())
+      base = base.filter((m) =>
+        m.specialties?.some((s) => s.toLowerCase() === selectedFilter.toLowerCase())
       );
     }
 
     if (searchQuery.trim() !== "") {
       const q = searchQuery.toLowerCase();
-      base = base.filter(m =>
-        m.name?.toLowerCase().includes(q) ||
-        m.specialties?.some(s => s.toLowerCase().includes(q))
+      base = base.filter(
+        (m) =>
+          m.name?.toLowerCase().includes(q) ||
+          m.specialties?.some((s) => s.toLowerCase().includes(q))
       );
     }
 
     setFilteredMentors(base);
   }, [allMentors, selectedTopic, selectedFilter, searchQuery, isLoading]);
 
+  // Build specialties list for chips
   const allSpecialties = useMemo(() => {
     const set = new Set();
-    allMentors.forEach(m => {
-      m.specialties?.forEach(s => set.add(s));
+    allMentors.forEach((m) => {
+      m.specialties?.forEach((s) => set.add(s));
     });
     return Array.from(set).sort();
   }, [allMentors]);
@@ -90,15 +120,17 @@ export default function Mentors() {
         <div className="sticky top-24 space-y-4">
           <h3 className="text-xl font-bold text-gray-800 mb-2 font-manrope">Filter by Topic</h3>
           <div className="space-y-2">
-            {megaMenuData.map(cat => (
-              <div key={cat.title}>
-                <p className="font-semibold text-sm text-gray-500 uppercase tracking-wide">{cat.title}</p>
-                {cat.topics.map(topic => (
-                  <div key={topic.title} className="ml-2 mt-1">
+            {megaMenuData.map((cat, cIdx) => (
+              <div key={`cat-${cIdx}-${cat.title}`}>
+                <p className="font-semibold text-sm text-gray-500 uppercase tracking-wide">
+                  {cat.title}
+                </p>
+                {cat.topics.map((topic, tIdx) => (
+                  <div key={`topic-${cIdx}-${tIdx}-${topic.title}`} className="ml-2 mt-1">
                     <p className="font-medium text-gray-600 text-sm">{topic.title}</p>
-                    {topic.subtopics.map(sub => (
+                    {topic.subtopics.map((sub, sIdx) => (
                       <button
-                        key={sub.name}
+                        key={`sub-${cIdx}-${tIdx}-${sIdx}-${sub.name}`}
                         onClick={() => setSelectedFilter(sub.name)}
                         className={`block text-left w-full px-4 py-1.5 rounded-md text-sm font-medium transition mt-1 ml-2 ${
                           selectedFilter === sub.name
@@ -132,14 +164,21 @@ export default function Mentors() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 font-manrope">Find Your Mentor</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 font-manrope">
+            Find Your Mentor
+          </h1>
           <p className="text-base sm:text-lg text-gray-600 font-lato max-w-2xl mx-auto">
             Browse our expert mentors. Use search, category bar, or the sidebar to filter.
           </p>
+          {isRelated && selectedTopic && (
+            <p className="mt-2 text-sm text-gray-500">
+              Showing related mentors for “{selectedTopic}”.
+            </p>
+          )}
         </motion.div>
 
         {/* Search */}
-        <motion.div 
+        <motion.div
           className="max-w-md mx-auto mb-8"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -148,7 +187,7 @@ export default function Mentors() {
           <input
             type="text"
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search mentors by name or specialty..."
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
           />
@@ -163,15 +202,23 @@ export default function Mentors() {
         >
           <Link
             to="/mentors"
-            className={`px-4 py-2 rounded-full font-bold transition-colors duration-200 ${!selectedTopic ? 'bg-orange-500 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-orange-100'}`}
+            className={`px-4 py-2 rounded-full font-bold transition-colors duration-200 ${
+              !selectedTopic
+                ? "bg-orange-500 text-white shadow-md"
+                : "bg-white text-gray-700 hover:bg-orange-100"
+            }`}
           >
             All Mentors
           </Link>
-          {allSpecialties.slice(0, 12).map(topic => (
+          {allSpecialties.slice(0, 12).map((topic, idx) => (
             <Link
-              key={topic}
+              key={`chip-${idx}-${topic}`}
               to={`/mentors?topic=${encodeURIComponent(topic)}`}
-              className={`px-4 py-2 rounded-full font-bold transition-colors duration-200 ${selectedTopic === topic ? 'bg-orange-500 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-orange-100'}`}
+              className={`px-4 py-2 rounded-full font-bold transition-colors duration-200 ${
+                selectedTopic === topic
+                  ? "bg-orange-500 text-white shadow-md"
+                  : "bg-white text-gray-700 hover:bg-orange-100"
+              }`}
             >
               {topic}
             </Link>
@@ -189,12 +236,15 @@ export default function Mentors() {
             <p className="text-gray-500 mt-2">Try clearing filters or searching again.</p>
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+          <motion.div
+            layout
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
+          >
             <AnimatePresence>
-              {filteredMentors.map(mentor => (
+              {filteredMentors.map((mentor, idx) => (
                 <motion.div
                   layout
-                  key={mentor.id}
+                  key={mentor.id || `mentor-${mentor.name || "unknown"}-${idx}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -203,15 +253,20 @@ export default function Mentors() {
                 >
                   <img
                     src={mentor.image || AVATAR_FALLBACK}
-                    alt={mentor.name}
+                    alt={mentor.name || "Mentor"}
                     className="w-full h-48 object-cover"
-                    onError={e => { e.target.onerror = null; e.target.src = AVATAR_FALLBACK; }}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = AVATAR_FALLBACK;
+                    }}
                   />
                   <div className="p-6 flex flex-col flex-grow">
                     <h2 className="text-xl font-bold text-gray-800 mb-1 font-manrope">
                       {mentor.name || "Mentor"}
                     </h2>
-                    <p className="text-sm text-orange-600 mb-3 font-semibold">{mentor.title || "Mentor"}</p>
+                    <p className="text-sm text-orange-600 mb-3 font-semibold">
+                      {mentor.title || "Mentor"}
+                    </p>
                     <p className="text-gray-600 text-sm mb-4 flex-grow line-clamp-2">
                       {mentor.bio}
                     </p>

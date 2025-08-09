@@ -1,4 +1,4 @@
 import HowItWorksContent from "../components/HowItWorksContent";
-export default function HowItWorks() {
+export default function HowItWorksClients() {
   return <HowItWorksContent />;
 }
