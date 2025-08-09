@@ -80,7 +80,7 @@ export default function TestimonialsCarousel() {
   };
 
 return (
-  <section className="w-full bg-sky-50 py-20 md:py-28 overflow-hidden">
+  <section className="w-full bg-slate-50 py-20 md:py-28 overflow-hidden">
     <div className="max-w-[2000px] mx-auto text-center px-2">
       <motion.h2
         className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-16 font-manrope"
