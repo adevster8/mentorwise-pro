@@ -78,7 +78,7 @@ export default function Navbar() {
   return (
     <>
       {/* Top nav */}
-      <nav className="bg-gray-900 px-4 md:px-6 h-20 flex justify-between items-center sticky top-0 z-[999] shadow-lg">
+<nav className="bg-gray-900 px-4 md:px-6 h-20 w-full overflow-x-clip flex justify-between items-center sticky top-0 z-[999] shadow-lg">
         {/* Brand */}
         <Link to="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
           <img src="/Compass.png" alt="MentorWise Logo" className="w-10 h-10 object-contain" />
@@ -86,7 +86,9 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden md:flex space-x-20 text-lg tracking-wide items-center">
+        {/* CHANGED md:flex -> lg:flex */}
+<div className="hidden xl:flex space-x-20 text-lg tracking-wide items-center">
+
           {/* How It Works (main link + hover dropdown) */}
           <div
             className="relative"
@@ -142,7 +144,8 @@ export default function Navbar() {
         </div>
 
         {/* Desktop right side */}
-        <div className="hidden md:flex space-x-16 text-lg tracking-wide items-center">
+        {/* CHANGED md:flex -> lg:flex */}
+<div className="hidden xl:flex space-x-10 xl:space-x-16 items-center">
           <Link
             to="/realtalk"
             className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-5 py-2 rounded-lg font-bold shadow transition-all transform hover:scale-105 text-base"
@@ -222,8 +225,9 @@ export default function Navbar() {
         </div>
 
         {/* Mobile menu button */}
+        {/* CHANGED md:hidden -> lg:hidden */}
         <button
-          className="md:hidden text-white hover:text-orange-400"
+className="xl:hidden text-white hover:text-orange-400"
           aria-label="Open menu"
           onClick={() => setMobileMenuOpen(true)}
         >
@@ -232,7 +236,8 @@ export default function Navbar() {
       </nav>
 
       {/* MegaMenu desktop */}
-      <div className="hidden md:block">
+      {/* CHANGED md:block -> lg:block */}
+      <div className="hidden lg:block">
         <MegaMenuNavbar />
       </div>
 
@@ -261,13 +266,12 @@ export default function Navbar() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
                 <nav className="space-y-3">
                   <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block hover:text-orange-400">
                     Home
                   </Link>
 
-                  {/* Optional: plain link to main How It Works */}
                   <Link
                     to="/how-it-works"
                     onClick={() => setMobileMenuOpen(false)}
@@ -276,7 +280,6 @@ export default function Navbar() {
                     How It Works
                   </Link>
 
-                  {/* How it works sub-links */}
                   <div className="rounded-xl border border-gray-800 overflow-hidden">
                     <Link
                       to="/how-it-works/clients"
@@ -317,6 +320,7 @@ export default function Navbar() {
                 </nav>
 
                 <div className="border-t border-gray-800 my-4" />
+
 
                 {/* Mobile MegaMenu accordion */}
                 <div>

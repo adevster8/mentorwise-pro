@@ -1,202 +1,139 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Button from "../../components/Button";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  User,
+  Lock,
+  Bell,
+  CalendarClock,
+  CreditCard,
+  Shield,
+  Eye,
+} from "lucide-react";
 
 export default function Settings() {
-  const [expanded, setExpanded] = useState(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    reminders: true,
-    dataSharing: false,
-  });
-
-  const handleToggle = (section) => {
-    setExpanded(expanded === section ? null : section);
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Settings saved! (Replace this with real logic)");
-  };
-
-  const sectionVariants = {
-    collapsed: { opacity: 0, height: 0 },
-    open: { opacity: 1, height: "auto" },
-  };
+  const cards = [
+    {
+      title: "Profile",
+      desc: "Name, photo, bio, and basic details.",
+      to: "/dashboard/edit-profile",
+      icon: <User className="w-6 h-6 text-orange-500" />,
+      actions: [{ label: "Edit Profile", to: "/dashboard/edit-profile" }],
+    },
+    {
+      title: "Account & Security",
+      desc: "Email, password, and login devices.",
+      to: "/dashboard/settings/account",
+      icon: <Lock className="w-6 h-6 text-orange-500" />,
+      actions: [{ label: "Manage", to: "/dashboard/settings/account" }],
+    },
+    {
+      title: "Notifications",
+      desc: "Session reminders and message alerts.",
+      to: "/dashboard/settings/notifications",
+      icon: <Bell className="w-6 h-6 text-orange-500" />,
+      actions: [{ label: "Edit", to: "/dashboard/settings/notifications" }],
+    },
+    {
+      title: "Scheduling",
+      desc: "Default timezone and calendar sync.",
+      to: "/dashboard/schedule",
+      icon: <CalendarClock className="w-6 h-6 text-orange-500" />,
+      actions: [{ label: "Open Schedule", to: "/dashboard/schedule" }],
+    },
+    {
+      title: "Billing & Payments",
+      desc: "Cards on file, invoices, and receipts.",
+      to: "/dashboard/billing",
+      icon: <CreditCard className="w-6 h-6 text-orange-500" />,
+      actions: [{ label: "Go to Billing", to: "/dashboard/billing" }],
+    },
+    {
+      title: "Privacy",
+      desc: "Profile visibility and data download.",
+      to: "/dashboard/settings/privacy",
+      icon: <Eye className="w-6 h-6 text-orange-500" />,
+      actions: [{ label: "Configure", to: "/dashboard/settings/privacy" }],
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-orange-50 px-6 py-12">
-      <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl p-8 border border-orange-100">
-        <h1 className="text-4xl font-extrabold text-orange-600 mb-8 font-manrope">Account Settings</h1>
+    <div className="min-h-screen bg-orange-50 font-manrope">
+      <div className="px-6 py-8 md:px-12">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
+            Account Settings
+          </h1>
+          <p className="text-slate-600 mt-2">
+            Update your profile, security, notifications, and billing in one place.
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Section 1: Personal Info */}
-          <div>
-            <button
-              type="button"
-              onClick={() => handleToggle("info")}
-              className="w-full text-left text-lg font-semibold text-blue-900 bg-blue-50 px-4 py-3 rounded-xl hover:bg-blue-100 transition mb-2"
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+        >
+          {cards.map((c) => (
+            <motion.div
+              key={c.title}
+              variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0 } }}
             >
-              Personal Info
-            </button>
-            <AnimatePresence initial={false}>
-              {expanded === "info" && (
-                <motion.div
-                  variants={sectionVariants}
-                  initial="collapsed"
-                  animate="open"
-                  exit="collapsed"
-                  transition={{ duration: 0.4 }}
-                  className="space-y-4 px-4"
-                >
-                  <label className="block text-sm font-medium text-gray-700">
-                    Full Name
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-orange-400 focus:outline-none"
-                      placeholder="Jordan Rivers"
-                    />
-                  </label>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+              <Link
+                to={c.to}
+                className="block rounded-2xl bg-white/80 backdrop-blur border border-orange-100 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition p-6"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-slate-900 font-semibold text-lg">{c.title}</div>
+                  {c.icon}
+                </div>
+                <p className="text-sm text-slate-600 mb-4">{c.desc}</p>
 
-          {/* Section 2: Email & Password */}
-          <div>
-            <button
-              type="button"
-              onClick={() => handleToggle("auth")}
-              className="w-full text-left text-lg font-semibold text-blue-900 bg-blue-50 px-4 py-3 rounded-xl hover:bg-blue-100 transition mb-2"
-            >
-              Email & Password
-            </button>
-            <AnimatePresence initial={false}>
-              {expanded === "auth" && (
-                <motion.div
-                  variants={sectionVariants}
-                  initial="collapsed"
-                  animate="open"
-                  exit="collapsed"
-                  transition={{ duration: 0.4 }}
-                  className="space-y-4 px-4"
-                >
-                  <label className="block text-sm font-medium text-gray-700">
-                    Email Address
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-orange-400 focus:outline-none"
-                      placeholder="jordan@example.com"
-                    />
-                  </label>
-                  <label className="block text-sm font-medium text-gray-700">
-                    New Password
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-orange-400 focus:outline-none"
-                      placeholder="••••••••"
-                    />
-                  </label>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                <div className="flex flex-wrap gap-2">
+                  {c.actions.map((a) => (
+                    <Link
+                      key={a.label}
+                      to={a.to}
+                      className="inline-flex items-center rounded-lg border border-orange-100 bg-white/70 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:bg-white hover:shadow transition"
+                    >
+                      {a.label}
+                    </Link>
+                  ))}
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
 
-          {/* Section 3: Notifications */}
-          <div>
-            <button
-              type="button"
-              onClick={() => handleToggle("notifications")}
-              className="w-full text-left text-lg font-semibold text-blue-900 bg-blue-50 px-4 py-3 rounded-xl hover:bg-blue-100 transition mb-2"
-            >
-              Session Reminders
-            </button>
-            <AnimatePresence initial={false}>
-              {expanded === "notifications" && (
-                <motion.div
-                  variants={sectionVariants}
-                  initial="collapsed"
-                  animate="open"
-                  exit="collapsed"
-                  transition={{ duration: 0.4 }}
-                  className="px-4 space-y-4"
-                >
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      name="reminders"
-                      checked={formData.reminders}
-                      onChange={handleChange}
-                      className="form-checkbox h-5 w-5 text-orange-500"
-                    />
-                    <span className="text-gray-700">Email me 24 hours before my sessions</span>
-                  </label>
-                </motion.div>
-              )}
-            </AnimatePresence>
+        {/* Safety / Danger zone */}
+        <div className="mt-10">
+          <div className="rounded-2xl bg-white/70 backdrop-blur border border-red-100 p-6">
+            <div className="flex items-start gap-3">
+              <Shield className="w-6 h-6 text-red-500 mt-0.5" />
+              <div>
+                <div className="font-semibold text-slate-900 mb-1">Privacy & Safety</div>
+                <p className="text-sm text-slate-600">
+                  Download your data, control visibility, or close your account.
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <Link
+                    to="/dashboard/settings/privacy"
+                    className="rounded-lg border border-orange-100 bg-white/70 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:bg-white transition"
+                  >
+                    Privacy Options
+                  </Link>
+                  <Link
+                    to="/dashboard/settings/account"
+                    className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-100 transition"
+                  >
+                    Close Account
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {/* Section 4: Privacy */}
-          <div>
-            <button
-              type="button"
-              onClick={() => handleToggle("privacy")}
-              className="w-full text-left text-lg font-semibold text-blue-900 bg-blue-50 px-4 py-3 rounded-xl hover:bg-blue-100 transition mb-2"
-            >
-              Privacy Settings
-            </button>
-            <AnimatePresence initial={false}>
-              {expanded === "privacy" && (
-                <motion.div
-                  variants={sectionVariants}
-                  initial="collapsed"
-                  animate="open"
-                  exit="collapsed"
-                  transition={{ duration: 0.4 }}
-                  className="px-4 space-y-4"
-                >
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      name="dataSharing"
-                      checked={formData.dataSharing}
-                      onChange={handleChange}
-                      className="form-checkbox h-5 w-5 text-orange-500"
-                    />
-                    <span className="text-gray-700">Allow mentors to view profile activity</span>
-                  </label>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Submit Button */}
-          <div className="pt-6">
-            <Button type="submit" className="w-full">
-              Save All Settings
-            </Button>
-          </div>
-        </form>
-      </div>
+        </div>
+      </div> 
     </div>
   );
 }
