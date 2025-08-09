@@ -6,7 +6,7 @@ import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 // NOTE: make sure the path + casing matches your file: ../services/chatService
-import { ensureThread, onMessages, sendMessage } from "../services/chatService";
+import { ensureThread, onMessages, sendMessage } from "../services/chatService.js";
 
 export default function MessageMentor() {
   const [me, setMe] = useState(null);
