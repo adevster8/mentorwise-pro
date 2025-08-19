@@ -68,18 +68,19 @@ const RealTalkCategory = lazy(() => import("./pages/RealTalkPages/RealTalkCatego
 const UserDashboard = lazy(() => import("./pages/UserDashboard/UserDashboard"));
 const UserMessages = lazy(() => import("./pages/UserDashboard/Messages"));
 const UserMessageThread = lazy(() => import("./pages/UserDashboard/MessageThread"));
-const Profile = lazy(() => import("./pages/UserDashboard/Profile"));
-const Billing = lazy(() => import("./pages/UserDashboard/Billing"));
-const Schedule = lazy(() => import("./pages/UserDashboard/Schedule"));
-const Bookings = lazy(() => import("./pages/UserDashboard/Bookings"));
-const EditProfile = lazy(() => import("./pages/UserDashboard/EditProfile"));
+const UserProfile = lazy(() => import("./pages/UserDashboard/Profile"));
+const UserBilling = lazy(() => import("./pages/UserDashboard/Billing"));
+const UserSchedule = lazy(() => import("./pages/UserDashboard/Schedule"));
+// IMPORTANT: import Bookings.jsx as UserBookings to match the default export in your file
+const UserBookings = lazy(() => import("./pages/UserDashboard/Bookings"));
+const UserEditProfile = lazy(() => import("./pages/UserDashboard/EditProfile"));
 const UserHelp = lazy(() => import("./pages/UserDashboard/Help"));
-const Invite = lazy(() => import("./pages/UserDashboard/Invite"));
-const Logout = lazy(() => import("./pages/UserDashboard/Logout"));
+const UserInvite = lazy(() => import("./pages/UserDashboard/Invite"));
+const UserLogout = lazy(() => import("./pages/UserDashboard/Logout"));
 const BecomeMentorDash = lazy(() => import("./pages/UserDashboard/BecomeMentorDash"));
 const UserSettings = lazy(() => import("./pages/UserDashboard/Settings"));
-const Projects = lazy(() => import("./pages/UserDashboard/Projects"));
-const Goals = lazy(() => import("./pages/UserDashboard/Goals"));
+const UserProjects = lazy(() => import("./pages/UserDashboard/Projects"));
+const UserGoals = lazy(() => import("./pages/UserDashboard/Goals"));
 
 // Mentor Dashboard Pages
 const MentorDashboard = lazy(() => import("./pages/MentorDashboard/MentorDashboard"));
@@ -141,30 +142,31 @@ export default function App() {
               <Route path="signup" element={<SignUp />} />
 
               {/* --- User Dashboard (Protected) --- */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={["user", "mentee", "mentor"]}>
-                    <UserDashboard />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="messages" element={<UserMessages />} />
-                <Route path="messages/:threadId" element={<UserMessageThread />} />
-                <Route path="schedule" element={<Schedule />} />
-                <Route path="goals" element={<Projects />} />
-                <Route path="projects" element={<Projects />} />
-                <Route path="billing" element={<Billing />} />
-                <Route path="edit-profile" element={<EditProfile />} />
-                <Route path="favorites" element={<Profile />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="bookings" element={<Bookings />} />
-                <Route path="invite" element={<Invite />} />
-                <Route path="logout" element={<Logout />} />
-                <Route path="become-mentor" element={<BecomeMentorDash />} />
-                <Route path="settings" element={<UserSettings />} />
-                <Route path="help" element={<UserHelp />} />
-              </Route>
+           <Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={["user", "mentee", "mentor"]}>
+      <UserDashboard />
+    </ProtectedRoute>
+  }
+>
+  <Route path="messages" element={<UserMessages />} />
+  <Route path="messages/:threadId" element={<UserMessageThread />} />
+  <Route path="schedule" element={<UserSchedule />} />
+  <Route path="goals" element={<UserGoals />} />
+  <Route path="projects" element={<UserProjects />} />
+  <Route path="billing" element={<UserBilling />} />
+  <Route path="edit-profile" element={<UserEditProfile />} />
+  <Route path="favorites" element={<UserProfile />} />
+  <Route path="profile" element={<UserProfile />} />
+  {/* Use the clearly named UserBookings component here */}
+  <Route path="bookings" element={<UserBookings />} />
+  <Route path="invite" element={<UserInvite />} />
+  <Route path="logout" element={<UserLogout />} />
+  <Route path="become-mentor" element={<BecomeMentorDash />} />
+  <Route path="settings" element={<UserSettings />} />
+  <Route path="help" element={<UserHelp />} />
+</Route>
 
               {/* --- Mentor Dashboard (Protected) --- */}
               <Route
