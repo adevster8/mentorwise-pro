@@ -4,12 +4,12 @@ import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./AuthContext";
 
-// Eager-load anything that shows on every page
+// Eager UI shared across pages
 import Navbar from "./components/Navbar";
 import PasswordGate from "./components/PasswordGate";
 import LayoutWithFooter from "./pages/LayoutWithFooter";
 
-// Only this one mentor builder is imported eagerly because you use it often
+// Eager: commonly used mentor builder
 import CreateProject from "./pages/MentorDashboard/CreateProject";
 
 // ---------- Fallback ----------
@@ -22,19 +22,15 @@ const LoadingFallback = () => (
 // ---------- Route Guard ----------
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, userData, loading } = useAuth();
-
   if (loading) return <LoadingFallback />;
   if (!user) return <Navigate to="/signin" replace />;
-
   if (Array.isArray(allowedRoles) && allowedRoles.length) {
-    const role = userData?.role; // e.g. "user" | "mentee" | "mentor" | "admin"
+    const role = userData?.role;
     if (role && !allowedRoles.includes(role)) {
-      // Avoid redirect loop: send them somewhere *else*
       const fallback = role === "mentor" ? "/mentor-dashboard" : "/";
       return <Navigate to={fallback} replace />;
     }
   }
-
   return children;
 };
 
@@ -58,12 +54,12 @@ const Blog = lazy(() => import("./pages/Blog"));
 const MentorSetup = lazy(() => import("./pages/MentorSetup"));
 const Locals = lazy(() => import("./pages/Locals"));
 
-// How It Works
-const HowItWorks = lazy(() => import("./pages/HowItWorks"));
-const HowItWorksClients = lazy(() => import("./pages/HowItWorksClients"));
-const HowItWorksCoaches = lazy(() => import("./pages/HowItWorksCoaches"));
+// ------ How It Works (main uses Clients page) ------
+const HowItWorksClients = lazy(() => import("./pages/HowItWorksClients")); // main + clients
+const HowItWorksCoaches = lazy(() => import("./pages/HowItWorksCoaches")); // mentors
+const Pricing = lazy(() => import("./pages/Pricing"));                     // pricing
 
-// RealTalk
+// ---------- RealTalk ----------
 const RealTalkHome = lazy(() => import("./pages/RealTalkPages/RealTalkHome"));
 const RealTalkThread = lazy(() => import("./pages/RealTalkPages/RealTalkThread"));
 const RealTalkNewPost = lazy(() => import("./pages/RealTalkPages/RealTalkNewPost"));
@@ -84,7 +80,6 @@ const Logout = lazy(() => import("./pages/UserDashboard/Logout"));
 const BecomeMentorDash = lazy(() => import("./pages/UserDashboard/BecomeMentorDash"));
 const UserSettings = lazy(() => import("./pages/UserDashboard/Settings"));
 const Projects = lazy(() => import("./pages/UserDashboard/Projects"));
-// Optional: if you have a UserDashboardHome component, lazy load it and add as index
 // const UserDashboardHome = lazy(() => import("./pages/UserDashboard/Home"));
 
 // ---------- Mentor Dashboard (lazy) ----------
@@ -100,7 +95,6 @@ const MentorSettings = lazy(() => import("./pages/MentorDashboard/Settings"));
 const MentorBookings = lazy(() => import("./pages/MentorDashboard/MentorBookings"));
 const MentorMessageThread = lazy(() => import("./pages/MentorDashboard/MessageThread"));
 const MentorProjects = lazy(() => import("./pages/MentorDashboard/Projects"));
-// Optional: MentorDashboardHome
 // const MentorDashboardHome = lazy(() => import("./pages/MentorDashboard/Home"));
 
 export default function App() {
@@ -111,7 +105,7 @@ export default function App() {
           <Navbar />
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
-              {/* ---------- Public (with site footer) ---------- */}
+              {/* ---------- Public (with footer layout) ---------- */}
               <Route element={<LayoutWithFooter />}>
                 <Route path="/" element={<Home />} />
                 <Route path="about" element={<About />} />
@@ -129,9 +123,16 @@ export default function App() {
                 <Route path="mentor-setup" element={<MentorSetup />} />
                 <Route path="locals" element={<Locals />} />
                 <Route path="message-mentor" element={<MessageMentor />} />
-                <Route path="how-it-works" element={<HowItWorks />} />
+
+                {/* ------ How It Works (main = clients) ------ */}
+                <Route path="how-it-works" element={<HowItWorksClients />} />
                 <Route path="how-it-works/clients" element={<HowItWorksClients />} />
                 <Route path="how-it-works/coaches" element={<HowItWorksCoaches />} />
+                <Route path="how-it-works/pricing" element={<Pricing />} />
+                {/* Optional short URL */}
+                <Route path="pricing" element={<Navigate to="/how-it-works/pricing" replace />} />
+
+                {/* ------ RealTalk ------ */}
                 <Route path="realtalk" element={<RealTalkHome />} />
                 <Route path="realtalk/category/:categoryName" element={<RealTalkCategory />} />
                 <Route path="realtalk/thread/:threadId" element={<RealTalkThread />} />
@@ -151,12 +152,11 @@ export default function App() {
                   </ProtectedRoute>
                 }
               >
-                {/* Optional index if you add a home component */}
                 {/* <Route index element={<UserDashboardHome />} /> */}
                 <Route path="messages" element={<UserMessages />} />
                 <Route path="messages/:threadId" element={<UserMessageThread />} />
                 <Route path="schedule" element={<Schedule />} />
-                <Route path="goals" element={<Projects />} /> {/* if Goals exists, swap back */}
+                <Route path="goals" element={<Projects />} />
                 <Route path="projects" element={<Projects />} />
                 <Route path="billing" element={<Billing />} />
                 <Route path="edit-profile" element={<EditProfile />} />
@@ -179,7 +179,6 @@ export default function App() {
                   </ProtectedRoute>
                 }
               >
-                {/* Optional index if you add a home component */}
                 {/* <Route index element={<MentorDashboardHome />} /> */}
                 <Route path="availability" element={<Availability />} />
                 <Route path="earnings" element={<Earnings />} />

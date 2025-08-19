@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -9,18 +8,11 @@ import { megaMenuData } from "../data/megaMenuData";
 
 import MegaMenuNavbar from "./MegaMenuNavbar";
 import {
-  ArrowRightOnRectangleIcon,
-  Bars3Icon,
-  ChevronDownIcon,
-  Cog6ToothIcon,
-  Squares2X2Icon,
-  UserCircleIcon,
-  XMarkIcon,
+  ArrowRightOnRectangleIcon, Bars3Icon, ChevronDownIcon, Cog6ToothIcon,
+  Squares2X2Icon, UserCircleIcon, XMarkIcon,
 } from "@heroicons/react/24/outline";
 
-/* =========================
-   Hooks
-   ========================= */
+// --- Hooks ---
 const useAuth = () => {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -66,9 +58,8 @@ const useClickOutside = (ref, callback) => {
   }, [ref, callback]);
 };
 
-/* =========================
-   Constants
-   ========================= */
+
+// --- Constants ---
 const NAV_LINKS = [
   { label: "How It Works", path: "/how-it-works", dropdown: true },
   { label: "Mentors", path: "/mentors" },
@@ -87,35 +78,8 @@ const getUserDropdownLinks = (dashboardPath) => [
   { label: "Settings", path: `${dashboardPath}/settings`, icon: Cog6ToothIcon },
 ];
 
-/* =========================
-   Helpers (mobile mega menu)
-   ========================= */
-const slugify = (s = "") =>
-  String(s)
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
 
-const getCatName = (cat) => cat?.name || cat?.title || "Category";
-const getTopicArray = (cat) => cat?.topics || cat?.groups || cat?.items || [];
-const getTopicName = (topic) => topic?.title || topic?.name || String(topic);
-const getSubtopicsArray = (topic) =>
-  Array.isArray(topic?.subtopics) ? topic.subtopics : [];
-const getSubName = (sub) => (typeof sub === "string" ? sub : sub?.name || "");
-const getSubPath = (sub) => (typeof sub === "string" ? null : sub?.path || null);
-
-const buildCategoryUrl = (catLabel) =>
-  `/mentors?category=${encodeURIComponent(slugify(catLabel))}`;
-const buildSubtopicUrl = (catLabel, subLabel) =>
-  `/mentors?category=${encodeURIComponent(
-    slugify(catLabel)
-  )}&subtopic=${encodeURIComponent(slugify(subLabel))}`;
-
-/* =========================
-   Subcomponents
-   ========================= */
+// --- Subcomponents ---
 const BrandLogo = React.memo(() => (
   <Link
     to="/"
@@ -276,244 +240,122 @@ const UserMenu = React.memo(({ user, userData, onLogout }) => {
   );
 });
 
-/* =========================
-   Mobile Menu (Hamburger)
-   ========================= */
-const MobileMenu = React.memo(
-  ({ isOpen, onClose, user, userData, onLogout }) => {
-    const [openCategoryIdx, setOpenCategoryIdx] = useState(null);
-    const dashboardPath =
-      userData?.role === "mentor" ? "/mentor-dashboard" : "/dashboard";
+// --- Mobile Menu Subcomponents (Condensed & Corrected) ---
+const MobileMegaMenuSubtopic = React.memo(({ subtopic, categoryLabel, closeMenu }) => {
+    const subName = subtopic?.name || subtopic || '';
+    const to = subtopic?.path || `/mentors?category=${encodeURIComponent(categoryLabel)}&subtopic=${encodeURIComponent(subName)}`;
+    
+    return (
+        <Link to={to} className="block text-sm text-gray-300 hover:text-orange-400 py-1 transition-colors" onClick={closeMenu}>
+            {subName}
+        </Link>
+    );
+});
 
-    useEffect(() => {
-      if (!isOpen) setOpenCategoryIdx(null);
-    }, [isOpen]);
+const MobileMegaMenuTopic = React.memo(({ topic, categoryLabel, closeMenu }) => {
+    const topicPath = `/mentors?topic=${encodeURIComponent(topic?.title || '')}`;
+    
+    return (
+        <li>
+            <Link to={topicPath} onClick={closeMenu}>
+                <p className="text-sm font-semibold text-orange-500 hover:text-orange-400 transition-colors mt-2 mb-1.5">
+                    {topic?.title || 'Topic'}
+                </p>
+            </Link>
+            <div className="grid grid-cols-1 gap-1.5">
+                {topic?.subtopics?.map((sub, j) => (
+                    <MobileMegaMenuSubtopic key={sub?.name || j} subtopic={sub} categoryLabel={categoryLabel} closeMenu={closeMenu} />
+                ))}
+            </div>
+        </li>
+    );
+});
+
+const MobileMegaMenuCategory = React.memo(({ category, index, openIndex, setOpenIndex, closeMenu }) => {
+    const isOpen = openIndex === index;
+    const categoryLabel = category?.name || `Category ${index + 1}`;
+    
+    return (
+        <li className="border-b border-gray-800 last:border-b-0">
+            <button
+                className="w-full flex items-center justify-between py-2.5 text-left font-semibold hover:text-orange-400 transition-colors"
+                onClick={() => setOpenIndex(isOpen ? null : index)}
+                aria-expanded={isOpen}
+                aria-controls={`mm-cat-${index}`}
+            >
+                {categoryLabel}
+                <ChevronDownIcon className={`w-5 h-5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+            </button>
+            <AnimatePresence initial={false}>
+                {isOpen && (
+                    <motion.div
+                        id={`mm-cat-${index}`}
+                        initial="collapsed" animate="open" exit="collapsed"
+                        variants={{ open: { opacity: 1, height: "auto" }, collapsed: { opacity: 0, height: 0 } }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="pl-2 pr-1 pb-2 overflow-hidden"
+                    >
+                        <ul className="mt-1 space-y-2">
+                            {category?.topics?.map((topic, i) => (
+                                <MobileMegaMenuTopic key={topic?.title || i} topic={topic} categoryLabel={categoryLabel} closeMenu={closeMenu} />
+                            ))}
+                        </ul>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </li>
+    );
+});
+
+
+const MobileMenu = React.memo(({ isOpen, onClose, user, userData, onLogout }) => {
+    const [openCategoryIdx, setOpenCategoryIdx] = useState(null);
+    const dashboardPath = userData?.role === "mentor" ? "/mentor-dashboard" : "/dashboard";
+
+    useEffect(() => { if (!isOpen) setOpenCategoryIdx(null) }, [isOpen]);
 
     return (
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <>
-            {/* Overlay */}
-            <motion.button
-              type="button"
-              aria-label="Close menu overlay"
-              className="fixed inset-0 bg-black/50 z-[998]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={onClose}
-            />
-
-            {/* Drawer */}
-            <motion.aside
-              className="fixed top-0 right-0 w-80 max-w-[88vw] h-full bg-gray-900 text-white z-[999] shadow-xl flex flex-col"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Mobile menu"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 h-16 border-b border-gray-800">
-                <span className="text-orange-500 font-bold text-lg">Menu</span>
-                <button aria-label="Close menu" onClick={onClose}>
-                  <XMarkIcon className="w-7 h-7" />
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
-                {/* Primary nav */}
-                <nav className="space-y-3">
-                  {NAV_LINKS.map((link) => (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      className="block hover:text-orange-400"
-                      onClick={onClose}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                  <Link
-                    to="/realtalk"
-                    onClick={onClose}
-                    className="inline-block mt-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-bold shadow"
-                  >
-                    🫂 RealTalk
-                  </Link>
-                </nav>
-
-                <div className="border-t border-gray-800 my-4" />
-
-                {/* MegaMenu accordion (no "View all" anywhere) */}
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                    Browse Categories
-                  </p>
-                  <ul className="space-y-1">
-                    {megaMenuData.map((cat, idx) => {
-                      const catLabel = getCatName(cat);
-                      const topics = getTopicArray(cat);
-
-                      return (
-                        <li
-                          key={`${catLabel}-${idx}`}
-                          className="border-b border-gray-800 pb-2"
-                        >
-                          {/* Category row: expand/collapse only */}
-                          <div className="flex items-center justify-between gap-2">
-                            <button
-                              className="flex-1 text-left py-2 font-semibold hover:text-orange-400"
-                              onClick={() =>
-                                setOpenCategoryIdx((prev) =>
-                                  prev === idx ? null : idx
-                                )
-                              }
-                              aria-expanded={openCategoryIdx === idx}
-                              aria-controls={`mm-cat-${idx}`}
-                            >
-                              {catLabel}
-                            </button>
-
-                            <button
-                              className="p-1 hover:text-orange-400"
-                              onClick={() =>
-                                setOpenCategoryIdx((prev) =>
-                                  prev === idx ? null : idx
-                                )
-                              }
-                              aria-label={`Toggle ${catLabel}`}
-                            >
-                              <ChevronDownIcon
-                                className={`w-5 h-5 transition-transform ${
-                                  openCategoryIdx === idx ? "rotate-180" : ""
-                                }`}
-                              />
-                            </button>
-                          </div>
-
-                          <AnimatePresence initial={false}>
-                            {openCategoryIdx === idx && (
-                              <motion.div
-                                id={`mm-cat-${idx}`}
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="pl-1 pr-1 overflow-hidden"
-                              >
-                                {/* Topics */}
-                                <ul className="mt-1 space-y-2">
-                                  {topics.map((topic, tIdx) => {
-                                    const topicLabel = getTopicName(topic);
-                                    const subs = getSubtopicsArray(topic);
-
-                                    return (
-                                      <li key={`${topicLabel}-${tIdx}`}>
-                                        <p className="text-sm font-semibold text-orange-300 mt-2 mb-1">
-                                          {topicLabel}
-                                        </p>
-
-                                        {/* Subtopics */}
-                                        {subs?.length ? (
-                                          <div className="grid grid-cols-1 gap-1">
-                                            {subs.map((sub, sIdx) => {
-                                              const subName = getSubName(sub);
-                                              const customPath = getSubPath(sub);
-                                              const to = customPath
-                                                ? customPath
-                                                : buildSubtopicUrl(
-                                                    catLabel,
-                                                    subName
-                                                  );
-
-                                              return (
-                                                <Link
-                                                  key={`${subName}-${sIdx}`}
-                                                  to={to}
-                                                  className="block text-sm text-gray-300 hover:text-orange-400 py-1"
-                                                  onClick={onClose}
-                                                >
-                                                  {subName}
-                                                </Link>
-                                              );
-                                            })}
-                                          </div>
-                                        ) : null}
-                                      </li>
-                                    );
-                                  })}
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    <motion.div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[998]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
+                    <motion.aside className="fixed top-0 right-0 w-80 max-w-[88vw] h-full bg-gray-900 text-white z-[999] shadow-2xl flex flex-col" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", stiffness: 300, damping: 30 }}>
+                        <div className="flex items-center justify-between px-6 h-20 border-b border-gray-800 flex-shrink-0">
+                            <span className="text-orange-500 font-bold text-lg">Menu</span>
+                            <button aria-label="Close menu" onClick={onClose}><XMarkIcon className="w-7 h-7" /></button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                            <nav className="space-y-4">
+                                {NAV_LINKS.map((link) => <Link key={link.path} to={link.path} className="block font-medium hover:text-orange-400" onClick={onClose}>{link.label}</Link>)}
+                                <Link to="/realtalk" onClick={onClose} className="inline-block mt-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-bold shadow">🫂 RealTalk</Link>
+                            </nav>
+                            <div className="border-t border-gray-800" />
+                            <div>
+                                <p className="text-xs uppercase tracking-wider text-gray-400 mb-3">Browse Categories</p>
+                                <ul className="space-y-1">
+                                    {megaMenuData.map((cat, idx) => (
+                                        <MobileMegaMenuCategory key={cat?.name || idx} category={cat} index={idx} openIndex={openCategoryIdx} setOpenIndex={setOpenCategoryIdx} closeMenu={onClose} />
+                                    ))}
                                 </ul>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-
-                {/* Auth section */}
-                <div className="mt-4">
-                  {!user ? (
-                    <div className="flex gap-3">
-                      <Link
-                        to="/signin"
-                        onClick={onClose}
-                        className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700"
-                      >
-                        Sign In
-                      </Link>
-                      <Link
-                        to="/signup"
-                        onClick={onClose}
-                        className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white"
-                      >
-                        Sign Up
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Link
-                        to={dashboardPath}
-                        onClick={onClose}
-                        className="block hover:text-orange-400"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        to={`${dashboardPath}/settings`}
-                        onClick={onClose}
-                        className="block hover:text-orange-400"
-                      >
-                        Settings
-                      </Link>
-                      <button
-                        onClick={() => {
-                          onLogout();
-                          onClose();
-                        }}
-                        className="text-left text-red-400 hover:text-red-500"
-                      >
-                        Log Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+                            </div>
+                            <div className="border-t border-gray-800" />
+                            <div className="space-y-4">
+                                {!user ? (
+                                    <div className="flex items-center gap-4"><Link to="/signin" onClick={onClose} className="flex-1 text-center px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 font-semibold">Sign In</Link><Link to="/signup" onClick={onClose} className="flex-1 text-center px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-semibold">Sign Up</Link></div>
+                                ) : (
+                                    <div className="space-y-3 font-medium"><Link to={dashboardPath} onClick={onClose} className="block hover:text-orange-400">Dashboard</Link><Link to={`${dashboardPath}/settings`} onClick={onClose} className="block hover:text-orange-400">Settings</Link><button onClick={() => { onLogout(); onClose(); }} className="text-left text-red-400 hover:text-red-500">Log Out</button></div>
+                                )}
+                            </div>
+                        </div>
+                    </motion.aside>
+                </>
+            )}
+        </AnimatePresence>
     );
-  }
-);
+});
 
-/* =========================
-   Main Navbar
-   ========================= */
+
+// --- Main Navbar ---
 export default function Navbar() {
   const { user, userData, handleLogout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -523,44 +365,21 @@ export default function Navbar() {
       <nav className="bg-gray-900 px-4 md:px-6 h-20 w-full overflow-x-clip flex justify-between items-center sticky top-0 z-[999] shadow-lg">
         <BrandLogo />
         <DesktopNavLinks links={NAV_LINKS} />
-
         <div className="hidden xl:flex space-x-10 xl:space-x-16 items-center">
-          <Link
-            to="/realtalk"
-            className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-5 py-2 rounded-lg font-bold shadow transition-all transform hover:scale-105 text-base"
-          >
-            🫂 RealTalk
-          </Link>
-          {user ? (
-            <UserMenu user={user} userData={userData} onLogout={handleLogout} />
-          ) : (
-            <AuthButtons />
-          )}
+          <Link to="/realtalk" className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-5 py-2 rounded-lg font-bold shadow transition-all transform hover:scale-105 text-base">🫂 RealTalk</Link>
+          {user ? <UserMenu user={user} userData={userData} onLogout={handleLogout} /> : <AuthButtons />}
         </div>
-
-        {/* Hamburger */}
-        <button
-          className="xl:hidden text-white hover:text-orange-400"
-          aria-label="Open menu"
-          onClick={() => setMobileMenuOpen(true)}
-        >
+        <button className="xl:hidden text-white hover:text-orange-400" aria-label="Open menu" onClick={() => setMobileMenuOpen(true)}>
           <Bars3Icon className="w-8 h-8" />
         </button>
       </nav>
-
-      {/* Desktop mega menu (unchanged) */}
-      <div className="hidden lg:block">
+      
+      {/* FIX: This div correctly controls the visibility of the MegaMenuNavbar */}
+      <div className="hidden md:block">
         <MegaMenuNavbar />
       </div>
 
-      {/* Mobile drawer */}
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        user={user}
-        userData={userData}
-        onLogout={handleLogout}
-      />
+      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} user={user} userData={userData} onLogout={handleLogout} />
     </>
   );
 }
