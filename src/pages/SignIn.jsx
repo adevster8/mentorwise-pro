@@ -1,11 +1,14 @@
 // src/pages/SignIn.jsx
 
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
+
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+
+import { auth, db } from "../firebase"; // ← from /src/pages -> ../firebase
+
 
 export default function SignIn() {
   const [email, setEmail] = useState("");

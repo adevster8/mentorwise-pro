@@ -1,7 +1,11 @@
+// src/pages/UserDashboard/BecomeMentorDash.jsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 export default function BecomeMentorDash() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-slate-100">
       <div className="max-w-3xl mx-auto py-12 px-6">
@@ -13,13 +17,15 @@ export default function BecomeMentorDash() {
         >
           Become a Mentor
         </motion.h1>
+
         <motion.p
           className="text-gray-600 mb-8 text-lg text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15 }}
         >
-          Share your expertise and make a meaningful impact. MentorWise gives you the power to connect and support those who need your wisdom — while building your brand.
+          Share your expertise and make a meaningful impact. MentorWise gives you the power to
+          connect and support those who need your wisdom — while building your brand.
         </motion.p>
 
         {/* Why Mentor */}
@@ -29,8 +35,10 @@ export default function BecomeMentorDash() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <h2 className="text-2xl font-bold text-orange-700 mb-3 font-manrope">Why Mentor with Us?</h2>
-          <ul className="list-disc list-inside text-gray-700 space-y-2 text-base font-lato">
+          <h2 className="text-2xl font-bold text-orange-700 mb-3 font-manrope">
+            Why Mentor with Us?
+          </h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2 text-base">
             <li>Set your own rates and availability</li>
             <li>Help others avoid costly mistakes</li>
             <li>Build your personal brand and influence</li>
@@ -45,14 +53,22 @@ export default function BecomeMentorDash() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h2 className="text-2xl font-bold text-orange-700 mb-3 font-manrope">How to Get Started</h2>
-          <ol className="list-decimal list-inside text-gray-700 space-y-2 text-base font-lato">
+          <h2 className="text-2xl font-bold text-orange-700 mb-3 font-manrope">
+            How to Get Started
+          </h2>
+          <ol className="list-decimal list-inside text-gray-700 space-y-2 text-base">
             <li>Fill out your mentor profile</li>
             <li>Set your rates and hours</li>
             <li>Submit for review</li>
             <li>Start accepting mentees</li>
           </ol>
-          <button className="mt-7 w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-8 rounded-xl font-bold text-lg shadow-md transition-all">
+
+          <button
+            type="button"
+            onClick={() => navigate("/mentor-setup")}
+            className="mt-7 w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-8 rounded-xl font-bold text-lg shadow-md transition-all"
+            aria-label="Apply to become a mentor"
+          >
             Apply to Become a Mentor
           </button>
         </motion.div>
@@ -62,8 +78,9 @@ export default function BecomeMentorDash() {
       <section className="relative h-[380px] md:h-[520px] mt-12 overflow-hidden flex items-end">
         <img
           src="/find-clients.png"
-          alt="Find Clients"
+          alt="Find clients through MentorWise"
           className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-black/60" />
         <motion.div
@@ -77,8 +94,9 @@ export default function BecomeMentorDash() {
             <h2 className="text-2xl md:text-3xl font-extrabold text-orange-600 mb-3 font-manrope">
               Attract Clients, Grow Long-Term
             </h2>
-            <p className="text-gray-800 text-lg font-lato">
-              Flexible offers, real connections. Our platform helps you build everything from quick-win calls to deep-dive coaching journeys.
+            <p className="text-gray-800 text-lg">
+              Flexible offers, real connections. Our platform helps you build everything from
+              quick-win calls to deep-dive coaching journeys.
             </p>
           </div>
         </motion.div>

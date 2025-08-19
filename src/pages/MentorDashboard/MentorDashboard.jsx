@@ -1,9 +1,10 @@
-// src/pages/MentorDashboard/MentorDashboard.jsx
 import { useEffect, useState, useMemo } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../firebase";
 import { motion } from "framer-motion";
+
+import { auth } from "../../firebase";
+
 import {
   LayoutDashboard,
   MessageCircle,
@@ -13,8 +14,10 @@ import {
   Star,
   Settings,
   HelpCircle,
-  FileText, // ✅ for Projects
+  FileText,   // Projects list
+  PlusCircle, // Create Project
 } from "lucide-react";
+
 
 export default function MentorDashboard() {
   const location = useLocation();
@@ -35,21 +38,23 @@ export default function MentorDashboard() {
     if (!checking && !uid) navigate("/signin");
   }, [checking, uid, navigate]);
 
-  const links = useMemo(
-    () => [
-      { name: "Dashboard", path: "/mentor-dashboard", icon: <LayoutDashboard /> },
-      { name: "Messages", path: "/mentor-dashboard/messages", icon: <MessageCircle /> },
-      { name: "Bookings", path: "/mentor-dashboard/bookings", icon: <CalendarCheck /> },
-      { name: "Requests", path: "/mentor-dashboard/requests", icon: <ClipboardList /> },
-      { name: "Projects", path: "/mentor-dashboard/projects", icon: <FileText /> }, // ✅ NEW
-      { name: "Availability", path: "/mentor-dashboard/availability", icon: <CalendarCheck /> },
-      { name: "Earnings", path: "/mentor-dashboard/earnings", icon: <DollarSign /> },
-      { name: "Reviews", path: "/mentor-dashboard/reviews", icon: <Star /> },
-      { name: "Settings", path: "/mentor-dashboard/settings", icon: <Settings /> },
-      { name: "Help", path: "/mentor-dashboard/help", icon: <HelpCircle /> },
-    ],
-    []
-  );
+  // Sidebar links (ordered)
+const links = useMemo(() => [
+  { name: "Dashboard", path: "/mentor-dashboard", icon: <LayoutDashboard /> },
+  { name: "Messages", path: "/mentor-dashboard/messages", icon: <MessageCircle /> },
+  { name: "Bookings", path: "/mentor-dashboard/bookings", icon: <CalendarCheck /> },
+  { name: "Requests", path: "/mentor-dashboard/requests", icon: <ClipboardList /> },
+
+  { name: "Projects", path: "/mentor-dashboard/projects", icon: <FileText /> },
+  { name: "Create Project", path: "/mentor-dashboard/projects/create", icon: <PlusCircle /> }, // <= HERE
+
+  { name: "Availability", path: "/mentor-dashboard/availability", icon: <CalendarCheck /> },
+  { name: "Earnings", path: "/mentor-dashboard/earnings", icon: <DollarSign /> },
+  { name: "Reviews", path: "/mentor-dashboard/reviews", icon: <Star /> },
+  { name: "Settings", path: "/mentor-dashboard/settings", icon: <Settings /> },
+  { name: "Help", path: "/mentor-dashboard/help", icon: <HelpCircle /> },
+], []);  // keep empty deps
+
 
   // active state should match nested paths too (e.g., /mentor-dashboard/messages/123)
   const isActive = (p) =>
@@ -88,10 +93,18 @@ export default function MentorDashboard() {
       icon: <ClipboardList className="w-6 h-6 text-orange-500" />,
       desc: "Review new client plans to accept.",
     },
+    // ✅ Quick path to the builder
+    {
+      title: "Create Project",
+      value: "New",
+      to: "/mentor-dashboard/projects/create",
+      icon: <PlusCircle className="w-6 h-6 text-orange-500" />,
+      desc: "Fiverr-style builder with media, milestones.",
+    },
     {
       title: "Projects",
-      value: "Create & manage",
-      to: "/mentor-dashboard/projects", // ✅ NEW quick link
+      value: "Manage",
+      to: "/mentor-dashboard/projects",
       icon: <FileText className="w-6 h-6 text-orange-500" />,
       desc: "Scopes, budgets, milestones.",
     },
@@ -118,23 +131,32 @@ export default function MentorDashboard() {
         <h2 className="text-2xl font-bold text-orange-600 mb-10 tracking-tight">
           Mentor Dashboard
         </h2>
-        <nav className="space-y-3">
-          {links.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition text-base font-semibold
-                ${
-                  isActive(link.path)
-                    ? "bg-orange-100 text-orange-700 shadow-sm"
-                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
-                }`}
-            >
-              <span className="text-lg">{link.icon}</span>
-              {link.name}
-            </Link>
-          ))}
-        </nav>
+       <nav className="space-y-3">
+  {links.map((link) => (
+    <Link
+      key={link.path}
+      to={link.path}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition text-base font-semibold
+        ${isActive(link.path)
+          ? "bg-orange-100 text-orange-700 shadow-sm"
+          : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"}`}
+    >
+      <span className="text-lg">{link.icon}</span>
+      {link.name}
+    </Link>
+  ))}
+
+  {/* INSERT HERE: fallback link */}
+  {!links.some((l) => l.path === "/mentor-dashboard/projects/create") && (
+    <Link
+      to="/mentor-dashboard/projects/create"
+      className="flex items-center gap-3 px-4 py-3 rounded-xl transition text-base font-semibold text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+    >
+      <span className="text-lg"><PlusCircle /></span>
+      Create Project
+    </Link>
+  )}
+</nav>
       </aside>
 
       {/* Main */}
@@ -142,13 +164,24 @@ export default function MentorDashboard() {
         {onRoot && (
           <>
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
-                Welcome back, Coach
-              </h1>
-              <p className="text-slate-600 mt-2">
-                Manage requests, projects, bookings, and earnings — all in one place.
-              </p>
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
+                  Welcome back, Coach
+                </h1>
+                <p className="text-slate-600 mt-2">
+                  Manage requests, projects, bookings, and earnings — all in one place.
+                </p>
+              </div>
+
+              {/* ✅ Top-right Create button for convenience */}
+              <Link
+                to="/mentor-dashboard/projects/create"
+                className="hidden md:inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 font-bold text-white shadow hover:bg-orange-700"
+              >
+                <PlusCircle className="w-5 h-5" />
+                Create Project
+              </Link>
             </div>
 
             {/* Cards grid */}
@@ -183,7 +216,8 @@ export default function MentorDashboard() {
               {[
                 { label: "Edit Profile", to: "/mentor-dashboard/edit-profile" },
                 { label: "Settings", to: "/mentor-dashboard/settings" },
-                { label: "Create an Offer", to: "/mentor-dashboard/requests" },
+                // ✅ point this at the new builder
+                { label: "Create Project", to: "/mentor-dashboard/projects/create" },
                 { label: "Help Center", to: "/mentor-dashboard/help" },
               ].map((q) => (
                 <Link

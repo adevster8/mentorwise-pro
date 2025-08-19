@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+// src/pages/UserDashboard/Settings.jsx
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   User,
@@ -11,6 +12,8 @@ import {
 } from "lucide-react";
 
 export default function Settings() {
+  const navigate = useNavigate();
+
   const cards = [
     {
       title: "Profile",
@@ -79,9 +82,13 @@ export default function Settings() {
               key={c.title}
               variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0 } }}
             >
-              <Link
-                to={c.to}
-                className="block rounded-2xl bg-white/80 backdrop-blur border border-orange-100 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition p-6"
+              {/* Card is a div (not Link) to avoid nested anchors */}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(c.to)}
+                onKeyDown={(e) => (e.key === "Enter" ? navigate(c.to) : null)}
+                className="block rounded-2xl bg-white/80 backdrop-blur border border-orange-100 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-slate-900 font-semibold text-lg">{c.title}</div>
@@ -95,12 +102,13 @@ export default function Settings() {
                       key={a.label}
                       to={a.to}
                       className="inline-flex items-center rounded-lg border border-orange-100 bg-white/70 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:bg-white hover:shadow transition"
+                      onClick={(e) => e.stopPropagation()} // prevent parent click
                     >
                       {a.label}
                     </Link>
                   ))}
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </motion.div>

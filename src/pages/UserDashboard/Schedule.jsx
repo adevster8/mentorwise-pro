@@ -1,5 +1,5 @@
 // src/pages/UserDashboard/Schedule.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { motion } from "framer-motion";
@@ -7,37 +7,65 @@ import { db, auth } from "../../firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
+// Helper: normalize Firestore field to YYYY-MM-DD
+const toYMD = (val) => {
+  if (!val) return "";
+  // Firestore Timestamp?
+  if (typeof val === "object" && typeof val.toDate === "function") {
+    const d = val.toDate();
+    return d.toISOString().slice(0, 10);
+  }
+  // Date instance?
+  if (val instanceof Date) return val.toISOString().slice(0, 10);
+  // Already a string like 'YYYY-MM-DD'?
+  if (typeof val === "string") {
+    // If it’s an ISO, cut off time
+    return val.length > 10 ? val.slice(0, 10) : val;
+  }
+  return "";
+};
+
 export default function Schedule() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [userId, setUserId] = useState(null);
   const [bookings, setBookings] = useState([]);
 
-  // Get logged in user ID
+  // 1) Track auth user
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, user => {
-      if (user) setUserId(user.uid);
-    });
+    const unsub = onAuthStateChanged(auth, (user) => setUserId(user?.uid ?? null));
     return unsub;
   }, []);
 
-  // Load bookings for this user
+  // 2) Live bookings for this user
   useEffect(() => {
     if (!userId) return;
-    const q = query(
-      collection(db, "bookings"),
-      where("userId", "==", userId)
-    );
-    const unsub = onSnapshot(q, snapshot => {
-      setBookings(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    const q = query(collection(db, "bookings"), where("userId", "==", userId));
+    const unsub = onSnapshot(q, (snap) => {
+      const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setBookings(rows);
     });
     return unsub;
   }, [userId]);
 
-  // Highlight dates with appointments
-  const appointmentDates = bookings.map(b => b.date);
+  // 3) Pre-compute normalized dates
+  const normalized = useMemo(
+    () =>
+      bookings.map((b) => ({
+        ...b,
+        dateYMD: toYMD(b.date),
+      })),
+    [bookings]
+  );
 
-  const selectedISO = selectedDate.toISOString().split("T")[0];
-  const todayAppointments = bookings.filter((a) => a.date === selectedISO);
+  const selectedYMD = useMemo(() => toYMD(selectedDate), [selectedDate]);
+  const appointmentDatesSet = useMemo(
+    () => new Set(normalized.map((b) => b.dateYMD).filter(Boolean)),
+    [normalized]
+  );
+  const todaysAppointments = useMemo(
+    () => normalized.filter((b) => b.dateYMD === selectedYMD),
+    [normalized, selectedYMD]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 py-12 px-4">
@@ -50,6 +78,7 @@ export default function Schedule() {
         >
           Your Schedule
         </motion.h1>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Calendar Card */}
           <motion.div
@@ -61,22 +90,31 @@ export default function Schedule() {
             <h2 className="text-xl font-bold text-slate-800 mb-5 font-manrope text-center">
               Select a Date
             </h2>
+
             <div className="flex justify-center">
               <Calendar
-                onChange={setSelectedDate}
+                onChange={(d) => setSelectedDate(d)}
                 value={selectedDate}
                 tileClassName={({ date }) => {
-                  const d = date.toISOString().split("T")[0];
-                  return appointmentDates.includes(d)
-                    ? "bg-orange-200 font-bold !rounded-xl"
-                    : "";
+                  const d = date.toISOString().slice(0, 10);
+                  return appointmentDatesSet.has(d) ? "react-calendar__tile--hasAppt" : undefined;
                 }}
                 className="w-full text-sm rounded-2xl border-none shadow-none"
               />
             </div>
+
             <p className="mt-6 text-gray-500 text-center text-sm">
-              Click any highlighted date to view your appointments.
+              Dates with appointments are highlighted.
             </p>
+
+            {/* Optional inline styles for highlight (or add to your CSS) */}
+            <style>{`
+              .react-calendar__tile--hasAppt {
+                background: #fed7aa !important; /* orange-200 */
+                border-radius: 0.75rem; /* rounded-xl */
+                font-weight: 700;
+              }
+            `}</style>
           </motion.div>
 
           {/* Appointment Details Card */}
@@ -87,23 +125,34 @@ export default function Schedule() {
             className="bg-white/90 rounded-3xl shadow-2xl border-t-4 border-orange-100 p-8 flex flex-col"
           >
             <h2 className="text-xl font-bold text-slate-800 mb-5 font-manrope text-center">
-              Appointments for <span className="text-orange-600">{selectedDate.toLocaleDateString()}</span>
+              Appointments for{" "}
+              <span className="text-orange-600">
+                {selectedDate.toLocaleDateString()}
+              </span>
             </h2>
-            {todayAppointments.length > 0 ? (
-              todayAppointments.map((appt) => (
+
+            {todaysAppointments.length > 0 ? (
+              todaysAppointments.map((appt) => (
                 <div key={appt.id} className="mb-8 bg-orange-50 rounded-xl shadow p-6">
                   <h3 className="text-lg font-bold text-blue-700 mb-2">
                     {appt.title || "Mentor Session"}
                   </h3>
+
                   <p className="text-gray-800 mb-1">
-                    <strong>Date:</strong> {selectedDate.toDateString()}
+                    <strong>Date:</strong>{" "}
+                    {appt.dateYMD
+                      ? new Date(appt.dateYMD).toDateString()
+                      : selectedDate.toDateString()}
                   </p>
+
                   <p className="text-gray-800 mb-2">
-                    <strong>Time:</strong> {appt.time}
+                    <strong>Time:</strong> {appt.time || "TBD"}
                   </p>
+
                   <p className="text-gray-600 mb-2">
-                    <strong>Mentor:</strong> {appt.mentorId}
+                    <strong>Mentor:</strong> {appt.mentorName || appt.mentorId || "—"}
                   </p>
+
                   {appt.zoomLink && (
                     <a
                       href={appt.zoomLink}

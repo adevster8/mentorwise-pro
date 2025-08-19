@@ -1,11 +1,21 @@
 // src/pages/MentorDashboard/Messages.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../../firebase";
 import {
-  collection, query, where, onSnapshot, orderBy, doc, getDoc,
-  addDoc, updateDoc, serverTimestamp
+  collection,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+  doc,
+  getDoc,
+  addDoc,
+  updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
+
+import { auth, db } from "../../firebase";
+
 
 const AVATAR = "/default-avatar.png";
 

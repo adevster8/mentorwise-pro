@@ -10,26 +10,26 @@ import {
   Smile,
   HelpCircle,
   LogOut,
-  HeartHandshake,
+  Handshake,   // ✅ use Handshake instead of HeartHandshake
   Pencil,
-  FileText,   // ← add this
+  FileText,
 } from "lucide-react";
-
 
 export default function UserDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const isActive = (p) => location.pathname === p || location.pathname.startsWith(p + "/");
+
   const links = [
     { name: "Dashboard", path: "/dashboard", icon: <Smile /> },
     { name: "Projects", path: "/dashboard/projects", icon: <FileText /> },
-
     { name: "Messages", path: "/dashboard/messages", icon: <MessageCircle /> },
     { name: "Schedule", path: "/dashboard/schedule", icon: <CalendarCheck /> },
     { name: "Goals", path: "/dashboard/goals", icon: <Target /> },
     { name: "Billing", path: "/dashboard/billing", icon: <CreditCard /> },
     { name: "Edit Profile", path: "/dashboard/edit-profile", icon: <Pencil /> },
-    { name: "Favorites", path: "/dashboard/favorites", icon: <HeartHandshake /> },
+    { name: "Favorites", path: "/dashboard/favorites", icon: <Handshake /> },   // ✅ here
     { name: "Settings", path: "/dashboard/settings", icon: <Settings /> },
     { name: "Help", path: "/dashboard/help", icon: <HelpCircle /> },
     { name: "Logout", path: "/dashboard/logout", icon: <LogOut /> },
@@ -40,7 +40,7 @@ export default function UserDashboard() {
     { icon: <MessageCircle className="text-orange-500 w-6 h-6" />, title: "New Messages", value: "2 unread chats", link: "/dashboard/messages" },
     { icon: <Target className="text-orange-500 w-6 h-6" />, title: "Mentorship Goals", value: "Create & track goals", link: "/dashboard/goals" },
     { icon: <CreditCard className="text-orange-500 w-6 h-6" />, title: "Billing", value: "$79 due this month", link: "/dashboard/billing" },
-    { icon: <HeartHandshake className="text-orange-500 w-6 h-6" />, title: "Favorite Mentors", value: "4 saved", link: "/dashboard/favorites" },
+    { icon: <Handshake className="text-orange-500 w-6 h-6" />, title: "Favorite Mentors", value: "4 saved", link: "/dashboard/favorites" }, // ✅ here
     { icon: <Settings className="text-orange-500 w-6 h-6" />, title: "Account Status", value: "Profile 80% complete", link: "/dashboard/settings" },
   ];
 
@@ -60,10 +60,11 @@ export default function UserDashboard() {
               key={link.path}
               to={link.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition text-base font-semibold ${
-                location.pathname === link.path
+                isActive(link.path)
                   ? "bg-orange-100 text-orange-700 shadow-sm"
                   : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
               }`}
+              aria-current={isActive(link.path) ? "page" : undefined}
             >
               <span className="text-lg">{link.icon}</span>
               {link.name}
@@ -74,7 +75,6 @@ export default function UserDashboard() {
 
       {/* Main */}
       <main className="flex-1 px-6 py-10 md:px-12 bg-orange-50">
-        {/* Cards */}
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-12"
           initial="hidden"
@@ -99,9 +99,9 @@ export default function UserDashboard() {
           ))}
         </motion.div>
 
-        {/* Nested routes (Goals, Messages, Schedule, etc.) */}
         <Outlet />
       </main>
     </div>
   );
 }
+

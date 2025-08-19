@@ -1,10 +1,24 @@
-// src/pages/UserDashboard/Projects.jsx
-import { useEffect, useMemo, useState } from "react";
+// src/pages/UserDashboard/Projects.jsx (FIXED: Restored original functionality + polished dropdown)
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Pencil, Trash2, X, CalendarDays, DollarSign, Link as LinkIcon,
-  Circle, CheckCircle2, BarChart3, Users, ChevronRight
+  Circle, CheckCircle2, BarChart3, Users, ChevronRight, MoreHorizontal
 } from "lucide-react";
+
+// --- Custom Hooks ---
+// This hook is for closing the dropdown when clicking outside of it.
+const useClickOutside = (ref, callback) => {
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (ref.current && !ref.current.contains(event.target)) {
+                callback();
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [ref, callback]);
+};
 
 /* ------------------------------ helpers ---------------------------------- */
 const currency = (n) =>
@@ -62,62 +76,69 @@ function Drawer({ open, onClose, children, title }) {
   );
 }
 
+/** FIXED & POLISHED DROPDOWN MENU */
+const DropdownMenu = ({ children }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
+    useClickOutside(dropdownRef, () => setIsOpen(false));
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button onClick={() => setIsOpen(!isOpen)} className={`p-2 rounded-full transition-colors duration-200 ${isOpen ? 'bg-slate-200' : 'hover:bg-slate-100'}`}>
+                <MoreHorizontal size={16} className="text-slate-500" />
+            </button>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="absolute right-0 top-full mt-2 w-48 bg-white shadow-xl rounded-lg border border-slate-100 z-10 p-1.5 flex flex-col gap-1"
+                    >
+                        {children}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
+
+
 /* --------------------------------- page ---------------------------------- */
 export default function Projects({ mode = "user" }) {
-  // Separate storage for user vs mentor
-  const STORAGE_KEY = useMemo(
-    () => (mode === "mentor" ? "mw_projects_mentor_v2" : "mw_projects_user_v2"),
-    [mode]
-  );
-
+  const STORAGE_KEY = useMemo(() => (mode === "mentor" ? "mw_projects_mentor_v2" : "mw_projects_user_v2"), [mode]);
   const [projects, setProjects] = useState([]);
   const [filter, setFilter] = useState("All");
   const [detailId, setDetailId] = useState(null);
-  const [editing, setEditing] = useState(null); // null | {id? ...fields}
+  const [editing, setEditing] = useState(null);
 
-  // load/save localStorage
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      if (Array.isArray(saved)) setProjects(saved);
+      if (Array.isArray(saved) && saved.length > 0) {
+        setProjects(saved);
+      } else {
+         const sample = [
+          {
+            id: crypto.randomUUID(), title: "Beginner Guitar — Month 1",
+            summary: "Foundations: chords, strumming, 2–3 full songs.", status: "In Progress",
+            budget: "300", spent: "120", due: "", collaborators: ["Alex (Mentor)"],
+            links: [{ label: "Practice Folder", url: "https://example.com" }],
+            milestones: [ { title: "Learn G, C, D chords", due: "", done: true }, { title: "Strumming patterns 1–2", due: "", done: false }, { title: "Play first full song", due: "", done: false }, ],
+            tasks: [ { title: "Daily 20-min practice", done: true }, { title: "Record weekly progress", done: false } ],
+            notes: "Focus on relaxed wrist; down-up consistency.", createdAt: Date.now(), updatedAt: Date.now(),
+          },
+        ];
+        setProjects(sample);
+      }
     } catch {}
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [STORAGE_KEY]);
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
   }, [projects, STORAGE_KEY]);
-
-  // initial demo (if empty)
-  useEffect(() => {
-    if (projects.length) return;
-    const sample = [
-      {
-        id: crypto.randomUUID(),
-        title: "Beginner Guitar — Month 1",
-        summary: "Foundations: chords, strumming, 2–3 full songs.",
-        status: "In Progress",
-        budget: "300",
-        spent: "120",
-        due: "",
-        collaborators: ["Alex (Mentor)"],
-        links: [{ label: "Practice Folder", url: "https://example.com" }],
-        milestones: [
-          { title: "Learn G, C, D chords", due: "", done: true },
-          { title: "Strumming patterns 1–2", due: "", done: false },
-          { title: "Play first full song", due: "", done: false },
-        ],
-        tasks: [
-          { title: "Daily 20-min practice", done: true },
-          { title: "Record weekly progress", done: false }
-        ],
-        notes: "Focus on relaxed wrist; down-up consistency.",
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      },
-    ];
-    setProjects(sample);
-  }, [projects.length]);
-
+  
   const percent = (p) => {
     const total = (p.tasks?.length || 0) + (p.milestones?.length || 0);
     const done =
@@ -132,17 +153,10 @@ export default function Projects({ mode = "user" }) {
 
   const openNew = () =>
     setEditing({
-      title: "",
-      summary: "",
-      status: "Planning",
-      budget: "",
-      spent: "",
-      due: "",
-      collaborators: [],
-      links: [{ label: "", url: "" }],
+      title: "", summary: "", status: "Planning", budget: "", spent: "", due: "",
+      collaborators: [], links: [{ label: "", url: "" }],
       milestones: [{ title: "", due: "", done: false }],
-      tasks: [{ title: "", done: false }],
-      notes: "",
+      tasks: [{ title: "", done: false }], notes: "",
     });
 
   const startEdit = (p) => setEditing({ ...p });
@@ -171,7 +185,6 @@ export default function Projects({ mode = "user" }) {
     if (detailId === id) setDetailId(null);
   };
 
-  // Only mentors can toggle tasks/milestones
   const toggleTask = (pid, idx) => {
     if (mode !== "mentor") return;
     setProjects((arr) =>
@@ -224,7 +237,6 @@ export default function Projects({ mode = "user" }) {
             </button>
           ))}
         </div>
-
         {mode === "mentor" && (
           <button
             onClick={openNew}
@@ -252,64 +264,36 @@ export default function Projects({ mode = "user" }) {
                   <div className="text-lg font-bold text-gray-900">{p.title}</div>
                   <div className="text-gray-600">{p.summary}</div>
                 </div>
-
                 {mode === "mentor" && (
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => startEdit(p)} className="p-2 rounded-lg hover:bg-orange-50" title="Edit">
-                      <Pencil className="w-4 h-4 text-gray-600" />
+                  <DropdownMenu>
+                    <button onClick={() => startEdit(p)} className="w-full flex items-center text-left px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                      <Pencil size={14} className="mr-2.5" /> Edit Project
                     </button>
-                    <button onClick={() => removeProject(p.id)} className="p-2 rounded-lg hover:bg-orange-50" title="Delete">
-                      <Trash2 className="w-4 h-4 text-gray-600" />
+                    <button onClick={() => removeProject(p.id)} className="w-full flex items-center text-left px-3 py-2 text-sm text-red-600 rounded-md hover:bg-red-50 hover:text-red-700 transition-colors">
+                      <Trash2 size={14} className="mr-2.5" /> Delete Project
                     </button>
-                  </div>
+                  </DropdownMenu>
                 )}
               </div>
-
               <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                <div className="bg-orange-50 rounded-xl px-3 py-2">
-                  <div className="text-gray-500">Status</div>
-                  <div className="font-semibold"><StatusChip value={p.status} /></div>
-                </div>
-                <div className="bg-orange-50 rounded-xl px-3 py-2">
-                  <div className="text-gray-500">Budget</div>
-                  <div className="font-semibold">{currency(p.budget)}</div>
-                </div>
-                <div className="bg-orange-50 rounded-xl px-3 py-2">
-                  <div className="text-gray-500">Spent</div>
-                  <div className="font-semibold">{currency(p.spent)}</div>
-                </div>
-                <div className="bg-orange-50 rounded-xl px-3 py-2">
-                  <div className="text-gray-500">Due</div>
-                  <div className="font-semibold">{p.due ? new Date(p.due).toLocaleDateString() : "—"}</div>
-                </div>
+                <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Status</div><div className="font-semibold"><StatusChip value={p.status} /></div></div>
+                <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Budget</div><div className="font-semibold">{currency(p.budget)}</div></div>
+                <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Spent</div><div className="font-semibold">{currency(p.spent)}</div></div>
+                <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Due</div><div className="font-semibold">{p.due ? new Date(p.due).toLocaleDateString() : "—"}</div></div>
               </div>
-
               <div className="mt-4">
                 <ProgressBar percent={percent(p)} />
                 <div className="text-xs text-gray-500 mt-1">{Math.round(percent(p))}% complete</div>
               </div>
-
               {p.collaborators?.length ? (
                 <div className="mt-4 text-sm">
-                  <div className="flex items-center gap-2 text-gray-700 font-semibold">
-                    <Users className="w-4 h-4" /> Collaborators
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {p.collaborators.map((c, i) => (
-                      <span key={i} className="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs">
-                        {c}
-                      </span>
-                    ))}
-                  </div>
+                  <div className="flex items-center gap-2 text-gray-700 font-semibold"><Users className="w-4 h-4" /> Collaborators</div>
+                  <div className="mt-2 flex flex-wrap gap-2">{p.collaborators.map((c, i) => (<span key={i} className="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs">{c}</span>))}</div>
                 </div>
               ) : null}
-
               <div className="mt-4">
-                <button
-                  onClick={() => setDetailId(p.id)}
-                  className="inline-flex items-center gap-2 text-orange-700 font-semibold hover:underline"
-                >
-                  View details <ChevronRight className="w-4 h-4" />
+                <button onClick={() => setDetailId(p.id)} className="inline-flex items-center gap-1.5 text-orange-700 font-semibold hover:underline">
+                  {mode === 'mentor' && <Pencil size={12} />} View details <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </motion.div>
@@ -317,359 +301,53 @@ export default function Projects({ mode = "user" }) {
         )}
       </div>
 
-      {/* ------------------------------ Detail Drawer ------------------------------ */}
+      {/* Detail Drawer (Restored original functionality) */}
       <Drawer open={!!current} onClose={() => setDetailId(null)} title={current?.title || "Project"}>
         {current && (
           <div className="space-y-6">
             <div className="text-gray-700">{current.summary}</div>
-
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-              <div className="bg-orange-50 rounded-xl px-3 py-2">
-                <div className="text-gray-500">Status</div>
-                <div className="font-semibold"><StatusChip value={current.status} /></div>
-              </div>
-              <div className="bg-orange-50 rounded-xl px-3 py-2">
-                <div className="text-gray-500">Budget</div>
-                <div className="font-semibold">{currency(current.budget)}</div>
-              </div>
-              <div className="bg-orange-50 rounded-xl px-3 py-2">
-                <div className="text-gray-500">Spent</div>
-                <div className="font-semibold">{currency(current.spent)}</div>
-              </div>
-              <div className="bg-orange-50 rounded-xl px-3 py-2">
-                <div className="text-gray-500">Due</div>
-                <div className="font-semibold">
-                  {current.due ? new Date(current.due).toLocaleDateString() : "—"}
-                </div>
-              </div>
+              <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Status</div><div className="font-semibold"><StatusChip value={current.status} /></div></div>
+              <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Budget</div><div className="font-semibold">{currency(current.budget)}</div></div>
+              <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Spent</div><div className="font-semibold">{currency(current.spent)}</div></div>
+              <div className="bg-orange-50 rounded-xl px-3 py-2"><div className="text-gray-500">Due</div><div className="font-semibold">{current.due ? new Date(current.due).toLocaleDateString() : "—"}</div></div>
             </div>
-
-            <div>
-              <div className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" /> Progress
-              </div>
-              <ProgressBar percent={percent(current)} />
-              <div className="text-xs text-gray-500 mt-1">{Math.round(percent(current))}% complete</div>
-            </div>
-
-            {current.links?.length ? (
-              <div>
-                <div className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <LinkIcon className="w-4 h-4" /> Links
-                </div>
-                <ul className="space-y-1">
-                  {current.links.map((l, i) =>
-                    l.url ? (
-                      <li key={i}>
-                        <a className="text-orange-700 hover:underline break-all" href={l.url} target="_blank" rel="noreferrer">
-                          {l.label || l.url}
-                        </a>
-                      </li>
-                    ) : null
-                  )}
-                </ul>
-              </div>
-            ) : null}
-
-            {current.tasks?.length ? (
-              <div>
-                <div className="font-semibold text-gray-800 mb-2">Tasks</div>
-                <ul className="space-y-2">
-                  {current.tasks.map((t, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      {mode === "mentor" ? (
-                        <button
-                          onClick={() => toggleTask(current.id, i)}
-                          className="p-1 rounded hover:bg-orange-50"
-                          aria-label={t.done ? "Mark incomplete" : "Mark complete"}
-                        >
-                          {t.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />}
-                        </button>
-                      ) : (
-                        t.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />
-                      )}
-                      <span className={t.done ? "line-through text-gray-400" : "text-gray-800"}>{t.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {current.milestones?.length ? (
-              <div>
-                <div className="font-semibold text-gray-800 mb-2">Milestones</div>
-                <ul className="space-y-2">
-                  {current.milestones.map((m, i) => (
-                    <li key={i} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {mode === "mentor" ? (
-                          <button
-                            onClick={() => toggleMilestone(current.id, i)}
-                            className="p-1 rounded hover:bg-orange-50"
-                            aria-label={m.done ? "Mark incomplete" : "Mark complete"}
-                          >
-                            {m.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />}
-                          </button>
-                        ) : (
-                          m.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />
-                        )}
-                        <span className={m.done ? "line-through text-gray-400" : "text-gray-800"}>{m.title}</span>
-                      </div>
-                      <span className="text-xs text-gray-500">{m.due ? new Date(m.due).toLocaleDateString() : "—"}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {current.collaborators?.length ? (
-              <div>
-                <div className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <Users className="w-4 h-4" /> Collaborators
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {current.collaborators.map((c, i) => (
-                    <span key={i} className="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs">
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            {current.notes ? (
-              <div>
-                <div className="font-semibold text-gray-800 mb-2">Notes</div>
-                <div className="text-gray-700 whitespace-pre-wrap">{current.notes}</div>
-              </div>
-            ) : null}
+            <div><div className="font-semibold text-gray-800 mb-2 flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Progress</div><ProgressBar percent={percent(current)} /><div className="text-xs text-gray-500 mt-1">{Math.round(percent(current))}% complete</div></div>
+            {current.links?.length ? (<div><div className="font-semibold text-gray-800 mb-2 flex items-center gap-2"><LinkIcon className="w-4 h-4" /> Links</div><ul className="space-y-1">{current.links.map((l, i) => l.url ? (<li key={i}><a className="text-orange-700 hover:underline break-all" href={l.url} target="_blank" rel="noreferrer">{l.label || l.url}</a></li>) : null)}</ul></div>) : null}
+            {current.tasks?.length ? (<div><div className="font-semibold text-gray-800 mb-2">Tasks</div><ul className="space-y-2">{current.tasks.map((t, i) => (<li key={i} className="flex items-center gap-2">{mode === "mentor" ? (<button onClick={() => toggleTask(current.id, i)} className="p-1 rounded hover:bg-orange-50" aria-label={t.done ? "Mark incomplete" : "Mark complete"}>{t.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />}</button>) : (t.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />)}<span className={t.done ? "line-through text-gray-400" : "text-gray-800"}>{t.title}</span></li>))}</ul></div>) : null}
+            {current.milestones?.length ? (<div><div className="font-semibold text-gray-800 mb-2">Milestones</div><ul className="space-y-2">{current.milestones.map((m, i) => (<li key={i} className="flex items-center justify-between"><div className="flex items-center gap-2">{mode === "mentor" ? (<button onClick={() => toggleMilestone(current.id, i)} className="p-1 rounded hover:bg-orange-50" aria-label={m.done ? "Mark incomplete" : "Mark complete"}>{m.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />}</button>) : (m.done ? <CheckCircle2 className="w-5 h-5 text-orange-500" /> : <Circle className="w-5 h-5 text-orange-500" />)}<span className={m.done ? "line-through text-gray-400" : "text-gray-800"}>{m.title}</span></div><span className="text-xs text-gray-500">{m.due ? new Date(m.due).toLocaleDateString() : "—"}</span></li>))}</ul></div>) : null}
+            {current.collaborators?.length ? (<div><div className="font-semibold text-gray-800 mb-2 flex items-center gap-2"><Users className="w-4 h-4" /> Collaborators</div><div className="flex flex-wrap gap-2">{current.collaborators.map((c, i) => (<span key={i} className="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs">{c}</span>))}</div></div>) : null}
+            {current.notes ? (<div><div className="font-semibold text-gray-800 mb-2">Notes</div><div className="text-gray-700 whitespace-pre-wrap">{current.notes}</div></div>) : null}
           </div>
         )}
       </Drawer>
 
-      {/* ------------------------------ Editor Drawer (mentor-only) ------------------------------ */}
+      {/* Editor Drawer (Restored original functionality) */}
       {mode === "mentor" && (
         <Drawer open={!!editing} onClose={() => setEditing(null)} title={editing?.id ? "Edit Project" : "New Project"}>
           {editing && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              <input
-                className="md:col-span-6 rounded-xl border border-orange-200 px-4 py-3"
-                placeholder="Project title"
-                value={editing.title}
-                onChange={(e) => setEditing((d) => ({ ...d, title: e.target.value }))}
-                autoFocus
-              />
-              <input
-                className="md:col-span-6 rounded-xl border border-orange-200 px-4 py-3"
-                placeholder="Short summary"
-                value={editing.summary}
-                onChange={(e) => setEditing((d) => ({ ...d, summary: e.target.value }))}
-              />
-              <div className="md:col-span-3 relative">
-                <DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                <input
-                  className="w-full pl-9 rounded-xl border border-orange-200 px-3 py-3"
-                  placeholder="Budget (USD)"
-                  value={editing.budget}
-                  onChange={(e) => setEditing((d) => ({ ...d, budget: e.target.value }))}
-                />
-              </div>
-              <div className="md:col-span-3 relative">
-                <DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                <input
-                  className="w-full pl-9 rounded-xl border border-orange-200 px-3 py-3"
-                  placeholder="Spent (USD)"
-                  value={editing.spent}
-                  onChange={(e) => setEditing((d) => ({ ...d, spent: e.target.value }))}
-                />
-              </div>
-              <div className="md:col-span-3">
-                <select
-                  className="w-full rounded-xl border border-orange-200 px-3 py-3"
-                  value={editing.status}
-                  onChange={(e) => setEditing((d) => ({ ...d, status: e.target.value }))}
-                >
-                  <option>Planning</option>
-                  <option>In Progress</option>
-                  <option>On Hold</option>
-                  <option>Complete</option>
-                </select>
-              </div>
-              <div className="md:col-span-3 relative">
-                <CalendarDays className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                <input
-                  type="date"
-                  className="w-full pl-10 rounded-xl border border-orange-200 px-3 py-3"
-                  value={editing.due || ""}
-                  onChange={(e) => setEditing((d) => ({ ...d, due: e.target.value }))}
-                />
-              </div>
-
-              {/* Collaborators */}
-              <div className="md:col-span-12">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Collaborators (comma-separated)</label>
-                <input
-                  className="w-full rounded-xl border border-orange-200 px-3 py-2"
-                  placeholder="e.g., Alex (Mentor), Sam (Designer)"
-                  value={editing.collaborators?.join(", ") || ""}
-                  onChange={(e) =>
-                    setEditing((d) => ({
-                      ...d,
-                      collaborators: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-                    }))
-                  }
-                />
-              </div>
-
-              {/* Links */}
-              <div className="md:col-span-12">
-                <div className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <LinkIcon className="w-4 h-4" /> Links
-                </div>
-                {editing.links.map((l, i) => (
-                  <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-                    <input
-                      className="rounded-xl border border-orange-200 px-3 py-2"
-                      placeholder="Label (e.g., Drive folder)"
-                      value={l.label}
-                      onChange={(e) => {
-                        const next = [...editing.links];
-                        next[i] = { ...next[i], label: e.target.value };
-                        setEditing((d) => ({ ...d, links: next }));
-                      }}
-                    />
-                    <input
-                      className="rounded-xl border border-orange-200 px-3 py-2"
-                      placeholder="URL"
-                      value={l.url}
-                      onChange={(e) => {
-                        const next = [...editing.links];
-                        next[i] = { ...next[i], url: e.target.value };
-                        setEditing((d) => ({ ...d, links: next }));
-                      }}
-                    />
-                  </div>
-                ))}
-                <button
-                  onClick={() => setEditing((d) => ({ ...d, links: [...d.links, { label: "", url: "" }] }))}
-                  className="text-sm text-orange-700 font-semibold hover:underline"
-                >
-                  + Add link
-                </button>
-              </div>
-
-              {/* Milestones */}
-              <div className="md:col-span-12">
-                <div className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" /> Milestones
-                </div>
-                {editing.milestones.map((m, i) => (
-                  <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-2">
-                    <input
-                      className="md:col-span-8 rounded-xl border border-orange-200 px-3 py-2"
-                      placeholder="Milestone title"
-                      value={m.title}
-                      onChange={(e) => {
-                        const next = [...editing.milestones];
-                        next[i] = { ...next[i], title: e.target.value };
-                        setEditing((d) => ({ ...d, milestones: next }));
-                      }}
-                    />
-                    <input
-                      type="date"
-                      className="md:col-span-3 rounded-xl border border-orange-200 px-3 py-2"
-                      value={m.due || ""}
-                      onChange={(e) => {
-                        const next = [...editing.milestones];
-                        next[i] = { ...next[i], due: e.target.value };
-                        setEditing((d) => ({ ...d, milestones: next }));
-                      }}
-                    />
-                    <div className="md:col-span-1 flex items-center">
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5"
-                        checked={!!m.done}
-                        onChange={() => {
-                          const next = [...editing.milestones];
-                          next[i] = { ...next[i], done: !next[i].done };
-                          setEditing((d) => ({ ...d, milestones: next }));
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-                <button
-                  onClick={() =>
-                    setEditing((d) => ({ ...d, milestones: [...d.milestones, { title: "", due: "", done: false }] }))
-                  }
-                  className="text-sm text-orange-700 font-semibold hover:underline"
-                >
-                  + Add milestone
-                </button>
-              </div>
-
-              {/* Tasks */}
-              <div className="md:col-span-12">
-                <div className="font-semibold text-gray-800 mb-2">Tasks</div>
-                {editing.tasks.map((t, i) => (
-                  <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-2">
-                    <input
-                      className="md:col-span-11 rounded-xl border border-orange-200 px-3 py-2"
-                      placeholder="Task title"
-                      value={t.title}
-                      onChange={(e) => {
-                        const next = [...editing.tasks];
-                        next[i] = { ...next[i], title: e.target.value };
-                        setEditing((d) => ({ ...d, tasks: next }));
-                      }}
-                    />
-                    <div className="md:col-span-1 flex items-center">
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5"
-                        checked={!!t.done}
-                        onChange={() => {
-                          const next = [...editing.tasks];
-                          next[i] = { ...next[i], done: !next[i].done };
-                          setEditing((d) => ({ ...d, tasks: next }));
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-                <button
-                  onClick={() => setEditing((d) => ({ ...d, tasks: [...d.tasks, { title: "", done: false }] }))}
-                  className="text-sm text-orange-700 font-semibold hover:underline"
-                >
-                  + Add task
-                </button>
-              </div>
-
-              {/* Notes */}
-              <textarea
-                className="md:col-span-12 rounded-xl border border-orange-200 px-3 py-3"
-                rows={4}
-                placeholder="Notes (scope details, decisions, etc.)"
-                value={editing.notes}
-                onChange={(e) => setEditing((d) => ({ ...d, notes: e.target.value }))}
-              />
-
-              <div className="md:col-span-12 flex gap-3 justify-end">
-                <button onClick={() => setEditing(null)} className="px-4 py-2 rounded-xl border border-orange-200">
-                  Cancel
-                </button>
-                <button
-                  onClick={saveEdit}
-                  className="px-4 py-2 rounded-xl bg-orange-600 text-white font-semibold hover:bg-orange-700"
-                >
-                  Save Project
-                </button>
-              </div>
+              <input className="md:col-span-6 rounded-xl border border-orange-200 px-4 py-3" placeholder="Project title" value={editing.title} onChange={(e) => setEditing((d) => ({ ...d, title: e.target.value }))} autoFocus />
+              <input className="md:col-span-6 rounded-xl border border-orange-200 px-4 py-3" placeholder="Short summary" value={editing.summary} onChange={(e) => setEditing((d) => ({ ...d, summary: e.target.value }))} />
+              <div className="md:col-span-3 relative"><DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" /><input className="w-full pl-9 rounded-xl border border-orange-200 px-3 py-3" placeholder="Budget (USD)" value={editing.budget} onChange={(e) => setEditing((d) => ({ ...d, budget: e.target.value }))} /></div>
+              <div className="md:col-span-3 relative"><DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" /><input className="w-full pl-9 rounded-xl border border-orange-200 px-3 py-3" placeholder="Spent (USD)" value={editing.spent} onChange={(e) => setEditing((d) => ({ ...d, spent: e.target.value }))} /></div>
+              <div className="md:col-span-3"><select className="w-full rounded-xl border border-orange-200 px-3 py-3" value={editing.status} onChange={(e) => setEditing((d) => ({ ...d, status: e.target.value }))}><option>Planning</option><option>In Progress</option><option>On Hold</option><option>Complete</option></select></div>
+              <div className="md:col-span-3 relative"><CalendarDays className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" /><input type="date" className="w-full pl-10 rounded-xl border border-orange-200 px-3 py-3" value={editing.due || ""} onChange={(e) => setEditing((d) => ({ ...d, due: e.target.value }))} /></div>
+              <div className="md:col-span-12"><label className="block text-sm font-semibold text-gray-700 mb-1">Collaborators (comma-separated)</label><input className="w-full rounded-xl border border-orange-200 px-3 py-2" placeholder="e.g., Alex (Mentor), Sam (Designer)" value={editing.collaborators?.join(", ") || ""} onChange={(e) => setEditing((d) => ({ ...d, collaborators: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),}))} /></div>
+              <div className="md:col-span-12"><div className="font-semibold text-gray-800 mb-2 flex items-center gap-2"><LinkIcon className="w-4 h-4" /> Links</div>{editing.links.map((l, i) => (<div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2"><input className="rounded-xl border border-orange-200 px-3 py-2" placeholder="Label (e.g., Drive folder)" value={l.label} onChange={(e) => { const next = [...editing.links]; next[i] = { ...next[i], label: e.target.value }; setEditing((d) => ({ ...d, links: next })); }} /><input className="rounded-xl border border-orange-200 px-3 py-2" placeholder="URL" value={l.url} onChange={(e) => { const next = [...editing.links]; next[i] = { ...next[i], url: e.target.value }; setEditing((d) => ({ ...d, links: next })); }} /></div>))}<button onClick={() => setEditing((d) => ({ ...d, links: [...d.links, { label: "", url: "" }] }))} className="text-sm text-orange-700 font-semibold hover:underline">+ Add link</button></div>
+              <div className="md:col-span-12"><div className="font-semibold text-gray-800 mb-2 flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Milestones</div>{editing.milestones.map((m, i) => (<div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-2"><input className="md:col-span-8 rounded-xl border border-orange-200 px-3 py-2" placeholder="Milestone title" value={m.title} onChange={(e) => { const next = [...editing.milestones]; next[i] = { ...next[i], title: e.target.value }; setEditing((d) => ({ ...d, milestones: next })); }} /><input type="date" className="md:col-span-3 rounded-xl border border-orange-200 px-3 py-2" value={m.due || ""} onChange={(e) => { const next = [...editing.milestones]; next[i] = { ...next[i], due: e.target.value }; setEditing((d) => ({ ...d, milestones: next })); }} /><div className="md:col-span-1 flex items-center"><input type="checkbox" className="w-5 h-5" checked={!!m.done} onChange={() => { const next = [...editing.milestones]; next[i] = { ...next[i], done: !next[i].done }; setEditing((d) => ({ ...d, milestones: next })); }} /></div></div>))}<button onClick={() => setEditing((d) => ({ ...d, milestones: [...d.milestones, { title: "", due: "", done: false }] }))} className="text-sm text-orange-700 font-semibold hover:underline">+ Add milestone</button></div>
+              <div className="md:col-span-12"><div className="font-semibold text-gray-800 mb-2">Tasks</div>{editing.tasks.map((t, i) => (<div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-2"><input className="md:col-span-11 rounded-xl border border-orange-200 px-3 py-2" placeholder="Task title" value={t.title} onChange={(e) => { const next = [...editing.tasks]; next[i] = { ...next[i], title: e.target.value }; setEditing((d) => ({ ...d, tasks: next })); }} /><div className="md:col-span-1 flex items-center"><input type="checkbox" className="w-5 h-5" checked={!!t.done} onChange={() => { const next = [...editing.tasks]; next[i] = { ...next[i], done: !next[i].done }; setEditing((d) => ({ ...d, tasks: next })); }} /></div></div>))}<button onClick={() => setEditing((d) => ({ ...d, tasks: [...d.tasks, { title: "", done: false }] }))} className="text-sm text-orange-700 font-semibold hover:underline">+ Add task</button></div>
+              <textarea className="md:col-span-12 rounded-xl border border-orange-200 px-3 py-3" rows={4} placeholder="Notes (scope details, decisions, etc.)" value={editing.notes} onChange={(e) => setEditing((d) => ({ ...d, notes: e.target.value }))} />
+              <div className="md:col-span-12 flex gap-3 justify-end"><button onClick={() => setEditing(null)} className="px-4 py-2 rounded-xl border border-orange-200">Cancel</button><button onClick={saveEdit} className="px-4 py-2 rounded-xl bg-orange-600 text-white font-semibold hover:bg-orange-700">Save Project</button></div>
             </div>
           )}
         </Drawer>
       )}
     </div>
   );
+}
+
+// Wrapper component to maintain the original export structure
+export function MentorProjects() {
+  return <Projects mode="mentor" />;
 }

@@ -1,16 +1,11 @@
 import { useState, useEffect } from "react";
-import { db, auth } from "../../firebase";
-import {
-  collection,
-  addDoc,
-  query,
-  where,
-  onSnapshot,
-  Timestamp,
-} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import { collection, addDoc, query, where, onSnapshot, Timestamp } from "firebase/firestore";
+
+import { auth, db } from "../../firebase";
 import { CalendarDays, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+
 
 export default function Availability() {
   const [slots, setSlots] = useState([]);
