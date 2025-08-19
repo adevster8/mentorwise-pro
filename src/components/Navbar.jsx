@@ -71,6 +71,7 @@ const NAV_LINKS = [
 const HOW_IT_WORKS_SUB_LINKS = [
   { label: "For Clients", path: "/how-it-works/clients" },
   { label: "For Coaches", path: "/how-it-works/coaches" },
+  { label: "Pricing", path: "/pricing" }, // <-- Add this new line
 ];
 
 const getUserDropdownLinks = (dashboardPath) => [

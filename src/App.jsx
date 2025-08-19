@@ -1,25 +1,22 @@
-// src/App.jsx
 import React, { Suspense, lazy } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./AuthContext";
 
-// Eager UI shared across pages
+// Eagerly load core UI components used on every page
 import Navbar from "./components/Navbar";
 import PasswordGate from "./components/PasswordGate";
 import LayoutWithFooter from "./pages/LayoutWithFooter";
-
-// Eager: commonly used mentor builder
 import CreateProject from "./pages/MentorDashboard/CreateProject";
 
-// ---------- Fallback ----------
+// --- Fallback Component for Lazy Loading ---
 const LoadingFallback = () => (
   <div style={{ display: "grid", placeItems: "center", minHeight: "60vh" }}>
-    <div>Loading…</div>
+    <div>Loading Page...</div>
   </div>
 );
 
-// ---------- Route Guard ----------
+// --- Route Guard for Protected Pages ---
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, userData, loading } = useAuth();
   if (loading) return <LoadingFallback />;
@@ -34,7 +31,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
-// ---------- Public Pages (lazy) ----------
+// --- Dynamic Page Imports (Code Splitting) ---
+
+// Public Pages
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -54,18 +53,18 @@ const Blog = lazy(() => import("./pages/Blog"));
 const MentorSetup = lazy(() => import("./pages/MentorSetup"));
 const Locals = lazy(() => import("./pages/Locals"));
 
-// ------ How It Works (main uses Clients page) ------
-const HowItWorksClients = lazy(() => import("./pages/HowItWorksClients")); // main + clients
-const HowItWorksCoaches = lazy(() => import("./pages/HowItWorksCoaches")); // mentors
-const Pricing = lazy(() => import("./pages/Pricing"));                     // pricing
+// How It Works & Pricing Pages
+const HowItWorksClients = lazy(() => import("./pages/HowItWorksClients"));
+const HowItWorksCoaches = lazy(() => import("./pages/HowItWorksCoaches"));
+const Pricing = lazy(() => import("./pages/Pricing")); // Correctly imported
 
-// ---------- RealTalk ----------
+// RealTalk Pages
 const RealTalkHome = lazy(() => import("./pages/RealTalkPages/RealTalkHome"));
 const RealTalkThread = lazy(() => import("./pages/RealTalkPages/RealTalkThread"));
 const RealTalkNewPost = lazy(() => import("./pages/RealTalkPages/RealTalkNewPost"));
 const RealTalkCategory = lazy(() => import("./pages/RealTalkPages/RealTalkCategory"));
 
-// ---------- User Dashboard (lazy) ----------
+// User Dashboard Pages
 const UserDashboard = lazy(() => import("./pages/UserDashboard/UserDashboard"));
 const UserMessages = lazy(() => import("./pages/UserDashboard/Messages"));
 const UserMessageThread = lazy(() => import("./pages/UserDashboard/MessageThread"));
@@ -80,9 +79,9 @@ const Logout = lazy(() => import("./pages/UserDashboard/Logout"));
 const BecomeMentorDash = lazy(() => import("./pages/UserDashboard/BecomeMentorDash"));
 const UserSettings = lazy(() => import("./pages/UserDashboard/Settings"));
 const Projects = lazy(() => import("./pages/UserDashboard/Projects"));
-// const UserDashboardHome = lazy(() => import("./pages/UserDashboard/Home"));
+const Goals = lazy(() => import("./pages/UserDashboard/Goals"));
 
-// ---------- Mentor Dashboard (lazy) ----------
+// Mentor Dashboard Pages
 const MentorDashboard = lazy(() => import("./pages/MentorDashboard/MentorDashboard"));
 const Availability = lazy(() => import("./pages/MentorDashboard/Availability"));
 const Earnings = lazy(() => import("./pages/MentorDashboard/Earnings"));
@@ -95,7 +94,6 @@ const MentorSettings = lazy(() => import("./pages/MentorDashboard/Settings"));
 const MentorBookings = lazy(() => import("./pages/MentorDashboard/MentorBookings"));
 const MentorMessageThread = lazy(() => import("./pages/MentorDashboard/MessageThread"));
 const MentorProjects = lazy(() => import("./pages/MentorDashboard/Projects"));
-// const MentorDashboardHome = lazy(() => import("./pages/MentorDashboard/Home"));
 
 export default function App() {
   return (
@@ -105,7 +103,7 @@ export default function App() {
           <Navbar />
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
-              {/* ---------- Public (with footer layout) ---------- */}
+              {/* --- Public Routes (with footer) --- */}
               <Route element={<LayoutWithFooter />}>
                 <Route path="/" element={<Home />} />
                 <Route path="about" element={<About />} />
@@ -124,26 +122,25 @@ export default function App() {
                 <Route path="locals" element={<Locals />} />
                 <Route path="message-mentor" element={<MessageMentor />} />
 
-                {/* ------ How It Works (main = clients) ------ */}
+                {/* --- How It Works & Pricing Routes --- */}
                 <Route path="how-it-works" element={<HowItWorksClients />} />
                 <Route path="how-it-works/clients" element={<HowItWorksClients />} />
                 <Route path="how-it-works/coaches" element={<HowItWorksCoaches />} />
-                <Route path="how-it-works/pricing" element={<Pricing />} />
-                {/* Optional short URL */}
-                <Route path="pricing" element={<Navigate to="/how-it-works/pricing" replace />} />
+                {/* This is the main route for your pricing page */}
+                <Route path="pricing" element={<Pricing />} />
 
-                {/* ------ RealTalk ------ */}
+                {/* --- RealTalk Routes --- */}
                 <Route path="realtalk" element={<RealTalkHome />} />
                 <Route path="realtalk/category/:categoryName" element={<RealTalkCategory />} />
                 <Route path="realtalk/thread/:threadId" element={<RealTalkThread />} />
                 <Route path="realtalk/new" element={<RealTalkNewPost />} />
               </Route>
 
-              {/* ---------- Auth ---------- */}
+              {/* --- Auth Routes (no footer) --- */}
               <Route path="signin" element={<SignIn />} />
               <Route path="signup" element={<SignUp />} />
 
-              {/* ---------- User Dashboard (Protected) ---------- */}
+              {/* --- User Dashboard (Protected) --- */}
               <Route
                 path="/dashboard"
                 element={
@@ -152,7 +149,6 @@ export default function App() {
                   </ProtectedRoute>
                 }
               >
-                {/* <Route index element={<UserDashboardHome />} /> */}
                 <Route path="messages" element={<UserMessages />} />
                 <Route path="messages/:threadId" element={<UserMessageThread />} />
                 <Route path="schedule" element={<Schedule />} />
@@ -170,7 +166,7 @@ export default function App() {
                 <Route path="help" element={<UserHelp />} />
               </Route>
 
-              {/* ---------- Mentor Dashboard (Protected) ---------- */}
+              {/* --- Mentor Dashboard (Protected) --- */}
               <Route
                 path="/mentor-dashboard"
                 element={
@@ -179,7 +175,6 @@ export default function App() {
                   </ProtectedRoute>
                 }
               >
-                {/* <Route index element={<MentorDashboardHome />} /> */}
                 <Route path="availability" element={<Availability />} />
                 <Route path="earnings" element={<Earnings />} />
                 <Route path="projects" element={<MentorProjects />} />
@@ -194,8 +189,6 @@ export default function App() {
                 <Route path="bookings" element={<MentorBookings />} />
               </Route>
 
-              {/* ---------- (Optional) 404 ---------- */}
-              {/* <Route path="*" element={<NotFoundPage />} /> */}
             </Routes>
           </Suspense>
         </PasswordGate>
