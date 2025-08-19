@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../../firebase";
 import {
   collection,
   query,
@@ -12,6 +11,9 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+
+import { auth, db } from "../../firebase";
+
 
 export default function MentorMessageThread() {
   const { threadId } = useParams();
