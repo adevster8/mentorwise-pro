@@ -56,7 +56,7 @@ const Locals = lazy(() => import("./pages/Locals"));
 // How It Works & Pricing Pages
 const HowItWorksClients = lazy(() => import("./pages/HowItWorksClients"));
 const HowItWorksCoaches = lazy(() => import("./pages/HowItWorksCoaches"));
-const Pricing = lazy(() => import("./pages/Pricing")); // Correctly imported
+const Pricing = lazy(() => import("./pages/Pricing.jsx")); // note .jsx and capital P
 
 // RealTalk Pages
 const RealTalkHome = lazy(() => import("./pages/RealTalkPages/RealTalkHome"));
