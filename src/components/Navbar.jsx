@@ -70,15 +70,15 @@ const NAV_LINKS = [
 
 const HOW_IT_WORKS_SUB_LINKS = [
   { label: "For Clients", path: "/how-it-works/clients" },
-  { label: "For Coaches", path: "/how-it-works/coaches" },
-  { label: "Pricing", path: "/pricing" }, // <-- Add this new line
+  { label: "For Mentors", path: "/how-it-works/coaches" }, // same route, clearer label
+   { label: "Pricing", path: "/pricing" },
+  { label: "Programs vs. Projects", path: "/how-it-works/programs-vs-projects" }, // NEW
 ];
 
 const getUserDropdownLinks = (dashboardPath) => [
   { label: "Dashboard", path: dashboardPath, icon: Squares2X2Icon },
   { label: "Settings", path: `${dashboardPath}/settings`, icon: Cog6ToothIcon },
 ];
-
 
 // --- Subcomponents ---
 const BrandLogo = React.memo(() => (

@@ -53,6 +53,8 @@ const Blog = lazy(() => import("./pages/Blog"));
 const MentorSetup = lazy(() => import("./pages/MentorSetup"));
 const Locals = lazy(() => import("./pages/Locals"));
 const ProgramPublic = lazy(() => import("./pages/ProgramPublic"));
+const HowItWorksProgramsVsProjects = lazy(() => import("./pages/HowItWorksProgramsVsProjects"));
+
 
 // How it works & pricing
 const HowItWorksClients = lazy(() => import("./pages/HowItWorksClients"));
@@ -126,6 +128,8 @@ export default function App() {
                 <Route path="locals" element={<Locals />} />
                 <Route path="message-mentor" element={<MessageMentor />} />
                 <Route path="program/:id" element={<ProgramPublic />} />
+                <Route path="how-it-works/programs-vs-projects" element={<HowItWorksProgramsVsProjects />} />
+
 
                 {/* How It Works & Pricing */}
                 <Route path="how-it-works" element={<HowItWorksClients />} />
