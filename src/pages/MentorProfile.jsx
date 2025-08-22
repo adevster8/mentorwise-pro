@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { db, auth } from "../firebase";
 import { mentors as mockMentors } from "../data/mentorsData";
@@ -107,7 +107,7 @@ const ProfileHeader = React.memo(({ mentor }) => (
         onError={(e) => { e.currentTarget.src = AVATAR_FALLBACK; }}
       />
       <div className="text-center md:text-left">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-[#181C2A] font-manrope">{mentor.name}</h1>
+        <h1 className="text-3xl md:4xl font-extrabold text-[#181C2A] font-manrope">{mentor.name}</h1>
         <p className="text-lg text-orange-600 font-semibold mt-1">{mentor.title}</p>
         {mentor.bio && <p className="text-slate-600 mt-3 text-base">{mentor.bio}</p>}
         <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-4 text-sm text-slate-600">
@@ -166,6 +166,114 @@ const SpecialtiesSection = React.memo(({ specialties }) => {
   );
 });
 
+/* --------------------- NEW: Programs Section (Published only) --------------------- */
+const PRICE_HINT = {
+  "pay-in-full-basic": "$249.00",
+  "milestones-starter": "$99.00 per milestone",
+  "retainer-standard": "$499.00",
+  "time-pack-5h": "$390.00",
+};
+
+function ProgramsSection({ mentorId, isOwnProfile }) {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      setLoading(true);
+      try {
+        const q = query(
+          collection(db, "programs"),
+          where("mentorId", "==", mentorId),
+          where("status", "==", "published")
+        );
+        const snap = await getDocs(q);
+        const vals = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        if (alive) setRows(vals);
+      } catch (e) {
+        console.error("Programs load failed:", e);
+        if (alive) setRows([]);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [mentorId]);
+
+  if (loading) {
+    return (
+      <div>
+        <h2 className="text-xl font-bold text-[#181C2A] mb-3 font-manrope">Programs</h2>
+        <div className="text-slate-600">Loading programs…</div>
+      </div>
+    );
+  }
+
+  if (!rows.length) {
+    return (
+      <div>
+        <h2 className="text-xl font-bold text-[#181C2A] mb-3 font-manrope">Programs</h2>
+        {isOwnProfile ? (
+          <p className="text-slate-600">
+            You don’t have any <span className="font-semibold">published</span> programs yet.
+            Create or publish one in{" "}
+            <Link to="/mentor-dashboard/programs" className="text-orange-700 font-semibold underline">
+              Mentor Dashboard → Programs
+            </Link>.
+          </p>
+        ) : (
+          <p className="text-slate-600">This mentor hasn’t published any programs yet.</p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-[#181C2A] mb-3 font-manrope">Programs</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {rows.map((p, i) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: i * 0.04 }}
+            className="rounded-2xl bg-white/70 backdrop-blur border border-slate-200 shadow-sm p-5"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-lg font-bold text-slate-900">{p.title}</div>
+                <div className="text-slate-700 mt-1">{p.blurb}</div>
+                <div className="text-sm text-slate-600 mt-2">
+                  {p.duration && <span className="mr-3"><span className="font-semibold">Duration:</span> {p.duration}</span>}
+                  {p.level && <span><span className="font-semibold">Level:</span> {p.level}</span>}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-slate-500">Plan</div>
+                <div className="text-sm font-semibold text-slate-800">{p.planKey}</div>
+                {p.priceHint ? (
+                  <div className="text-xs text-slate-500 mt-1">{p.priceHint}</div>
+                ) : PRICE_HINT[p.planKey] ? (
+                  <div className="text-xs text-slate-500 mt-1">from {PRICE_HINT[p.planKey]}</div>
+                ) : null}
+              </div>
+            </div>
+            <div className="mt-4">
+              <Link
+                to={`/program/${p.id}`}
+                className="inline-flex items-center justify-center rounded-xl bg-orange-600 text-white font-bold px-4 py-2.5 hover:bg-orange-700 transition shadow-sm w-full sm:w-auto"
+              >
+                View & Purchase
+              </Link>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // --- Main Page Component (Orchestrator) ---
 export default function MentorProfile() {
@@ -191,6 +299,8 @@ export default function MentorProfile() {
           
           <div className="p-8 md:p-10 space-y-10">
             <ActionButtons mentorId={mentor.id} isOwnProfile={isOwnProfile} />
+            {/* NEW: Published programs for this mentor */}
+            <ProgramsSection mentorId={mentor.id} isOwnProfile={isOwnProfile} />
             <ProfileSection title={`About ${mentor.name}`} content={mentor.fullBio} />
             <SpecialtiesSection specialties={mentor.specialties} />
             <ProfileSection title="Portfolio" content={mentor.portfolio} />

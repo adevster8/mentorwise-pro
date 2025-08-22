@@ -24,3 +24,21 @@ yarn-error.log*
 # Editors
 .vscode/
 .idea/
+
+# Secrets
+.env
+.env.local
+
+# Secrets
+.env
+.env.*
+server/.env
+server/.env.*
+# Node
+node_modules/
+server/node_modules/
+# Build
+/dist/
+server/dist/
+# Backups
+*.zip
