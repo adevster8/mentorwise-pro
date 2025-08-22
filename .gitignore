@@ -24,3 +24,7 @@ yarn-error.log*
 # Editors
 .vscode/
 .idea/
+
+# Secrets
+.env
+.env.local
