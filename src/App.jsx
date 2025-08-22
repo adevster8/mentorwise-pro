@@ -3,20 +3,21 @@ import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./AuthContext";
 
-// Eagerly load core UI components used on every page
+// Core UI on every page
 import Navbar from "./components/Navbar";
 import PasswordGate from "./components/PasswordGate";
 import LayoutWithFooter from "./pages/LayoutWithFooter";
+// Keep CreateProject eagerly loaded if you like (used in mentor routes)
 import CreateProject from "./pages/MentorDashboard/CreateProject";
 
-// --- Fallback Component for Lazy Loading ---
+/* ---------- Fallback ---------- */
 const LoadingFallback = () => (
   <div style={{ display: "grid", placeItems: "center", minHeight: "60vh" }}>
     <div>Loading Page...</div>
   </div>
 );
 
-// --- Route Guard for Protected Pages ---
+/* ---------- Guard ---------- */
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, userData, loading } = useAuth();
   if (loading) return <LoadingFallback />;
@@ -31,9 +32,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
-// --- Dynamic Page Imports (Code Splitting) ---
-
-// Public Pages
+/* ---------- Lazy routes ---------- */
+// Public
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -52,26 +52,26 @@ const Support = lazy(() => import("./pages/Support"));
 const Blog = lazy(() => import("./pages/Blog"));
 const MentorSetup = lazy(() => import("./pages/MentorSetup"));
 const Locals = lazy(() => import("./pages/Locals"));
+const ProgramPublic = lazy(() => import("./pages/ProgramPublic"));
 
-// How It Works & Pricing Pages
+// How it works & pricing
 const HowItWorksClients = lazy(() => import("./pages/HowItWorksClients"));
 const HowItWorksCoaches = lazy(() => import("./pages/HowItWorksCoaches"));
-const Pricing = lazy(() => import("./pages/pricing.jsx")); // note .jsx and capital P
+const Pricing = lazy(() => import("./pages/pricing.jsx"));
 
-// RealTalk Pages
+// RealTalk
 const RealTalkHome = lazy(() => import("./pages/RealTalkPages/RealTalkHome"));
 const RealTalkThread = lazy(() => import("./pages/RealTalkPages/RealTalkThread"));
 const RealTalkNewPost = lazy(() => import("./pages/RealTalkPages/RealTalkNewPost"));
 const RealTalkCategory = lazy(() => import("./pages/RealTalkPages/RealTalkCategory"));
 
-// User Dashboard Pages
+// User Dashboard
 const UserDashboard = lazy(() => import("./pages/UserDashboard/UserDashboard"));
 const UserMessages = lazy(() => import("./pages/UserDashboard/Messages"));
 const UserMessageThread = lazy(() => import("./pages/UserDashboard/MessageThread"));
 const UserProfile = lazy(() => import("./pages/UserDashboard/Profile"));
 const UserBilling = lazy(() => import("./pages/UserDashboard/Billing"));
 const UserSchedule = lazy(() => import("./pages/UserDashboard/Schedule"));
-// IMPORTANT: import Bookings.jsx as UserBookings to match the default export in your file
 const UserBookings = lazy(() => import("./pages/UserDashboard/Bookings"));
 const UserEditProfile = lazy(() => import("./pages/UserDashboard/EditProfile"));
 const UserHelp = lazy(() => import("./pages/UserDashboard/Help"));
@@ -82,7 +82,7 @@ const UserSettings = lazy(() => import("./pages/UserDashboard/Settings"));
 const UserProjects = lazy(() => import("./pages/UserDashboard/Projects"));
 const UserGoals = lazy(() => import("./pages/UserDashboard/Goals"));
 
-// Mentor Dashboard Pages
+// Mentor Dashboard
 const MentorDashboard = lazy(() => import("./pages/MentorDashboard/MentorDashboard"));
 const Availability = lazy(() => import("./pages/MentorDashboard/Availability"));
 const Earnings = lazy(() => import("./pages/MentorDashboard/Earnings"));
@@ -95,7 +95,10 @@ const MentorSettings = lazy(() => import("./pages/MentorDashboard/Settings"));
 const MentorBookings = lazy(() => import("./pages/MentorDashboard/MentorBookings"));
 const MentorMessageThread = lazy(() => import("./pages/MentorDashboard/MessageThread"));
 const MentorProjects = lazy(() => import("./pages/MentorDashboard/Projects"));
+const MentorPrograms = lazy(() => import("./pages/MentorDashboard/Programs"));
+const CreateProgram = lazy(() => import("./pages/MentorDashboard/CreateProgram"));
 
+/* ---------- App ---------- */
 export default function App() {
   return (
     <HelmetProvider>
@@ -104,7 +107,7 @@ export default function App() {
           <Navbar />
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
-              {/* --- Public Routes (with footer) --- */}
+              {/* Public (with footer) */}
               <Route element={<LayoutWithFooter />}>
                 <Route path="/" element={<Home />} />
                 <Route path="about" element={<About />} />
@@ -122,53 +125,52 @@ export default function App() {
                 <Route path="mentor-setup" element={<MentorSetup />} />
                 <Route path="locals" element={<Locals />} />
                 <Route path="message-mentor" element={<MessageMentor />} />
+                <Route path="program/:id" element={<ProgramPublic />} />
 
-                {/* --- How It Works & Pricing Routes --- */}
+                {/* How It Works & Pricing */}
                 <Route path="how-it-works" element={<HowItWorksClients />} />
                 <Route path="how-it-works/clients" element={<HowItWorksClients />} />
                 <Route path="how-it-works/coaches" element={<HowItWorksCoaches />} />
-                {/* This is the main route for your pricing page */}
                 <Route path="pricing" element={<Pricing />} />
 
-                {/* --- RealTalk Routes --- */}
+                {/* RealTalk */}
                 <Route path="realtalk" element={<RealTalkHome />} />
                 <Route path="realtalk/category/:categoryName" element={<RealTalkCategory />} />
                 <Route path="realtalk/thread/:threadId" element={<RealTalkThread />} />
                 <Route path="realtalk/new" element={<RealTalkNewPost />} />
               </Route>
 
-              {/* --- Auth Routes (no footer) --- */}
+              {/* Auth (no footer) */}
               <Route path="signin" element={<SignIn />} />
               <Route path="signup" element={<SignUp />} />
 
-              {/* --- User Dashboard (Protected) --- */}
-           <Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute allowedRoles={["user", "mentee", "mentor"]}>
-      <UserDashboard />
-    </ProtectedRoute>
-  }
->
-  <Route path="messages" element={<UserMessages />} />
-  <Route path="messages/:threadId" element={<UserMessageThread />} />
-  <Route path="schedule" element={<UserSchedule />} />
-  <Route path="goals" element={<UserGoals />} />
-  <Route path="projects" element={<UserProjects />} />
-  <Route path="billing" element={<UserBilling />} />
-  <Route path="edit-profile" element={<UserEditProfile />} />
-  <Route path="favorites" element={<UserProfile />} />
-  <Route path="profile" element={<UserProfile />} />
-  {/* Use the clearly named UserBookings component here */}
-  <Route path="bookings" element={<UserBookings />} />
-  <Route path="invite" element={<UserInvite />} />
-  <Route path="logout" element={<UserLogout />} />
-  <Route path="become-mentor" element={<BecomeMentorDash />} />
-  <Route path="settings" element={<UserSettings />} />
-  <Route path="help" element={<UserHelp />} />
-</Route>
+              {/* User Dashboard */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["user", "mentee", "mentor"]}>
+                    <UserDashboard />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="messages" element={<UserMessages />} />
+                <Route path="messages/:threadId" element={<UserMessageThread />} />
+                <Route path="schedule" element={<UserSchedule />} />
+                <Route path="goals" element={<UserGoals />} />
+                <Route path="projects" element={<UserProjects />} />
+                <Route path="billing" element={<UserBilling />} />
+                <Route path="edit-profile" element={<UserEditProfile />} />
+                <Route path="favorites" element={<UserProfile />} />
+                <Route path="profile" element={<UserProfile />} />
+                <Route path="bookings" element={<UserBookings />} />
+                <Route path="invite" element={<UserInvite />} />
+                <Route path="logout" element={<UserLogout />} />
+                <Route path="become-mentor" element={<BecomeMentorDash />} />
+                <Route path="settings" element={<UserSettings />} />
+                <Route path="help" element={<UserHelp />} />
+              </Route>
 
-              {/* --- Mentor Dashboard (Protected) --- */}
+              {/* Mentor Dashboard */}
               <Route
                 path="/mentor-dashboard"
                 element={
@@ -181,6 +183,8 @@ export default function App() {
                 <Route path="earnings" element={<Earnings />} />
                 <Route path="projects" element={<MentorProjects />} />
                 <Route path="projects/create" element={<CreateProject />} />
+                <Route path="programs" element={<MentorPrograms />} />
+                <Route path="programs/create" element={<CreateProgram />} />
                 <Route path="edit-profile" element={<EditMentorProfile />} />
                 <Route path="help" element={<MentorHelp />} />
                 <Route path="messages" element={<MentorMessages />} />
@@ -190,7 +194,6 @@ export default function App() {
                 <Route path="settings" element={<MentorSettings />} />
                 <Route path="bookings" element={<MentorBookings />} />
               </Route>
-
             </Routes>
           </Suspense>
         </PasswordGate>
