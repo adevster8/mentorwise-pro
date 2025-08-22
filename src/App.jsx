@@ -54,6 +54,8 @@ const MentorSetup = lazy(() => import("./pages/MentorSetup"));
 const Locals = lazy(() => import("./pages/Locals"));
 const ProgramPublic = lazy(() => import("./pages/ProgramPublic"));
 const HowItWorksProgramsVsProjects = lazy(() => import("./pages/HowItWorksProgramsVsProjects"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
 
 
 // How it works & pricing
@@ -174,30 +176,33 @@ export default function App() {
                 <Route path="help" element={<UserHelp />} />
               </Route>
 
-              {/* Mentor Dashboard */}
-              <Route
-                path="/mentor-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={["mentor"]}>
-                    <MentorDashboard />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="availability" element={<Availability />} />
-                <Route path="earnings" element={<Earnings />} />
-                <Route path="projects" element={<MentorProjects />} />
-                <Route path="projects/create" element={<CreateProject />} />
-                <Route path="programs" element={<MentorPrograms />} />
-                <Route path="programs/create" element={<CreateProgram />} />
-                <Route path="edit-profile" element={<EditMentorProfile />} />
-                <Route path="help" element={<MentorHelp />} />
-                <Route path="messages" element={<MentorMessages />} />
-                <Route path="messages/:threadId" element={<MentorMessageThread />} />
-                <Route path="requests" element={<Requests />} />
-                <Route path="reviews" element={<Reviews />} />
-                <Route path="settings" element={<MentorSettings />} />
-                <Route path="bookings" element={<MentorBookings />} />
-              </Route>
+{/* Mentor Dashboard */}
+<Route
+  path="/mentor-dashboard"
+  element={
+    <ProtectedRoute allowedRoles={["mentor"]}>
+      <MentorDashboard />
+    </ProtectedRoute>
+  }
+>
+  <Route path="availability" element={<Availability />} />
+  <Route path="earnings" element={<Earnings />} />
+  <Route path="projects" element={<MentorProjects />} />
+  <Route path="projects/create" element={<CreateProject />} />
+  <Route path="programs" element={<MentorPrograms />} />
+  <Route path="programs/create" element={<CreateProgram />} />
+  <Route path="edit-profile" element={<EditMentorProfile />} />
+  <Route path="help" element={<MentorHelp />} />
+  <Route path="messages" element={<MentorMessages />} />
+  <Route path="messages/:threadId" element={<MentorMessageThread />} />
+  <Route path="requests" element={<Requests />} />
+  <Route path="reviews" element={<Reviews />} />
+  <Route path="settings" element={<MentorSettings />} />
+  <Route path="bookings" element={<MentorBookings />} />
+
+  {/* 404 for any unknown mentor-dashboard sub-route */}
+  <Route path="*" element={<NotFound />} />
+</Route>
             </Routes>
           </Suspense>
         </PasswordGate>

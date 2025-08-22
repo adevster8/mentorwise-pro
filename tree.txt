@@ -1,0 +1,176 @@
+.
+├── .env
+├── .gitignore
+├── .gitignore.save
+├── eslint.config.js
+├── index.html
+├── index.js
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── public
+│   ├── 73d90cb7-9800-4913-904e-f9b47366d30c.png
+│   ├── about-2.jpg
+│   ├── about-photo.jpg
+│   ├── Background-Pic.jpg
+│   ├── background-waves.png
+│   ├── Become-a-Mentor.jpg
+│   ├── Become-a-Mentor.png
+│   ├── bottom-panel.png
+│   ├── Coaching.jpg
+│   ├── Compass.png
+│   ├── contact-waves.png
+│   ├── default-avatar.png
+│   ├── find-clients.png
+│   ├── hero-illustration.png
+│   ├── hero-illustration1.png
+│   ├── hero.png
+│   ├── Icon-Pic.png
+│   ├── laptop-photo.jpg
+│   ├── Large-Pic.png
+│   ├── lifecoach-vid.mp4
+│   ├── locals-image1.jpg
+│   ├── logo-mentorwise.png
+│   ├── logo-mentorwise2.png
+│   ├── robots.txt
+│   ├── schedule-zoom-pic.png
+│   ├── schedule-zoom-pic1.png
+│   ├── sign-up-pic.jpg
+│   ├── sitemap.xml
+│   ├── slide-show1.png
+│   ├── slide-show2.png
+│   ├── vite.svg
+│   ├── why-coaching.jpg
+│   └── your-life.jpg
+├── README.md
+├── Server
+│   ├── .env
+│   ├── firebase-service-account.json
+│   ├── index.js
+│   ├── package-lock.json
+│   └── package.json
+├── src
+│   ├── App.css
+│   ├── App.jsx
+│   ├── assets
+│   │   └── react.svg
+│   ├── AuthContext.jsx
+│   ├── components
+│   │   ├──  FilterSidebar.jsx
+│   │   ├── BookingForm.jsx
+│   │   ├── BottomPanelArt.jsx
+│   │   ├── Button.jsx
+│   │   ├── CheckoutForm.jsx
+│   │   ├── ContactForm.jsx
+│   │   ├── Footer.jsx
+│   │   ├── HeroSlideshow.jsx
+│   │   ├── HowItWorksContent.jsx
+│   │   ├── IconPic.jsx
+│   │   ├── Layout.jsx
+│   │   ├── MegaMenuNavbar.jsx
+│   │   ├── MentorCard.jsx
+│   │   ├── ModernDropdown.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── NewsletterSection.jsx
+│   │   ├── ParallaxCardSection.jsx
+│   │   ├── PasswordGate.jsx
+│   │   ├── RealTalkComponents
+│   │   │   ├── RealTalkCategorySidebar.jsx
+│   │   │   ├── RealTalkEmojiBar.jsx
+│   │   │   ├── RealTalkReplyBubble.jsx
+│   │   │   ├── RealTalkStartModal.jsx
+│   │   │   ├── RealTalkThreadCard.jsx
+│   │   │   └── RealTalkUserTag.jsx
+│   │   ├── ReviewList.jsx
+│   │   └── TestimonialsCarousel.jsx
+│   ├── data
+│   │   ├── blogPosts.js
+│   │   ├── megaMenuData.js
+│   │   └── mentorsData.js
+│   ├── data-backup
+│   │   ├── data
+│   │   │   └── mentorsData.js
+│   │   └── mentorsData.js
+│   ├── firebase.js
+│   ├── hooks
+│   │   └── useBookings.js
+│   ├── index.css
+│   ├── lib
+│   │   └── stripe.js
+│   ├── main.jsx
+│   ├── pages
+│   │   ├── About.jsx
+│   │   ├── BecomeMentor.jsx
+│   │   ├── Blog.jsx
+│   │   ├── BookingConfirmation.jsx
+│   │   ├── Contact.jsx
+│   │   ├── FAQ.jsx
+│   │   ├── FindMentor.jsx
+│   │   ├── Home.jsx
+│   │   ├── HowItWorks.jsx
+│   │   ├── HowItWorksClients.jsx
+│   │   ├── HowItWorksCoaches.jsx
+│   │   ├── HowItWorksProgramsVsProjects.jsx
+│   │   ├── LayoutWithFooter.jsx
+│   │   ├── Locals.jsx
+│   │   ├── MentorDashboard
+│   │   │   ├── Availability.jsx
+│   │   │   ├── CreateProgram.jsx
+│   │   │   ├── CreateProject.jsx
+│   │   │   ├── Earnings.jsx
+│   │   │   ├── EditMentorProfile.jsx
+│   │   │   ├── Help.jsx
+│   │   │   ├── MentorBookings.jsx
+│   │   │   ├── MentorDashboard.jsx
+│   │   │   ├── Messages.jsx
+│   │   │   ├── MessageThread.jsx
+│   │   │   ├── Programs.jsx
+│   │   │   ├── Projects.jsx
+│   │   │   ├── Requests.jsx
+│   │   │   ├── Reviews.jsx
+│   │   │   └── Settings.jsx
+│   │   ├── MentorProfile.jsx
+│   │   ├── Mentors.jsx
+│   │   ├── MentorSetup.jsx
+│   │   ├── MessageMentor.jsx
+│   │   ├── NotFound.jsx
+│   │   ├── pricing.jsx
+│   │   ├── Privacy.jsx
+│   │   ├── ProgramPublic.jsx
+│   │   ├── RealTalkPages
+│   │   │   ├── RealTalkCategory.jsx
+│   │   │   ├── RealTalkHome.jsx
+│   │   │   ├── RealTalkLanding.jsx
+│   │   │   ├── RealTalkNewPost.jsx
+│   │   │   └── RealTalkThread.jsx
+│   │   ├── RedirectToMentors.jsx
+│   │   ├── ScheduleCall.jsx
+│   │   ├── SignIn.jsx
+│   │   ├── SignUp.jsx
+│   │   ├── SignUpMentee.jsx
+│   │   ├── Support.jsx
+│   │   ├── Terms.jsx
+│   │   └── UserDashboard
+│   │       ├── BecomeMentorDash.jsx
+│   │       ├── Billing.jsx
+│   │       ├── Bookings.jsx
+│   │       ├── EditProfile.jsx
+│   │       ├── Goals.jsx
+│   │       ├── Help.jsx
+│   │       ├── Invite.jsx
+│   │       ├── Logout.jsx
+│   │       ├── Messages.jsx
+│   │       ├── MessageThread.jsx
+│   │       ├── Profile.jsx
+│   │       ├── Projects.jsx
+│   │       ├── Schedule.jsx
+│   │       ├── Settings.jsx
+│   │       └── UserDashboard.jsx
+│   └── services
+│       └── chatService.js
+├── tailwind.config.js
+├── tree.txt
+├── vercel.json
+└── vite.config.js
+
+17 directories, 157 files

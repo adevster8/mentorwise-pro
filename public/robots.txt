@@ -1,0 +1,13 @@
+# Allow the public site, block private areas
+User-agent: *
+Allow: /
+
+# Auth and private dashboards
+Disallow: /signin
+Disallow: /signup
+Disallow: /dashboard/
+Disallow: /mentor-dashboard/
+Disallow: /realtalk/new
+
+# Your sitemap lives here in production (update the domain)
+Sitemap: https://YOUR-DOMAIN.com/sitemap.xml
