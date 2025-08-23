@@ -11,6 +11,7 @@ import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import HeroSlideshow from "../components/HeroSlideshow";
 
 
+
 import {
   BoltIcon,
   BriefcaseIcon,
@@ -552,31 +553,41 @@ const ActionChoiceSection = React.memo(() => (
     </div>
   </section>
 ));
-
-// === Video (Impact-style reveal to full-bleed at mid-screen) ===
+// === Video (Impact-style reveal; mobile + desktop sizing tuned) ===
 const VideoBannerSection = React.memo(() => {
   const ref = React.useRef(null);
 
+  // Keep your slower timing (full screen just before mid-viewport)
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 85%", "center 50%"],
+    offset: ["start 92%", "center 48%"],
   });
 
   const CM = 38;
+  const FILL_AT = 0.88;
 
-  const scale = useTransform(scrollYProgress, [0, 0.48, 1], [0.82, 1.0, 1.0]);
-  const radius = useTransform(scrollYProgress, [0, 0.32, 0.48, 1], [22, 12, 0, 0]);
-  const overlayOp = useTransform(scrollYProgress, [0, 1], [0.45, 0.2]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.2, 0.5], [0, 0.65, 1]);
-  const textY = useTransform(scrollYProgress, [0, 1], [18, 0]);
-  const padX = useTransform(scrollYProgress, [0, 0.5, 1], [CM, 0, 0]);
-  const padY = useTransform(scrollYProgress, [0, 0.5, 1], [CM, 0, 0]);
-  const stickyTop = useTransform(scrollYProgress, [0, 0.5, 1], [96, 0, 0]);
+  // Animation (unchanged feel; just retuned for same timing)
+  const scale     = useTransform(scrollYProgress, [0, FILL_AT, 1], [0.82, 1.0, 1.0]);
+  const radius    = useTransform(scrollYProgress, [0, FILL_AT, 1], [22, 0, 0]);
+  const overlayOp = useTransform(scrollYProgress, [0, 0.6, FILL_AT, 1], [0.45, 0.35, 0.22, 0.20]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.55, FILL_AT], [0, 0.65, 1]);
+  const textY       = useTransform(scrollYProgress, [0, 1], [18, 0]);
+
+  const padX      = useTransform(scrollYProgress, [0, FILL_AT, 1], [CM, 0, 0]);
+  const padY      = useTransform(scrollYProgress, [0, FILL_AT, 1], [CM, 0, 0]);
+  const stickyTop = useTransform(scrollYProgress, [0, FILL_AT, 1], [96, 0, 0]);
   const boxShadow = useTransform(
     scrollYProgress,
-    [0, 0.48, 1],
+    [0, FILL_AT, 1],
     ["0 20px 50px rgba(0,0,0,0.25)", "0 6px 18px rgba(0,0,0,0.10)", "0 0 0 rgba(0,0,0,0)"]
   );
+
+  // Slightly less tall in both directions:
+  // mobile ~72vh, tablet ~66vh, desktop ~60vh
+  const heightClasses = "h-[72vh] sm:h-[66vh] lg:h-[60vh]";
+
+  // Keep face framed on both; slightly lower focal point helps mobile
+  const objectPos = "center 35%";
 
   return (
     <section
@@ -588,7 +599,7 @@ const VideoBannerSection = React.memo(() => {
       <motion.div className="sticky" style={{ top: stickyTop }}>
         <motion.div className="w-screen" style={{ paddingLeft: padX, paddingRight: padX }}>
           <motion.div
-            className="relative w-full aspect-[16/9] overflow-hidden will-change-transform"
+            className={`relative w-full ${heightClasses} overflow-hidden will-change-transform`}
             style={{
               scale,
               borderRadius: radius,
@@ -605,35 +616,41 @@ const VideoBannerSection = React.memo(() => {
               playsInline
               preload="metadata"
               className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: "center top" }}
+              style={{ objectPosition: objectPos }}
             />
 
+            {/* Soft dark overlay that lightens as you scroll */}
             <motion.div className="absolute inset-0 bg-black" style={{ opacity: overlayOp }} aria-hidden />
 
-            <motion.div
-              style={{ opacity: textOpacity, y: textY }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center"
-            >
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white max-w-4xl leading-snug">
-                Unlock Your Potential with the Right Mentor
-              </h2>
-              <p className="mt-4 text-lg sm:text-xl lg:text-2xl text-gray-200 max-w-2xl">
-                Our mentors have helped thousands reach their personal and professional goals.
-              </p>
-              <Link
-                to="/mentors"
-                className="mt-6 bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold shadow-lg text-lg"
-                aria-label="Find your mentor"
-              >
-                Find Your Mentor
-              </Link>
-            </motion.div>
+            {/* Copy — smaller on mobile, more side padding, same look on desktop */}
+<motion.div
+  style={{ opacity: textOpacity, y: textY }}
+  className="absolute inset-0 grid place-items-center text-center"
+>
+  <div className="w-[320px] sm:w-[560px] lg:w-[820px] px-4 mx-auto">
+    <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+      Unlock Your Potential with the Right Mentor
+    </h2>
+    <p className="mt-4 text-lg sm:text-xl lg:text-2xl text-gray-200">
+      Our mentors have helped thousands reach their personal and professional goals.
+    </p>
+    <Link
+      to="/mentors"
+      className="mt-6 bg-orange-600 hover:bg-orange-700 text-white px-7 sm:px-9 py-3.5 rounded-lg font-semibold shadow-lg text-lg sm:text-xl inline-block"
+      aria-label="Find your mentor"
+    >
+      Find Your Mentor
+    </Link>
+  </div>
+</motion.div>
           </motion.div>
         </motion.div>
       </motion.div>
     </section>
   );
 });
+
+
 
 const CommunitySection = React.memo(() => (
   <section aria-label="RealTalk community" className="w-full bg-sky-50 py-20 md:py-28">
