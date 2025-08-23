@@ -312,39 +312,54 @@ const HowItWorksSection = React.memo(() => (
       src="/background-waves.png"
       alt=""
       aria-hidden="true"
-      className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none opacity-70"
+      className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none opacity-70 select-none"
       loading="lazy"
       decoding="async"
       sizes="100vw"
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
     />
+
     <div className="absolute inset-0 bg-white/75 z-10 pointer-events-none" />
+
     <div className="max-w-screen-xl mx-auto text-center relative z-20">
       <motion.h2
         className="text-3xl sm:text-5xl font-extrabold text-orange-600 mb-20 font-manrope"
         initial={{ y: 40, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        viewport={{ once: true, amount: 0.3 }}
+        style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       >
         How It Works
       </motion.h2>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {HOW_IT_WORKS_STEPS.map((step, index) => (
           <motion.div
             key={index}
-            className="relative bg-orange-100/90 p-6 md:p-8 rounded-2xl shadow-xl border-t-4 border-orange-200 transition-all hover:scale-105 hover:shadow-2xl hover:bg-orange-200/80 cursor-pointer"
-            whileHover={{ scale: 1.07 }}
+            className="relative bg-orange-100/90 p-6 md:p-8 rounded-2xl shadow-xl border-t-4 border-orange-200 cursor-pointer transform-gpu"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: "easeOut", delay: index * 0.05 }}
+            viewport={{ once: true, amount: 0.25 }}
+            // tiny, smooth hover to avoid re-rasterizing big shadows
+            whileHover={{ scale: 1.03 }}
+            style={{
+              willChange: "transform, opacity",
+              transform: "translateZ(0)",
+              backfaceVisibility: "hidden",
+            }}
           >
-            <div className="absolute top-3 right-5 text-6xl font-black text-orange-600 opacity-10">
+            <div className="absolute top-3 right-5 text-6xl font-black text-orange-600 opacity-10 select-none">
               {index + 1}
             </div>
+
             <div className="text-5xl mb-4 drop-shadow">{step.emoji}</div>
+
             <h3 className="text-xl font-extrabold font-manrope mb-3 text-orange-700">
               {step.title}
             </h3>
+
             <p className="text-base leading-relaxed text-gray-700 font-lato">
               {step.description}
             </p>
@@ -701,7 +716,27 @@ const CommunitySection = React.memo(() => (
 const ValuePropositionSection = React.memo(() => (
   <section aria-label="Value proposition" className="w-full bg-white py-20 md:py-28">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      {/* IMAGE: first on mobile, second on desktop */}
       <motion.div
+        className="w-full order-1 lg:order-2"
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        viewport={{ once: true }}
+      >
+        <img
+          src="/why-coaching.jpg"
+          alt="A mentor at their desk during a video call"
+          className="w-full h-full object-cover rounded-3xl shadow-2xl border-2 border-orange-100"
+          loading="lazy"
+          decoding="async"
+          sizes="(max-width: 1024px) 100vw, 600px"
+        />
+      </motion.div>
+
+      {/* TEXT: second on mobile, first on desktop */}
+      <motion.div
+        className="order-2 lg:order-1"
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
@@ -736,22 +771,6 @@ const ValuePropositionSection = React.memo(() => (
         >
           Find Your Mentor
         </Link>
-      </motion.div>
-      <motion.div
-        className="w-full"
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        viewport={{ once: true }}
-      >
-        <img
-          src="/why-coaching.jpg"
-          alt="A mentor at their desk during a video call"
-          className="w-full h-full object-cover rounded-3xl shadow-2xl border-2 border-orange-100"
-          loading="lazy"
-          decoding="async"
-          sizes="(max-width: 1024px) 100vw, 600px"
-        />
       </motion.div>
     </div>
   </section>
