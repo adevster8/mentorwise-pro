@@ -2,50 +2,34 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-/** TUNE THESE ONLY (desktop/tablet) */
-const LEFT = {
-  src: "/hero-image-left.jpg",
-  pos: "100% 50%",
-  scale: 1.06,
-  offsetX: "-2%",
-  offsetY: "2%",
-};
-
-const RIGHT = {
-  src: "/slide-show1.png",
-  pos: "97% 60%",     // X → move further RIGHT (97 → 99%).
-                      // Y → move further DOWN (58 → 60%).
-  scale: 1.14,        // keep same bleed
-  offsetX: "-1%",     // less left slide (was -3%)
-  offsetY: "2%",      // move image slightly DOWN
-};
 export default function Hero() {
   return (
     <>
-      {/* === MOBILE / NARROW (shows when < md) === */}
+      {/* === MOBILE (< md) === */}
       <section className="md:hidden relative w-full h-[92svh] min-h-[520px] max-h-[900px] overflow-hidden bg-black">
-        {/* Left image full-bleed */}
+        {/* Full-bleed photo — centered subject for phones */}
         <img
-          src={LEFT.src}
+          src="/hero-image-left.jpg"
           alt=""
           className="absolute inset-0 h-full w-full object-cover will-change-transform"
           style={{
-            objectPosition: LEFT.pos,
-            transform: `translate(${LEFT.offsetX}, ${LEFT.offsetY}) scale(${LEFT.scale})`,
+            objectPosition: "55% 50%",
+            transform: "translate(0, 0) scale(1)",
             transformOrigin: "center",
           }}
           loading="eager"
           fetchpriority="high"
         />
-        {/* Darker top/bottom gradients for readability */}
+
+        {/* Readability gradients */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-black/40 to-transparent" />
-          <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-black/65 via-black/35 to-transparent" />
+          <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-black/65 via-black/50 to-transparent" />
         </div>
 
         {/* Card + CTA */}
         <motion.div
-          className="relative z-10 h-full flex flex-col justify-end px-4 pb-[calc(18px+env(safe-area-inset-bottom))] gap-4"
+          className="relative z-10 h-full flex flex-col justify-end px-4 pb-[calc(72px+env(safe-area-inset-bottom))] gap-5"
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -71,53 +55,35 @@ export default function Hero() {
         </motion.div>
       </section>
 
-      {/* === DESKTOP / TABLET (keeps current alignment; shows when ≥ md) === */}
+      {/* === DESKTOP / TABLET (≥ md) — hero matches image size exactly === */}
       <section
-        className="hidden md:flex relative w-full h-[80vh] min-h-[600px] items-end justify-center overflow-hidden"
+        className="hidden md:block relative w-full overflow-hidden bg-black"
         style={{ marginTop: "-100px" }}
       >
-  {/* LEFT HALF */}
-<div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
-  <img
-    src={LEFT.src}
-    alt=""
-    className="h-full w-full object-cover will-change-transform"
-    style={{
-      objectPosition: LEFT.pos,
-      transform: `translate(${LEFT.offsetX}, ${LEFT.offsetY}) scale(${LEFT.scale})`,
-      transformOrigin: "center",
-    }}
-  />
-  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-transparent" />
-</div>
+        {/* The image defines the height: width:100%, height:auto (no cropping, any aspect) */}
+      <img
+  src="/hero-final.png"
+  alt=""
+  className="block w-full h-auto will-change-transform"
+  style={{
+    transform: "translateY(69px)",  // ↓ moves image down
+    transformOrigin: "center",
+  }}
+/>
 
-{/* RIGHT HALF */}
-<div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
-  <img
-    src={RIGHT.src}
-    alt=""
-    className="h-full w-full object-cover will-change-transform"
-    style={{
-      objectPosition: RIGHT.pos,
-      transform: `translate(calc(${RIGHT.offsetX} - 0.5%), ${RIGHT.offsetY}) scale(${RIGHT.scale})`,
-      // ^ tiny nudge left (0.5%) to overlap and kill seam
-      transformOrigin: "center",
-    }}
-  />
-  <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/35 via-transparent to-transparent" />
-</div>
-
-        {/* Bottom gradient for card contrast (darker) */}
+        {/* Overlays pinned to the image box */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/50 via-transparent to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
 
-        {/* Text + CTA (unchanged) */}
+        {/* Text + CTA over the image */}
         <motion.div
-          className="relative z-10 w-full max-w-screen-xl px-6 md:px-8 pb-16 md:pb-20"
+          className="absolute inset-x-0 bottom-0 z-10 w-full max-w-screen-xl mx-auto px-6 md:px-8 pb-16 md:pb-20"
           initial={{ opacity: 0, y: 26 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: "easeOut" }}
         >
-          <div className="mx-auto max-w-3xl bg-white/95 backdrop-blur-sm rounded-3xl px-8 py-10 md:px-12 md:py-12 shadow-xl ring-1 ring-black/5">
+          <div className="mx-auto max-w-3xl bg-white/95 rounded-3xl px-8 py-10 md:px-12 md:py-12 shadow-xl ring-1 ring-black/5 relative -translate-y-2 md:-translate-y-4">
             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-[#181C2A] text-center font-manrope">
               Mentorship That Moves <br />
               You <span className="text-orange-600">Forward</span>
