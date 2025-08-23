@@ -9,6 +9,7 @@ import ModernDropdown from "../components/ModernDropdown";
 import ParallaxCardSection from "../components/ParallaxCardSection";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import HeroSlideshow from "../components/HeroSlideshow";
+import NewsletterModal from "../components/NewsletterModal";
 
 
 
@@ -305,7 +306,7 @@ const CategorySection = React.memo(function CategorySection() {
 const HowItWorksSection = React.memo(() => (
   <section
     aria-label="How MentorWise works"
-    className="relative pt-60 pb-4 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
+    className="relative pt-10 sm:pt-14 md:pt-24 pb-8 md:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
     style={{ background: "linear-gradient(0deg, #fff7eecc 65%, #e6eef7cc 100%)" }}
   >
     <img
@@ -323,7 +324,7 @@ const HowItWorksSection = React.memo(() => (
 
     <div className="max-w-screen-xl mx-auto text-center relative z-20">
       <motion.h2
-        className="text-3xl sm:text-5xl font-extrabold text-orange-600 mb-20 font-manrope"
+        className="text-3xl sm:text-5xl font-extrabold text-orange-600 mb-8 sm:mb-12 md:mb-20 font-manrope"
         initial={{ y: 40, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -342,7 +343,6 @@ const HowItWorksSection = React.memo(() => (
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: "easeOut", delay: index * 0.05 }}
             viewport={{ once: true, amount: 0.25 }}
-            // tiny, smooth hover to avoid re-rasterizing big shadows
             whileHover={{ scale: 1.03 }}
             style={{
               willChange: "transform, opacity",
@@ -425,140 +425,128 @@ const WhyMentorWiseSection = React.memo(function WhyMentorWiseSection() {
 const ActionChoiceSection = React.memo(() => (
   <section
     aria-label="Choose an action"
-    className="w-full bg-gradient-to-b from-orange-50 to-white py-16"
+    className="w-full bg-gradient-to-b from-orange-50 to-white py-10 sm:py-16"
   >
-    <div className="w-full px-4 sm:px-6 lg:px-12">
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Find a Mentor */}
-        <div className="bg-white rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-8 lg:p-10 flex flex-col justify-between">
+    <div className="w-full px-3 sm:px-6 lg:px-12">
+      <div className="grid grid-cols-2 gap-3 sm:gap-8">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-3 sm:p-8 lg:p-10 flex flex-col justify-between">
           <div>
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 mb-6">
-              <Rocket className="w-7 h-7" />
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-600 mb-4 sm:mb-6">
+              <Rocket className="w-5 h-5 sm:w-7 sm:h-7" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#181C2A] mb-4">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#181C2A] mb-2 sm:mb-4 leading-tight">
               I want to achieve a goal.
             </h2>
-            <p className="text-gray-600 mb-7 max-w-2xl">
-              Find a vetted expert to help you master a skill, complete a
-              project, or launch your next big idea.
+            <p className="text-[13px] sm:text-base text-gray-600 mb-4 sm:mb-7 max-w-2xl">
+              <span className="sm:hidden">Work with a vetted expert to master a skill or finish a project.</span>
+              <span className="hidden sm:inline">Find a vetted expert to help you master a skill, complete a project, or launch your next big idea.</span>
             </p>
-            <ul className="space-y-5">
-              <li className="flex gap-4">
-                <div className="mt-1 text-orange-600">
-                  <Map className="w-5 h-5" />
+            <ul className="space-y-3 sm:space-y-5">
+              <li className="flex gap-3 sm:gap-4">
+                <div className="mt-0.5 sm:mt-1 text-orange-600">
+                  <Map className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#181C2A]">
-                    Get a Step-by-Step Roadmap
-                  </p>
-                  <p className="text-gray-600">
-                    Follow a clear plan with milestones tailored to your
-                    specific goal.
+                  <p className="font-semibold text-[#181C2A] text-sm sm:text-base">Get a Step-by-Step Roadmap</p>
+                  <p className="text-gray-600 text-[12px] sm:text-sm">
+                    <span className="sm:hidden">Follow a clear plan with tailored milestones.</span>
+                    <span className="hidden sm:inline">Follow a clear plan with milestones tailored to your specific goal.</span>
                   </p>
                 </div>
               </li>
-              <li className="flex gap-4">
-                <div className="mt-1 text-orange-600">
-                  <Sparkles className="w-5 h-5" />
+              <li className="flex gap-3 sm:gap-4">
+                <div className="mt-0.5 sm:mt-1 text-orange-600">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#181C2A]">
-                    Master Skills with 1-on-1 Guidance
-                  </p>
-                  <p className="text-gray-600">
-                    Receive personalized feedback and support from a true
-                    expert.
+                  <p className="font-semibold text-[#181C2A] text-sm sm:text-base">1-on-1 Guidance</p>
+                  <p className="text-gray-600 text-[12px] sm:text-sm">
+                    <span className="sm:hidden">Personal feedback and support from a true expert.</span>
+                    <span className="hidden sm:inline">Receive personalized feedback and support from a true expert.</span>
                   </p>
                 </div>
               </li>
-              <li className="flex gap-4">
-                <div className="mt-1 text-orange-600">
-                  <MessageSquare className="w-5 h-5" />
+              <li className="flex gap-3 sm:gap-4">
+                <div className="mt-0.5 sm:mt-1 text-orange-600">
+                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#181C2A]">
-                    Build Confidence & Get Results
-                  </p>
-                  <p className="text-gray-600">
-                    Move forward faster with a partner dedicated to your
-                    success.
+                  <p className="font-semibold text-[#181C2A] text-sm sm:text-base">Build Confidence & Get Results</p>
+                  <p className="text-gray-600 text-[12px] sm:text-sm">
+                    <span className="sm:hidden">Move faster with a partner dedicated to your success.</span>
+                    <span className="hidden sm:inline">Move forward faster with a partner dedicated to your success.</span>
                   </p>
                 </div>
               </li>
             </ul>
           </div>
-          <div className="mt-8">
+          <div className="mt-5 sm:mt-8">
             <Link
               to="/mentors"
               aria-label="Find your mentor"
-              className="inline-flex items-center justify-center w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-7 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition"
+              className="inline-flex items-center justify-center w-full bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-7 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold shadow-md hover:shadow-lg transition text-sm sm:text-base"
             >
               Find Your Mentor →
             </Link>
           </div>
         </div>
 
-        {/* Become a Coach */}
-        <div className="bg-slate-100 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] p-8 lg:p-10 flex flex-col justify-between">
+        <div className="bg-slate-100 rounded-2xl sm:rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] p-3 sm:p-8 lg:p-10 flex flex-col justify-between">
           <div>
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 mb-6">
-              <GraduationCap className="w-7 h-7" />
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-600 mb-4 sm:mb-6">
+              <GraduationCap className="w-5 h-5 sm:w-7 sm:h-7" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#181C2A] mb-4">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#181C2A] mb-2 sm:mb-4 leading-tight">
               I want to share my expertise.
             </h2>
-            <p className="text-gray-600 mb-7 max-w-2xl">
-              Turn your skills into a sustainable business with low fees,
-              flexible offer types, and high-quality clients.
+            <p className="text-[13px] sm:text-base text-gray-600 mb-4 sm:mb-7 max-w-2xl">
+              <span className="sm:hidden">Build a sustainable coaching business with low fees and great clients.</span>
+              <span className="hidden sm:inline">Turn your skills into a sustainable business with low fees, flexible offer types, and high-quality clients.</span>
             </p>
-            <ul className="space-y-5">
-              <li className="flex gap-4">
-                <div className="mt-1 text-orange-600">
-                  <Wallet className="w-5 h-5" />
+            <ul className="space-y-3 sm:space-y-5">
+              <li className="flex gap-3 sm:gap-4">
+                <div className="mt-0.5 sm:mt-1 text-orange-600">
+                  <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#181C2A]">
-                    Monetize with Low 12% Fees
-                  </p>
-                  <p className="text-gray-600">
-                    Keep more of what you earn compared to other platforms.
+                  <p className="font-semibold text-[#181C2A] text-sm sm:text-base">Monetize with Low 12% Fees</p>
+                  <p className="text-gray-600 text-[12px] sm:text-sm">
+                    <span className="sm:hidden">Keep more of what you earn.</span>
+                    <span className="hidden sm:inline">Keep more of what you earn compared to other platforms.</span>
                   </p>
                 </div>
               </li>
-              <li className="flex gap-4">
-                <div className="mt-1 text-orange-600">
-                  <CalendarCheck className="w-5 h-5" />
+              <li className="flex gap-3 sm:gap-4">
+                <div className="mt-0.5 sm:mt-1 text-orange-600">
+                  <CalendarCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#181C2A]">
-                    Offer Flexible Plans & Retainers
-                  </p>
-                  <p className="text-gray-600">
-                    Sell your expertise your way — not just as one-off gigs.
+                  <p className="font-semibold text-[#181C2A] text-sm sm:text-base">Flexible Plans & Retainers</p>
+                  <p className="text-gray-600 text-[12px] sm:text-sm">
+                    <span className="sm:hidden">Sell your expertise your way.</span>
+                    <span className="hidden sm:inline">Sell your expertise your way — not just as one-off gigs.</span>
                   </p>
                 </div>
               </li>
-              <li className="flex gap-4">
-                <div className="mt-1 text-orange-600">
-                  <Users className="w-5 h-5" />
+              <li className="flex gap-3 sm:gap-4">
+                <div className="mt-0.5 sm:mt-1 text-orange-600">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#181C2A]">
-                    Grow with High-Quality Clients
-                  </p>
-                  <p className="text-gray-600">
-                    Connect with users who are invested in achieving real
-                    outcomes.
+                  <p className="font-semibold text-[#181C2A] text-sm sm:text-base">High-Quality Clients</p>
+                  <p className="text-gray-600 text-[12px] sm:text-sm">
+                    <span className="sm:hidden">Connect with serious learners.</span>
+                    <span className="hidden sm:inline">Connect with users who are invested in achieving real outcomes.</span>
                   </p>
                 </div>
               </li>
             </ul>
           </div>
-          <div className="mt-8">
+          <div className="mt-5 sm:mt-8">
             <Link
               to="/become-a-mentor"
               aria-label="Become a coach"
-              className="inline-flex items-center justify-center w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-7 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition"
+              className="inline-flex items-center justify-center w-full bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-7 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold shadow-md hover:shadow-lg transition text-sm sm:text-base"
             >
               Become a Coach →
             </Link>
@@ -568,6 +556,7 @@ const ActionChoiceSection = React.memo(() => (
     </div>
   </section>
 ));
+
 // === Video (Impact-style reveal; mobile + desktop sizing tuned) ===
 const VideoBannerSection = React.memo(() => {
   const ref = React.useRef(null);
@@ -666,6 +655,7 @@ const VideoBannerSection = React.memo(() => {
 });
 
 
+// === Real Talk ===
 
 const CommunitySection = React.memo(() => (
   <section aria-label="RealTalk community" className="w-full bg-sky-50 py-20 md:py-28">
@@ -713,43 +703,68 @@ const CommunitySection = React.memo(() => (
   </section>
 ));
 
+// === Expert Mentors ===
+
 const ValuePropositionSection = React.memo(() => (
   <section aria-label="Value proposition" className="w-full bg-white py-20 md:py-28">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-      {/* IMAGE: first on mobile, second on desktop */}
+      {/* IMAGES */}
       <motion.div
         className="w-full order-1 lg:order-2"
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
         viewport={{ once: true }}
       >
-        <img
-          src="/why-coaching.jpg"
-          alt="A mentor at their desk during a video call"
-          className="w-full h-full object-cover rounded-3xl shadow-2xl border-2 border-orange-100"
-          loading="lazy"
-          decoding="async"
-          sizes="(max-width: 1024px) 100vw, 600px"
-        />
+        {/* <1000px — wide top photo only */}
+        <div className="relative h-[380px] sm:h-[430px] md:h-[460px] max-[999px]:block min-[1000px]:hidden">
+          <img
+            src="/why-coaching.jpg"
+            alt="Mentor at desk during a video call"
+            className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-xl border border-orange-100"
+            style={{ objectPosition: '50% 45%' }}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
+        {/* ≥1000px — overlapped collage */}
+        <div className="relative hidden min-[1000px]:block min-[1000px]:h-[460px]">
+          {/* Back image (top-right) */}
+          <img
+            src="/why-coaching.jpg"
+            alt="Mentor at desk during a video call"
+            className="absolute right-0 top-0 object-cover rounded-3xl shadow-xl border border-orange-100"
+            style={{ width: '68%', aspectRatio: '5 / 4', objectPosition: '50% 45%' }}
+            loading="lazy"
+            decoding="async"
+          />
+          {/* Front image (bottom-left) */}
+          <img
+            src="/wfh-pic.jpg"
+            alt="Cozy home workspace with shelves and accessories"
+            className="absolute left-0 bottom-0 object-cover rounded-3xl shadow-2xl border border-orange-100"
+            style={{ width: '58%', height: '68%', aspectRatio: '1 / 1', objectPosition: '50% 35%' }}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </motion.div>
 
-      {/* TEXT: second on mobile, first on desktop */}
+      {/* TEXT */}
       <motion.div
         className="order-2 lg:order-1"
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
         viewport={{ once: true }}
       >
         <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 font-manrope leading-tight">
-          Expert mentors. <br /> <span className="text-orange-600">Real results.</span> One
-          platform.
+          Expert mentors. <br /> <span className="text-orange-600">Real results.</span> One platform.
         </h2>
         <p className="mt-4 text-lg text-slate-600 font-lato">
-          Mentorship bridges the gap between where you are and where you want to
-          be. It’s not a course; it’s a partnership focused on your specific
-          goals.
+          Mentorship bridges the gap between where you are and where you want to be. It’s not a course; it’s a
+          partnership focused on your specific goals.
         </p>
         <ul className="mt-8 space-y-5 text-slate-700">
           {VALUE_PROPOSITION_FEATURES.map((feature) => (
@@ -776,9 +791,11 @@ const ValuePropositionSection = React.memo(() => (
   </section>
 ));
 
+
 /* -------------------------
    Page (UNCHANGED ORDER)
 -------------------------- */
+
 
 export default function Home() {
   const jsonLd = {
@@ -861,6 +878,9 @@ export default function Home() {
         <ValuePropositionSection />
         <ParallaxCardSection />
       </main>
+
+      {/* Popup newsletter (shows after 25s, overlays page) */}
+      <NewsletterModal />
     </motion.div>
   );
 }

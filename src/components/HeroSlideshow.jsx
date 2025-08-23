@@ -6,7 +6,11 @@ export default function Hero() {
   return (
     <>
       {/* === MOBILE (< md) === */}
-      <section className="md:hidden relative w-full h-[92svh] min-h-[520px] max-h-[900px] overflow-hidden bg-black">
+      <section
+        className="md:hidden relative w-full h-[92svh] min-h-[520px] max-h-[900px] overflow-hidden bg-black"
+        // opacity controls (mobile): 25% lighter than before
+        style={{ ["--mTop"]: 0.30, ["--mFloor"]: 0.49 }}
+      >
         {/* Full-bleed photo — centered subject for phones */}
         <img
           src="/hero-image-left.jpg"
@@ -21,10 +25,10 @@ export default function Hero() {
           fetchpriority="high"
         />
 
-        {/* Readability gradients */}
+        {/* Readability gradients (tunable via --mTop / --mFloor) */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-black/40 to-transparent" />
-          <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-black/65 via-black/50 to-transparent" />
+          <div className="absolute top-0 inset-x-0 h-28 bg-[linear-gradient(to_bottom,rgba(0,0,0,var(--mTop)),transparent)]" />
+          <div className="absolute bottom-0 inset-x-0 h-44 bg-[linear-gradient(to_top,rgba(0,0,0,var(--mFloor)),rgba(0,0,0,calc(var(--mFloor)*0.75)),transparent)]" />
         </div>
 
         {/* Card + CTA */}
@@ -55,28 +59,37 @@ export default function Hero() {
         </motion.div>
       </section>
 
-      {/* === DESKTOP / TABLET (≥ md) — hero matches image size exactly === */}
+      {/* === DESKTOP / TABLET (≥ md) — image’s natural height (no crop) === */}
       <section
         className="hidden md:block relative w-full overflow-hidden bg-black"
-        style={{ marginTop: "-100px" }}
+        style={{
+          marginTop: "-100px",
+          // opacity controls (desktop): 25% lighter than before
+          ["--edge"]: 0.38, // was ~0.50
+          ["--floor"]: 0.45, // was ~0.60
+        }}
       >
-        {/* The image defines the height: width:100%, height:auto (no cropping, any aspect) */}
-      <img
-  src="/hero-final.png"
-  alt=""
-  className="block w-full h-auto will-change-transform"
-  style={{
-    transform: "translateY(69px)",  // ↓ moves image down
-    transformOrigin: "center",
-  }}
-/>
+        {/* The image defines height; position nudged down as before */}
+        <img
+          src="/hero-final.png"
+          alt=""
+          className="block w-full h-auto will-change-transform"
+          style={{
+            transform: "translateY(69px)",
+            transformOrigin: "center",
+          }}
+          loading="eager"
+          fetchpriority="high"
+        />
 
-        {/* Overlays pinned to the image box */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/50 via-transparent to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+        {/* Soft edge gradients (use --edge) */}
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,var(--edge)),transparent,transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_left,rgba(0,0,0,var(--edge)),transparent,transparent)]" />
 
-        {/* Text + CTA over the image */}
+        {/* Bottom contrast gradient (uses --floor; mid = 50% of floor to keep shape) */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(to_top,rgba(0,0,0,var(--floor)),rgba(0,0,0,calc(var(--floor)*0.5)),transparent)]" />
+
+        {/* Text + CTA */}
         <motion.div
           className="absolute inset-x-0 bottom-0 z-10 w-full max-w-screen-xl mx-auto px-6 md:px-8 pb-16 md:pb-20"
           initial={{ opacity: 0, y: 26 }}

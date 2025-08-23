@@ -23,7 +23,6 @@ import {
 } from "@heroicons/react/24/outline";
 
 // --- Data Constants ---
-// All static content is defined here for performance and easier maintenance.
 
 const SUB_NAV_LINKS = [
   { href: "#overview", label: "Overview" },
@@ -141,9 +140,7 @@ const FAQ_ITEMS = [
   { q: "Can mentors sell courses or resources?", a: "Yes—mentors can bundle sessions with courses, templates, or recordings for hybrid learning." },
 ];
 
-
-// --- Animation & UI Primitives ---
-// Reusable helpers and presentational components.
+// --- Animation & UI helpers ---
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -152,11 +149,31 @@ const fadeUp = (delay = 0) => ({
   transition: { duration: 0.6, ease: "easeOut", delay },
 });
 
-const Section = ({ id, eyebrow, title, subtitle, children }) => (
-  <section id={id} className="scroll-mt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-    {eyebrow && <motion.div {...fadeUp(0)} className="text-xs tracking-widest uppercase font-semibold text-orange-600/90">{eyebrow}</motion.div>}
-    {title && <motion.h2 {...fadeUp(0.05)} className="mt-2 text-3xl md:text-4xl font-extrabold text-slate-900">{title}</motion.h2>}
-    {subtitle && <motion.p {...fadeUp(0.1)} className="mt-3 text-base md:text-lg text-slate-600 max-w-3xl">{subtitle}</motion.p>}
+/**
+ * Section with tighter top padding on mobile.
+ * - mobile: pt-4 (first section can override to pt-2)
+ * - md+:    pt-16 (unchanged)
+ */
+const Section = ({ id, eyebrow, title, subtitle, children, className = "" }) => (
+  <section
+    id={id}
+    className={`scroll-mt-20 md:scroll-mt-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-16 pb-12 md:pb-16 ${className}`}
+  >
+    {eyebrow && (
+      <motion.div {...fadeUp(0)} className="text-xs tracking-widest uppercase font-semibold text-orange-600/90">
+        {eyebrow}
+      </motion.div>
+    )}
+    {title && (
+      <motion.h2 {...fadeUp(0.05)} className="mt-2 text-3xl md:text-4xl font-extrabold text-slate-900">
+        {title}
+      </motion.h2>
+    )}
+    {subtitle && (
+      <motion.p {...fadeUp(0.1)} className="mt-3 text-base md:text-lg text-slate-600 max-w-3xl">
+        {subtitle}
+      </motion.p>
+    )}
     <div className="mt-8">{children}</div>
   </section>
 );
@@ -168,14 +185,18 @@ const Pill = ({ icon: Icon, children }) => (
 );
 
 const GlassCard = ({ children, className = "" }) => (
-  <div className={`bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-xl ${className}`}>{children}</div>
+  <div className={`bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-xl ${className}`}>
+    {children}
+  </div>
 );
 
-const Check = () => <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">✓</span>;
+const Check = () => (
+  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">
+    ✓
+  </span>
+);
 
-
-// --- Section Components ---
-// The main component is broken down into these smaller, memoized sections.
+// --- Sections ---
 
 const StickySubNav = React.memo(({ links }) => (
   <div className="sticky top-0 z-40 backdrop-blur-xl bg-white/70 border-b border-white/60">
@@ -183,7 +204,9 @@ const StickySubNav = React.memo(({ links }) => (
       <div className="flex items-center gap-3 py-3 overflow-x-auto">
         {links.map((link, i) => (
           <React.Fragment key={link.href}>
-            <a className="text-sm font-semibold text-slate-800 hover:text-orange-600 whitespace-nowrap" href={link.href}>{link.label}</a>
+            <a className="text-sm font-semibold text-slate-800 hover:text-orange-600 whitespace-nowrap" href={link.href}>
+              {link.label}
+            </a>
             {i < links.length - 1 && <span className="text-slate-300">•</span>}
           </React.Fragment>
         ))}
@@ -193,8 +216,10 @@ const StickySubNav = React.memo(({ links }) => (
 ));
 
 const HeroSection = React.memo(() => (
+  // Extra-tight top padding only for the first section on mobile
   <Section
     id="overview"
+    className="pt-0 md:pt-8"
     eyebrow="MentorWise"
     title="Tell us your goal. Get a custom plan from a real coach."
     subtitle="We blend the warmth of mentorship with the power of a marketplace. Chat free → receive a polished plan → pay securely → book instantly → track progress."
@@ -210,13 +235,21 @@ const HeroSection = React.memo(() => (
               <Pill icon={CalendarDaysIcon}>Instant scheduling</Pill>
             </div>
             <p className="text-slate-700 leading-relaxed">
-              MentorWise is built for real growth: whether you're switching careers, learning guitar, launching a side hustle, or leveling up in fitness. Choose how you want to work—Goal-based, Retainer, or Learning-based—then collaborate in a modern, animated UI that feels as smooth as your favorite apps.
+              MentorWise is built for real growth: whether you're switching careers, learning guitar, launching a side
+              hustle, or leveling up in fitness. Choose how you want to work—Goal-based, Retainer, or Learning-based—then
+              collaborate in a modern, animated UI that feels as smooth as your favorite apps.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link to="/mentors" className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-white font-semibold shadow hover:bg-orange-600">
+              <Link
+                to="/mentors"
+                className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-white font-semibold shadow hover:bg-orange-600"
+              >
                 Find a Coach <ArrowRightIcon className="h-5 w-5" />
               </Link>
-              <Link to="/realtalk" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-slate-900 font-semibold border border-slate-200 shadow-sm hover:bg-slate-50">
+              <Link
+                to="/realtalk"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-slate-900 font-semibold border border-slate-200 shadow-sm hover:bg-slate-50"
+              >
                 Ask the Community
               </Link>
             </div>
@@ -226,13 +259,33 @@ const HeroSection = React.memo(() => (
               <div className="absolute -inset-2 rounded-3xl bg-gradient-to-tr from-orange-200 via-orange-100 to-blue-100 blur-xl opacity-70" />
               <GlassCard className="relative p-4 md:p-6">
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="col-span-2 font-semibold text-slate-800 flex items-center gap-2"><SparklesIcon className="h-5 w-5 text-orange-600" /> Live demo of a Plan Card</div>
-                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200"><div className="text-xs text-slate-500">Type</div><div className="font-semibold">Goal-Based</div></div>
-                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200"><div className="text-xs text-slate-500">Price</div><div className="font-semibold">$199</div></div>
-                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200"><div className="text-xs text-slate-500">Sessions</div><div className="font-semibold">4 × 60 min</div></div>
-                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200"><div className="text-xs text-slate-500">Schedule</div><div className="font-semibold">Mon & Thu, 5–6pm</div></div>
-                  <div className="col-span-2 flex flex-wrap items-center gap-2 text-xs text-slate-600"><Check /> Homework & feedback • <Check /> Progress tracking • <Check /> Session notes</div>
-                  <div className="col-span-2"><button className="w-full rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5">Accept & Pay</button></div>
+                  <div className="col-span-2 font-semibold text-slate-800 flex items-center gap-2">
+                    <SparklesIcon className="h-5 w-5 text-orange-600" /> Live demo of a Plan Card
+                  </div>
+                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200">
+                    <div className="text-xs text-slate-500">Type</div>
+                    <div className="font-semibold">Goal-Based</div>
+                  </div>
+                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200">
+                    <div className="text-xs text-slate-500">Price</div>
+                    <div className="font-semibold">$199</div>
+                  </div>
+                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200">
+                    <div className="text-xs text-slate-500">Sessions</div>
+                    <div className="font-semibold">4 × 60 min</div>
+                  </div>
+                  <div className="bg-white/70 rounded-xl p-3 border border-slate-200">
+                    <div className="text-xs text-slate-500">Schedule</div>
+                    <div className="font-semibold">Mon & Thu, 5–6pm</div>
+                  </div>
+                  <div className="col-span-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                    <Check /> Homework & feedback • <Check /> Progress tracking • <Check /> Session notes
+                  </div>
+                  <div className="col-span-2">
+                    <button className="w-full rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5">
+                      Accept & Pay
+                    </button>
+                  </div>
                 </div>
               </GlassCard>
             </div>
@@ -244,7 +297,12 @@ const HeroSection = React.memo(() => (
 ));
 
 const CoachingPathsSection = React.memo(({ paths }) => (
-  <Section id="paths" eyebrow="Paths" title="Three ways to work—pick your style" subtitle="These are built for flexibility and fairness. No unrealistic guarantees—just transparent plans and real accountability.">
+  <Section
+    id="paths"
+    eyebrow="Paths"
+    title="Three ways to work—pick your style"
+    subtitle="These are built for flexibility and fairness. No unrealistic guarantees—just transparent plans and real accountability."
+  >
     <div className="grid md:grid-cols-3 gap-6">
       {paths.map((path, i) => (
         <motion.div key={path.title} {...fadeUp(i * 0.05)}>
@@ -255,7 +313,11 @@ const CoachingPathsSection = React.memo(({ paths }) => (
             </div>
             <p className="text-slate-600 mb-4">{path.description}</p>
             <ul className="space-y-2 text-sm text-slate-700">
-              {path.features.map(feature => <li key={feature} className="flex items-start gap-2"><Check /> {feature}</li>)}
+              {path.features.map((feature) => (
+                <li key={feature} className="flex items-start gap-2">
+                  <Check /> {feature}
+                </li>
+              ))}
             </ul>
           </GlassCard>
         </motion.div>
@@ -265,7 +327,12 @@ const CoachingPathsSection = React.memo(({ paths }) => (
 ));
 
 const WorkflowSection = React.memo(({ steps }) => (
-  <Section id="flow" eyebrow="Flow" title="From chat to growth in minutes" subtitle="A modern, frictionless path that feels as simple as texting—but with pro-grade structure behind the scenes.">
+  <Section
+    id="flow"
+    eyebrow="Flow"
+    title="From chat to growth in minutes"
+    subtitle="A modern, frictionless path that feels as simple as texting—but with pro-grade structure behind the scenes."
+  >
     <div className="grid md:grid-cols-5 gap-4">
       {steps.map((step, i) => (
         <motion.div key={step.title} {...fadeUp(i * 0.05)}>
@@ -283,8 +350,18 @@ const WorkflowSection = React.memo(({ steps }) => (
       ))}
     </div>
     <motion.div {...fadeUp(0.3)} className="mt-8 flex flex-wrap items-center gap-3">
-      <Link to="/mentors" className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-white font-semibold shadow hover:bg-slate-800">Match with a Coach <ArrowRightIcon className="h-5 w-5" /></Link>
-      <a href="#paths" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-slate-900 font-semibold border border-slate-200 shadow-sm hover:bg-slate-50">Explore paths</a>
+      <Link
+        to="/mentors"
+        className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-white font-semibold shadow hover:bg-slate-800"
+      >
+        Match with a Coach <ArrowRightIcon className="h-5 w-5" />
+      </Link>
+      <a
+        href="#paths"
+        className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-slate-900 font-semibold border border-slate-200 shadow-sm hover:bg-slate-50"
+      >
+        Explore paths
+      </a>
     </motion.div>
   </Section>
 ));
@@ -300,7 +377,11 @@ const ComparisonSection = React.memo(({ comparisons }) => (
               <Pill>{col.badge}</Pill>
             </div>
             <ul className="space-y-2 text-sm text-slate-700">
-              {col.points.map(p => <li key={p} className="flex items-start gap-2"><Check /> {p}</li>)}
+              {col.points.map((p) => (
+                <li key={p} className="flex items-start gap-2">
+                  <Check /> {p}
+                </li>
+              ))}
             </ul>
           </GlassCard>
         </motion.div>
@@ -332,7 +413,7 @@ const SocialProofSection = React.memo(({ stats }) => (
     <motion.div {...fadeUp(0)}>
       <GlassCard className="p-6 md:p-8">
         <div className="grid sm:grid-cols-3 gap-6 text-center">
-          {stats.map(stat => (
+          {stats.map((stat) => (
             <div key={stat.l} className="space-y-1">
               <div className="text-3xl font-extrabold text-slate-900">{stat.n}</div>
               <div className="text-slate-600">{stat.l}</div>
@@ -372,14 +453,14 @@ const CtaSection = React.memo(() => (
   </Section>
 ));
 
-
-// --- Main Page Component ---
-// This component now assembles the page from the smaller, optimized sections.
+// --- Main ---
 
 export default function HowItWorksContent() {
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
-    return () => { document.documentElement.style.scrollBehavior = "auto"; };
+    return () => {
+      document.documentElement.style.scrollBehavior = "auto";
+    };
   }, []);
 
   return (
