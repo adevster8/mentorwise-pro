@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useRef, useMemo } from "react";
 
+
 /**
  * Impact-style scroll reveal (sticky card that grows + drifts).
  * - Default drift NW → SE (x: -40→90, y: -10→40).

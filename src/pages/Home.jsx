@@ -9,7 +9,7 @@ import ModernDropdown from "../components/ModernDropdown";
 import ParallaxCardSection from "../components/ParallaxCardSection";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import HeroSlideshow from "../components/HeroSlideshow";
-import HeroVideoReel from "../components/HeroVideoReel";
+
 
 import {
   BoltIcon,
