@@ -40,7 +40,7 @@ export default function Hero() {
         {/* Darker top/bottom gradients for readability */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-black/40 to-transparent" />
-          <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-black/65 via-black/35 to-transparent" />
+          <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-black/65 via-black/50 to-transparent" />
         </div>
 
         {/* Card + CTA */}
@@ -88,7 +88,7 @@ export default function Hero() {
       transformOrigin: "center",
     }}
   />
-  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-transparent" />
+  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 </div>
 
 {/* RIGHT HALF */}
@@ -104,39 +104,40 @@ export default function Hero() {
       transformOrigin: "center",
     }}
   />
-  <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/35 via-transparent to-transparent" />
+  <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/50 via-transparent to-transparent" />
 </div>
 
         {/* Bottom gradient for card contrast (darker) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
 
         {/* Text + CTA (unchanged) */}
-        <motion.div
-          className="relative z-10 w-full max-w-screen-xl px-6 md:px-8 pb-16 md:pb-20"
-          initial={{ opacity: 0, y: 26 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: "easeOut" }}
-        >
-          <div className="mx-auto max-w-3xl bg-white/95 backdrop-blur-sm rounded-3xl px-8 py-10 md:px-12 md:py-12 shadow-xl ring-1 ring-black/5">
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-[#181C2A] text-center font-manrope">
-              Mentorship That Moves <br />
-              You <span className="text-orange-600">Forward</span>
-            </h1>
-            <p className="mt-5 text-lg md:text-xl text-[#181C2A] text-center font-lato">
-              Get advice from experts and support from peers. All in one space
-              built for your growth and success.
-            </p>
-          </div>
+<motion.div
+  className="relative z-10 w-full max-w-screen-xl px-6 md:px-8 pb-16 md:pb-20"
+  initial={{ opacity: 0, y: 26 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.75, ease: "easeOut" }}
+>
+  {/* move just the card up slightly */}
+  <div className="mx-auto max-w-3xl bg-white/95 rounded-3xl px-8 py-10 md:px-12 md:py-12 shadow-xl ring-1 ring-black/5 relative -translate-y-2 md:-translate-y-4">
+    <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-[#181C2A] text-center font-manrope">
+      Mentorship That Moves <br />
+      You <span className="text-orange-600">Forward</span>
+    </h1>
+    <p className="mt-5 text-lg md:text-xl text-[#181C2A] text-center font-lato">
+      Get advice from experts and support from peers. All in one space
+      built for your growth and success.
+    </p>
+  </div>
 
-          <div className="mt-3 flex justify-center">
-            <Link
-              to="/mentors"
-              className="inline-flex items-center justify-center bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:scale-105"
-            >
-              Find Your Mentor
-            </Link>
-          </div>
-        </motion.div>
+  <div className="mt-3 flex justify-center">
+    <Link
+      to="/mentors"
+      className="inline-flex items-center justify-center bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition transform hover:scale-105"
+    >
+      Find Your Mentor
+    </Link>
+  </div>
+</motion.div>
       </section>
     </>
   );
