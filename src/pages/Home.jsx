@@ -658,8 +658,12 @@ const VideoBannerSection = React.memo(() => {
 // === Real Talk ===
 
 const CommunitySection = React.memo(() => (
-  <section aria-label="RealTalk community" className="w-full bg-sky-50 py-20 md:py-28">
+  <section
+    aria-label="RealTalk community"
+    className="w-full bg-sky-50 py-20 md:py-28"
+  >
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      {/* Illustration stays on the left */}
       <motion.div
         className="relative"
         initial={{ opacity: 0, x: -50 }}
@@ -676,32 +680,38 @@ const CommunitySection = React.memo(() => (
           sizes="(max-width: 1024px) 100vw, 600px"
         />
       </motion.div>
+
+      {/* Text block — now right aligned */}
       <motion.div
+        className="text-right"
         initial={{ opacity: 0, x: 50 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
       >
         <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 font-manrope leading-tight">
-          Join the Conversation in <br />{" "}
+          Join the Conversation in <br />
           <span className="text-orange-600">RealTalk</span>
         </h2>
-        <p className="mt-4 text-lg text-slate-600 font-lato">
+        <p className="mt-4 text-lg text-slate-600 font-lato max-w-md ml-auto">
           Our community forum is a safe space to ask questions, share
           experiences, and get advice from peers and mentors who've been there.
           It's the heart of our community.
         </p>
-        <Link
-          to="/realtalk"
-          className="mt-8 inline-block bg-slate-900 hover:bg-blue-300 text-white font-bold px-8 md:px-10 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
-          aria-label="Visit RealTalk"
-        >
-          Visit RealTalk
-        </Link>
+        <div className="mt-8 flex justify-end">
+          <Link
+            to="/realtalk"
+            className="inline-block bg-slate-900 hover:bg-blue-300 text-white font-bold px-8 md:px-10 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+            aria-label="Visit RealTalk"
+          >
+            Visit RealTalk
+          </Link>
+        </div>
       </motion.div>
     </div>
   </section>
 ));
+
 
 // === Expert Mentors ===
 

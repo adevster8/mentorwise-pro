@@ -216,7 +216,6 @@ const StickySubNav = React.memo(({ links }) => (
 ));
 
 const HeroSection = React.memo(() => (
-  // Extra-tight top padding only for the first section on mobile
   <Section
     id="overview"
     className="pt-0 md:pt-8"
@@ -453,6 +452,34 @@ const CtaSection = React.memo(() => (
   </Section>
 ));
 
+// --- Full-Width Image Pair with rounded edges & outer margin ---
+const ImagePairSection = React.memo(() => {
+  // ~1 cm ≈ 40px → px-10 and gap-10
+  return (
+    <section aria-label="MentorWise imagery" className="w-full px-10 md:px-10 pb-10">
+      <motion.div
+        {...fadeUp(0.05)}
+        className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full"
+      >
+        <img
+          src="/chair-guy.jpg"
+          alt="Client smiling in a studio after making progress with a mentor"
+          loading="lazy"
+          decoding="async"
+          className="w-full h-[520px] md:h-[560px] object-cover rounded-2xl"
+        />
+        <img
+          src="/drummer-pic.jpg"
+          alt="Musician practicing drums as part of a coaching plan"
+          loading="lazy"
+          decoding="async"
+          className="w-full h-[520px] md:h-[560px] object-cover rounded-2xl"
+          style={{ objectPosition: "top center" }} // show more of his face
+        />
+      </motion.div>
+    </section>
+  );
+});
 // --- Main ---
 
 export default function HowItWorksContent() {
@@ -471,6 +498,11 @@ export default function HowItWorksContent() {
           name="description"
           content="Goal-based, Retainer, and Learning-based coaching. Chat for free, get a polished plan, pay securely, schedule instantly, and track progress—MentorWise."
         />
+        <meta property="og:title" content="How It Works — MentorWise" />
+        <meta
+          property="og:description"
+          content="Chat free → Plan card → Secure checkout → Instant scheduling → Progress tracking."
+        />
       </Helmet>
 
       <StickySubNav links={SUB_NAV_LINKS} />
@@ -484,6 +516,9 @@ export default function HowItWorksContent() {
         <SocialProofSection stats={SOCIAL_PROOF_STATS} />
         <FaqSection items={FAQ_ITEMS} />
         <CtaSection />
+
+        {/* Full-width images under CTA */}
+        <ImagePairSection />
       </main>
     </div>
   );
