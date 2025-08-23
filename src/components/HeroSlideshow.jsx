@@ -65,8 +65,8 @@ export default function Hero() {
         style={{
           marginTop: "-100px",
           // opacity controls (desktop): 25% lighter than before
-          ["--edge"]: 0.38, // was ~0.50
-          ["--floor"]: 0.45, // was ~0.60
+          ["--edge"]: 0.25, // was ~0.50
+          ["--floor"]: 0.40, // was ~0.60
         }}
       >
         {/* The image defines height; position nudged down as before */}
