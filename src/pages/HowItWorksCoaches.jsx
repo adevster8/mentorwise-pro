@@ -1,4 +1,3 @@
-// src/pages/HowItWorksCoaches.jsx
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -9,7 +8,10 @@ import {
   PlayCircleIcon, RocketLaunchIcon, ShieldCheckIcon, SparklesIcon, StarIcon, UserGroupIcon
 } from "@heroicons/react/24/outline";
 
-/* ---------------- Data ---------------- */
+/* -------------------------------------------------------------------------- */
+/* DATA CONSTANTS                                                             */
+/* -------------------------------------------------------------------------- */
+
 const SUB_NAV_LINKS = [
   { href: "#overview", label: "Overview" }, { href: "#earn", label: "Ways to Earn" },
   { href: "#flow", label: "Sales Flow" }, { href: "#fees", label: "Fees & Payouts" },
@@ -59,7 +61,10 @@ const FAQ_ITEMS = [
   { q: "What about scheduling and reschedules?", a: "You control availability windows, buffers, and reschedule rules. Clients see the policy before paying." },
 ];
 
-/* -------------- UI helpers -------------- */
+/* -------------------------------------------------------------------------- */
+/* HELPER & UI COMPONENTS                                                     */
+/* -------------------------------------------------------------------------- */
+
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-80px" }, transition: { duration: 0.6, ease: "easeOut", delay },
@@ -88,7 +93,10 @@ const Check = () => (
   <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">✓</span>
 );
 
-/* -------------- Sections -------------- */
+/* -------------------------------------------------------------------------- */
+/* MEMOIZED SECTION COMPONENTS                                                */
+/* -------------------------------------------------------------------------- */
+
 const StickySubNav = React.memo(({ links }) => (
   <div className="sticky top-0 z-40 backdrop-blur-xl bg-white/70 border-b border-white/60">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -323,7 +331,6 @@ const CtaSection = React.memo(() => (
   </Section>
 ));
 
-/* -------- FIXED: Teacher image fits within same margins -------- */
 const TeacherImageSection = React.memo(() => (
   <section aria-label="MentorWise coach imagery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
     <motion.div {...fadeUp(0.05)}>
@@ -339,7 +346,10 @@ const TeacherImageSection = React.memo(() => (
   </section>
 ));
 
-/* ---------------- Main Page ---------------- */
+/* -------------------------------------------------------------------------- */
+/* MAIN PAGE COMPONENT                                                        */
+/* -------------------------------------------------------------------------- */
+
 export default function HowItWorksCoaches() {
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
@@ -347,7 +357,7 @@ export default function HowItWorksCoaches() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-white font-manrope">
+    <div className="min-h-screen bg-[linear-gradient(160deg,theme(colors.orange.50)_10%,theme(colors.blue.50)_40%,theme(colors.orange.50)_70%)] font-manrope">
       <Helmet>
         <title>How It Works for Coaches — MentorWise</title>
         <meta
@@ -368,8 +378,6 @@ export default function HowItWorksCoaches() {
         <ToolsSection tools={COACH_TOOLS} />
         <FaqSection items={FAQ_ITEMS} />
         <CtaSection />
-
-        {/* NEW: single image strip placed directly above the newsletter */}
         <TeacherImageSection />
       </main>
     </div>
